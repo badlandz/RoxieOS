@@ -31,6 +31,6 @@ To get a normal user + GUI apps later:
 Welcome to the real desktop.
 Root forever. Roxanne forever.
 
-Full technical manifesto → (WHITEPAPER.md](WHITEPAPER.md)
+Full technical manifesto → [WHITEPAPER.md](WHITEPAPER.md)
 
 
