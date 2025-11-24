@@ -7,8 +7,6 @@ You just got Roxanne’d.
 See [WHITEPAPER.md](WHITEPAPER.md) for the 8-package Rick-Roll manifesto.
 
 Root is love. Root is life.
-=======
-# roxieos/README.md
 
 You just got Roxanne’d.
 
@@ -33,6 +31,6 @@ To get a normal user + GUI apps later:
 Welcome to the real desktop.
 Root forever. Roxanne forever.
 
-Full technical manifesto → /WHITEPAPER.md
+Full technical manifesto → (WHITEPAPER.md](WHITEPAPER.md)
 
 
