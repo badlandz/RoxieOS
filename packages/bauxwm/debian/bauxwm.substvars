@@ -1,0 +1,3 @@
+shlibs:Depends=libc6 (>= 2.34), libfontconfig1 (>= 2.12.6), libx11-6, libxft2 (>> 2.1.1), libxinerama1 (>= 2:1.1.4)
+misc:Depends=
+misc:Pre-Depends=

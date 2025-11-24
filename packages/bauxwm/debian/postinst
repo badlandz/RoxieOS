@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+# Apply Caps ⇄ Esc globally and instantly
+setupcon --force
+localectl set-x11-keymap us pc105 "" caps:escape
+
+# Fix root's Alacritty config
+mkdir -p /root/.config/alacritty
+ln -sf /usr/share/bauxwm/alacritty-roxanne.toml /root/.config/alacritty/alacritty.toml
+
+echo "Roxanne Cyberdeck v0.1 loaded — Caps Lock is dead. Escape lives."

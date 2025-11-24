@@ -1,0 +1,40 @@
+# Roxanne Cyberdeck Alacritty — red radioactive terminal v0.1
+# No mouse. Layers only. Toxic green-black bg.
+
+[window]
+padding = { x = 10, y = 10 }
+decorations = "None"  # no titlebar
+startup_mode = "Windowed"
+opacity = 0.9  # transparency for cyberdeck glow
+
+[font]
+normal = { family = "Comic Sans MS Nerd Font Mono", style = "Regular" }
+size = 13.0
+
+[colors.primary]
+background = "#0e281c"  # deep radioactive green-black
+foreground = "#aaacb2"  # muted cyan-gray
+
+[colors.normal]
+black = "#000000"
+red = "#f38ba8"  # root/danger
+green = "#a6e3a1"  # safe/running
+yellow = "#f9e2af"
+blue = "#89b4fa"  # remote/calm
+magenta = "#f5c2e7"
+cyan = "#94e2d5"
+white = "#cdd6f4"
+
+[colors.bright]
+black = "#45475a"
+red = "#f38ba8"
+green = "#a6e3a1"
+yellow = "#f9e2af"
+blue = "#89b4fa"
+magenta = "#f5c2e7"
+cyan = "#94e2d5"
+white = "#bac2de"
+
+[bell]
+animation = "EaseOutExpo"
+duration = 0

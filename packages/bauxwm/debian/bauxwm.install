@@ -1,0 +1,7 @@
+dwm/dwm                                  usr/bin/dwm-roxanne
+usr/share/bauxwm/bin/status.sh           usr/share/bauxwm/bin/
+etc/default/keyboard                     etc/default/
+etc/X11/xinit/xinitrc                    etc/X11/xinit/
+etc/xdg/picom/picom.conf                  etc/xdg/picom/
+etc/alacritty-roxanne.toml               usr/share/bauxwm/alacritty-roxanne.toml
+patches/roxanne.patch                    usr/share/doc/bauxwm/

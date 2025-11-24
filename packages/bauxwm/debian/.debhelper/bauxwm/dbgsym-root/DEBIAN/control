@@ -1,0 +1,12 @@
+Package: bauxwm-dbgsym
+Source: bauxwm
+Version: 0.1-1
+Auto-Built-Package: debug-symbols
+Architecture: amd64
+Maintainer: badlandz <robert.current@gmail.com>
+Installed-Size: 34
+Depends: bauxwm (= 0.1-1)
+Section: debug
+Priority: optional
+Description: debug symbols for bauxwm
+Build-Ids: 17ca6c64d9774620aae0e56d07726dba5d42ad8c

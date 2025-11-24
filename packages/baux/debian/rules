@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+# debian/rules — BAUX packaging with full logging and local plugins
+
+DH_VERBOSE = 1
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	set -x  # Log every command
+	echo "[RULES] Start install at $(date)"
+
+	mkdir -p $(CURDIR)/debian/baux/usr/bin && echo "[OK] Created usr/bin" || { echo "[ERROR] mkdir usr/bin failed"; exit 1; }
+	mkdir -p $(CURDIR)/debian/baux/usr/share/baux && echo "[OK] Created usr/share/baux" || { echo "[ERROR] mkdir usr/share/baux failed"; exit 1; }
+	mkdir -p $(CURDIR)/debian/baux/usr/share/tmux-plugins && echo "[OK] Created usr/share/tmux-plugins" || { echo "[ERROR] mkdir tmux-plugins failed"; exit 1; }
+
+	install -m 0755 core/baux $(CURDIR)/debian/baux/usr/bin/baux && echo "[OK] Installed baux binary" || { echo "[ERROR] install baux failed"; exit 1; }
+
+	cp -a nvim demo docs forge legacy roxieos test core/tmux $(CURDIR)/debian/baux/usr/share/baux/ && echo "[OK] Copied data dirs" || { echo "[ERROR] cp data dirs failed"; exit 1; }
+
+	cp -a core/tmux/plugins/resurrect $(CURDIR)/debian/baux/usr/share/tmux-plugins/ && echo "[OK] Copied resurrect plugin" || { echo "[ERROR] cp resurrect failed"; exit 1; }
+	cp -a core/tmux/plugins/continuum $(CURDIR)/debian/baux/usr/share/tmux-plugins/ && echo "[OK] Copied continuum plugin" || { echo "[ERROR] cp continuum failed"; exit 1; }
+
+	echo "[RULES] Install complete at $(date)"

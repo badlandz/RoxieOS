@@ -1,0 +1,20 @@
+baux (0.2.1) UNRELEASED; urgency=medium
+
+  * Roxanne Edition — resurrection works, red dead panes, hostname
+    fixed, starship system-wide, unixporn ready
+
+ -- root <root@roxie-builder.current.law>  Thu, 20 Nov 2025 17:36:18 +0000
+
+baux (0.2.0) unstable; urgency=medium
+
+  * Proper Debian packaging
+  * Install /usr/share/baux/bauxrc globally
+  * Add postinst to create directory if missing
+
+ -- badlandz <badlandz@example.com>  Tue, 18 Nov 2025 23:55:00 -0700
+
+baux (0.1.0) unstable; urgency=low
+
+  * Initial release - monorepo MVP
+
+ -- badlandz <badlandz@example.com>  Tue, 18 Nov 2025 04:30:00 -0700
