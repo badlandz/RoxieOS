@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Roxanne Cyberdeck
 
 You just got Roxanne’d.
@@ -31,4 +30,3 @@ Root forever. Roxanne forever.
 Full technical manifesto → /WHITEPAPER.md
 
 
->>>>>>> 6f4c168a73a23f879683785abad561bc474231f8
