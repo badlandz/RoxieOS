@@ -1,0 +1,9 @@
+# BAUXVI
+
+This is a meta package of only configuration files.
+
+This will have system wide configuation files that:
+* Cover EVERY vim variant from neovide neovim all the way down to vi.tiny debian package
+* This will have "master" style that is:
+  * full blown BAUX/TMUX/BASH maped everything including AI integrations, "NvChad on steroids"
+  * it will work in "fall back" mode, so as much of your config as can still works for vi.tiny

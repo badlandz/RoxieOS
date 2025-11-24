@@ -1,0 +1,6 @@
+bauxwm (0.1-1) UNRELEASED; urgency=medium
+
+  * Roxanne Cyberdeck — Caps Lock dead forever, black bg, red clock,
+    picom, global keymap
+
+ -- root <root@roxie-builder.current.law>  Thu, 20 Nov 2025 19:11:33 +0000

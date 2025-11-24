@@ -1,0 +1,12 @@
+Package: bauxwm
+Version: 0.1-1
+Architecture: amd64
+Maintainer: badlandz <robert.current@gmail.com>
+Installed-Size: 80
+Depends: libc6 (>= 2.34), libfontconfig1 (>= 2.12.6), libx11-6, libxft2 (>> 2.1.1), libxinerama1 (>= 2:1.1.4), alacritty, picom, console-setup, baux
+Section: x11
+Priority: optional
+Homepage: https://github.com/badlandz/roxieos
+Description: Roxanne Cyberdeck WM — dwm + Alacritty + Caps Lock is dead
+ No mouse. No mercy. Caps Lock is permanently swapped with Escape.
+ Pure black background, red clock, transparent terminals.
