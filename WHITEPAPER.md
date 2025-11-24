@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Roxanne Cyberdeck v0.1 “Rick-Roll Edition”
 ### Whitepaper / Build Manifesto – November 21 2025
 **badlandz** – root is love, root is life
@@ -84,12 +83,10 @@ Boot the ISO/USB on any machine. You will see:
 2. GRUB that literally says “You just got Roxanne’d”
 3. Instant drop to root BAUX prompt in transparent Alacritty
 4. `fastfetch` that screams a giant red/green BAUX logo
->>>>>>> 6f4c168a73a23f879683785abad561bc474231f8
 5. `uname -r` that says “roxanne-linux”
 
 No questions. No setup. No mercy.
 
-<<<<<<< HEAD
 Root forever. Layers forever. Roxanne forever.
 
 – badlandz, November 2025  
@@ -116,4 +113,3 @@ Root forever. Layers forever. Roxanne forever.
 
 – badlandz, November 2025  
 
->>>>>>> 6f4c168a73a23f879683785abad561bc474231f8
