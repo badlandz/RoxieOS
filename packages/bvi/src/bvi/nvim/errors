@@ -1,62 +1,0 @@
-[?1049h[22;0;0t[?1h=[H[2J[?2004h[?2026$p[?2027$p[?2031$p[?2048$p[?u[c[?25h[?25l(B[m[H                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                
-                                                                                [24;1H(B[m[91mError detected while processing /home/coyote/.config/nvim/init.vim:(B[m[K[21;24r[21;1H[3M[r[20;1H                                                                                
-
-line    1:                                                                      
-[91mE492: Not an editor command: -- Set leader key(B[m                                  
-mapleader                                                                       [1 q[?1002h[?1006h[H[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[K
-[91mError detected while processing /home/coyote/.config/nvim/init.vim:(B[m[K
-line    1:[K
-[91mE492: Not an editor command: -- Set leader key(B[m[K
-mapleader[K[?25h[?25l[?1004h[?25h[?25l[24;1H"mapleader" [New][?25h[?25l[18;24r[18;1H[2M[r[23;1HCannot open file "mapleader"                                                    
-=                                                                               [C[?25h[?25l[24;1H"=" [New][?25h[?25l[17;24r[17;1H[M[r[24;1H""" [New]                                                                       [24;10H[?25h[?25l[16;24r[16;1H[M[r[24;1H""" [New]                                                                       [24;10H[?25h[?25l[10;24r[10;1H[6M[r[19;1HCannot open file """                                                            
-line    2:                                                                      
-[91mE480: No match: g(B[m                                                               
-line    4:                                                                      
-[91mE492: Not an editor command: -- Basic Neovim settings(B[m                           
-uicursor                                                                        [24;9H[?25h[?25l[24;1H"uicursor" [New][?25h[?25l[8;24r[8;1H[2M[r[23;1HCannot open file "uicursor"                                                     
-=                                                                               [C[?25h[?25l[24;1H"=" [New][?25h[?25l[7;24r[7;1H[M[r[24;1H"""" [New]                                                                      [24;11H[?25h[?25l[3;24r[3;1H[4M[r[21;1HCannot open file """"                                                           
-line    5:                                                                      
-[91mE480: No match: opt(B[m                                                             
-syntax                                                                          [24;7H[?25h[?25l[24;1H"syntax" [New][?25h[?25l[H[2M[22BCannot open file "syntax"                                                       
-=                                                                               [C[?25h[?25l[24;1H"=" [New][?25h[?25l[H[M[23B-- More --                                                                      [?1002l[?1006l[24;11H[?25h
