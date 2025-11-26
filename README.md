@@ -9,6 +9,8 @@ It can go wrong, and more wrong, nesting itself to oblivion with the wrong move 
 But seriously... 
 You just got Roxanne’d.
 <img width="1920" height="1080" alt="roxie_2025-11-24_093029" src="https://github.com/user-attachments/assets/4f451045-992c-480a-a914-2b207b6d41ad" />
+
+Unstable, but mastered nesting:
 <img width="1920" height="1080" alt="roxie_2025-11-23_005900" src="https://github.com/user-attachments/assets/34dd2b35-ac9d-4ee6-830d-19c734657ef5" />
 
 See [WHITEPAPER.md](WHITEPAPER.md) for the 8-package Rick-Roll manifesto.
