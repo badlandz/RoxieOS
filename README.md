@@ -1,5 +1,12 @@
 # Roxanne Cyberdeck
 
+THIS IS NOT RELESE SOFTWARE
+
+It can go wrong, and more wrong, nesting itself to oblivion with the wrong move right now, but... hey... look at all the fun ways it can randomly make you look at the date and time.. 
+
+<img width="1920" height="1080" alt="2025-11-26_15-24" src="https://github.com/user-attachments/assets/a439272f-7396-4690-981a-8aa22512a5f4" />
+
+But seriously... 
 You just got Roxanne’d.
 <img width="1920" height="1080" alt="roxie_2025-11-24_093029" src="https://github.com/user-attachments/assets/4f451045-992c-480a-a914-2b207b6d41ad" />
 <img width="1920" height="1080" alt="roxie_2025-11-23_005900" src="https://github.com/user-attachments/assets/34dd2b35-ac9d-4ee6-830d-19c734657ef5" />
