@@ -29,7 +29,7 @@ Boot to BAUX on anything modern: < 4 seconds
 ### Banned forever from v0.1
 - Separate roxieos-starship / roxieos-btop packages  
 - Wallpapers (pure black via xsetroot)  
-- Custom kernel compile (symlink only)  
+- Custom kernel compile (target destination RISC-V)  
 - Users  
 - Sudo  
 - More than 8 packages
