@@ -25,11 +25,11 @@ You just got Roxanne’d.
 Total installed size: < 380 MB  
 Boot to BAUX on Pi Zero: < 12 seconds  
 Boot to BAUX on anything modern: < 4 seconds
+- Custom kernel compile (target destination RISC-V)  
 
 ### Banned forever from v0.1
 - Separate roxieos-starship / roxieos-btop packages  
 - Wallpapers (pure black via xsetroot)  
-- Custom kernel compile (target destination RISC-V)  
 - Users  
 - Sudo  
 - More than 8 packages
