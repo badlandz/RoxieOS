@@ -71,7 +71,7 @@ Boot to usable BAUX on anything modern: < 4 seconds
 
 • Separate roxieos-starship / roxieos-btop packages → everything lives in /etc/baux/
 • Wallpapers → pure black via `xsetroot -solid "#0e281c"`
-• Custom kernel compile → just a symlink
+• Custom kernel compile → it's going to get interesting.. target.. RISC-V, because... 
 • Users → root only
 • Sudo → doesn’t exist
 • More than 8 packages → heresy
