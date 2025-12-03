@@ -1,7 +1,5 @@
-# BAUX: The Immortal Shell
-**Core session management for BAUXBSD v0.1**  
-badlandz – December 2025  
-Root is love. Layers forever.
+# baux - Immortal Shell
+**Core session management for BAUXBSD v0.1**
 
 BAUX provides immortal tmux sessions with resurrection, anti-nesting detection, and SeaweedFS integration for persistent storage across reboots and machine migrations.
 
@@ -42,5 +40,24 @@ baux kill session-name   # Kill specific session
 baux revive --all       # Restore all sessions
 baux sync target        # Sync projects to target
 ```
+
+## Session Persistence
+
+BAUX implements a hybrid persistence strategy:
+
+### ZFS Snapshots (Cold Storage)
+- Automatic snapshots via zfs-periodic
+- Full system state preservation
+- Rollback capability for disaster recovery
+
+### SeaweedFS Buffering (Hot Storage)
+- Temporary buffering for sudden disconnects
+- API-based file operations (no FUSE mounting)
+- Cross-machine synchronization
+
+### rsync/git Integration
+- Reliable project synchronization
+- Version control integration
+- Fallback when SeaweedFS unavailable
 
 BAUX is the foundation of instant productivity on BAUXBSD.

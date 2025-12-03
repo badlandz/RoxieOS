@@ -26,7 +26,7 @@ echo 'setxkbmap -symbols baux' >> /usr/local/etc/X11/xinitrc
 ```
 
 #### 1.3 Core Package Testing
-- Test baux-base (system configs)
+- Test bbase (system configs)
 - Test baux (tmux session management)
 - Verify Caps→Esc works everywhere
 - Confirm Mod4 keybindings in console + X
@@ -41,6 +41,7 @@ debian/control → Makefile + pkg-descr
 debian/postinst → pkg-plist + scripts
 debian/rules → do-install target
 /etc/ → /usr/local/etc/
+/usr/ → /usr/local/
 ```
 
 #### 2.2 Core Package Ports
@@ -51,9 +52,11 @@ CATEGORIES=	sysutils
 
 do-install:
 	${MKDIR} ${STAGEDIR}${PREFIX}/bin
-	${INSTALL_SCRIPT} ${WRKSRC}/baux ${STAGEDIR}${PREFIX}/bin
+	${INSTALL_SCRIPT} ${WRKSRC}/baux ${STAGEDIR}${PREFIX}/bin/baux
 	${MKDIR} ${STAGEDIR}${PREFIX}/etc/baux
-	${INSTALL_DATA} ${WRKSRC}/tmux/baux.conf ${STAGEDIR}${PREFIX}/etc/baux/
+	${INSTALL_DATA} ${WRKSRC}/tmux/baux.conf ${STAGEDIR}${PREFIX}/etc/baux/baux.conf
+
+.include <bsd.port.mk>
 ```
 
 #### 2.3 Service Migration
@@ -97,17 +100,56 @@ make install BAUX_THEME=yes
 - Confirm session name display in bwm bar
 - Test Mod4 keybindings across all layers
 
-### Phase 4: Polish & ISO (Week 7-8)
+### Phase 4: Session Persistence (Week 7-8)
+**Goal:** Implement ZFS + SeaweedFS hybrid
+
+#### 4.1 ZFS Snapshots for Cold Storage
+```bash
+# Configure automatic snapshots
+pkg install zfs-periodic
+
+# /etc/periodic.conf
+hourly_zfs_snapshot_enable="YES"
+hourly_zfs_snapshot_pools="zroot"
+hourly_zfs_snapshot_keep=24
+
+daily_zfs_snapshot_enable="YES"
+daily_zfs_snapshot_pools="zroot"
+daily_zfs_snapshot_keep=7
+
+# Manual snapshots
+zfs snapshot zroot/usr/home@baux-session-start
+zfs rollback zroot/usr/home@baux-session-start
+```
+
+#### 4.2 SeaweedFS for Hot Buffering
+```bash
+# Basic server setup (no FUSE mounting)
+weed master -port=9333 &
+weed volume -dir=/tmp/baux-buffer -mserver=localhost:9333 -port=8080 &
+weed filer -dir=/tmp/baux-filer -master=localhost:9333 -port=8888 &
+
+# API-based session buffering
+# Buffers sudden disconnects, syncs via rsync/git
+```
+
+#### 4.3 Hybrid Integration
+- **SeaweedFS**: Hot buffer for network drops/lid closes
+- **ZFS snapshots**: Cold storage for full session resurrection
+- **rsync/git**: Cross-machine project synchronization
+- **tmux resurrect**: Pane/command restoration
+
+### Phase 5: Polish & ISO (Week 9-10)
 **Goal:** Create bootable BAUXBSD image
 
-#### 4.1 System Hardening
+#### 5.1 System Hardening
 ```bash
 # Security configurations
 echo 'sshd_enable="YES"' >> /etc/rc.conf
 echo 'clear_tmp_enable="YES"' >> /etc/rc.conf
 ```
 
-#### 4.2 ISO Creation
+#### 5.2 ISO Creation
 ```bash
 # Using FreeBSD release engineering tools
 make release
@@ -120,8 +162,8 @@ make release
 ### Core Package Matrix
 | Package | FreeBSD Dependencies | Size |
 |---------|-------------------|-------|
-| baux-base | bash, tmux | 50MB |
-| baux | tmux, seaweedfs | 80MB |
+| bbase | bash, tmux | 50MB |
+| baux | tmux, seaweedfs, rsync, git | 80MB |
 | bwm | dwm, picom | 25MB |
 | bterm | st, libXft | 5MB |
 | bvi | neovim | 90MB |

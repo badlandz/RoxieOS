@@ -15,14 +15,14 @@ dd if=FreeBSD-15.0-RELEASE-amd64-disc1.iso of=/dev/da0 bs=1M conv=sync
 ### 2. Boot and Install Core
 ```bash
 # On first boot:
-pkg install baux-base baux bwm bterm bvi bweb chaos
+pkg install bbase baux bwm bterm bvi bweb chaos
 
 # Enable BAUX keymap
 echo 'keymap="baux"' >> /etc/rc.conf
 
 # Enable services
 echo 'baux_enable="YES"' >> /etc/rc.conf
-echo 'bauxwm_enable="YES"' >> /etc/rc.conf
+echo 'bwm_enable="YES"' >> /etc/rc.conf
 ```
 
 ### 3. First Run Configuration
@@ -39,12 +39,12 @@ baux
 
 ## Package Details
 
-### baux-base
+### bbase
 **Purpose:** System foundation with BAUX keymap
 **Size:** 50MB installed
 **Files:**
 - `/usr/share/syscons/keymaps/baux.kbd` - Console keymap
-- `/usr/local/share/X11/xkb/symbols/baux` - X11 keymap  
+- `/usr/local/share/X11/xkb/symbols/baux` - X11 keymap
 - `/etc/rc.conf` - System configuration
 
 **Key Features:**
@@ -74,7 +74,7 @@ baux
 
 ### bwm
 **Purpose:** Minimal window manager
-**Size:** 25MB installed  
+**Size:** 25MB installed
 **Dependencies:** dwm, picom
 
 **Key Features:**
@@ -106,7 +106,7 @@ baux
 
 **Key Features:**
 - Neovim with Lazy.nvim integration
-- Fallback to vim → vi.tiny
+- Fallback: vim → vi.tiny
 - Session state persistence
 - LSP for embedded development
 
@@ -115,6 +115,8 @@ baux
 bvi file.c           # Opens with neovim
 bvi --fallback file.c  # Forces vim if neovim unavailable
 ```
+
+**Note:** Intentionally replaces the basic `editors/bvi` binary editor with enhanced Neovim integration.
 
 ### bweb
 **Purpose:** Keyboard-native browser
@@ -145,7 +147,7 @@ bvi --fallback file.c  # Forces vim if neovim unavailable
 # Start development environment
 baux                    # Opens BAUX with sessions
 Mod4+1                  # Switch to shell session
-Mod4+2                  # Switch to editor session  
+Mod4+2                  # Switch to editor session
 Mod4+3                  # Switch to browser session
 Alt+1-4                  # Navigate within session
 ```
@@ -167,6 +169,35 @@ baux revive --all
 baux sync forge          # Sync to 'forge' machine
 baux sync nas             # Sync to NAS storage
 baux sync --all           # Sync all configured targets
+```
+
+## ZFS Setup for Session Persistence
+
+### Automatic Snapshots
+```bash
+# Install zfs-periodic
+pkg install zfs-periodic
+
+# Configure in /etc/periodic.conf
+hourly_zfs_snapshot_enable="YES"
+hourly_zfs_snapshot_pools="zroot"
+hourly_zfs_snapshot_keep=24
+
+daily_zfs_snapshot_enable="YES"
+daily_zfs_snapshot_pools="zroot"
+daily_zfs_snapshot_keep=7
+```
+
+### Session Resurrection
+```bash
+# Create snapshot before session
+zfs snapshot zroot/usr/home@baux-session-start
+
+# Restore session from snapshot
+zfs rollback zroot/usr/home@baux-session-start
+
+# List available snapshots
+zfs list -t snapshot
 ```
 
 ## Troubleshooting
@@ -224,7 +255,7 @@ baux reload
 # Create development template
 baux template dev --shell --editor --web
 
-# Create electronics template  
+# Create electronics template
 baux template hw --serial --monitor
 
 # Use template

@@ -1,55 +1,34 @@
-# BAUXBSD Unified Keymap Philosophy
-**Consistent muscle memory across all layers**
+# BAUXBSD Unified Workflow & Keymap Philosophy
 
-## Core Principle
+## Core Principle: One Finger Movement = One Meaning
 
-> **One finger movement = one meaning = one result**  
-No matter if you're in bwm, tmux, neovim, or console - the same keybindings produce identical results.
+Every key combination produces identical results across all BAUXBSD layers.
 
 ## The BAUX Keymap System
 
 ### Foundation: baux.kbd
-**Location**: `/usr/share/syscons/keymaps/baux.kbd`  
-**Purpose**: Caps Lock → Escape globally, Mod4 mappings for session switching
+**Location:** `/usr/share/syscons/keymaps/baux.kbd`
+**Purpose:** Caps Lock → Escape globally, Mod4 session switching
 
 ### Keymap Hierarchy
 
 | Layer | Modifiers | Session Navigation | Window/Pane Nav | Global Actions |
 |--------|------------|-------------------|------------------|----------------|
-| **Console** | Ctrl-Alt | Mod4+1-9 (F1-F9) | Alt+1-9 | Ctrl+... |
-| **bwm** | Mod4 | Mod4+1-9 | Alt+1-9 | Mod4+Enter/b |
-| **tmux** | Ctrl-b (prefix) | Mod4+1-9 | Alt+1-9, hjkl | Ctrl+b |
-| **bvi** | Space (leader) | Space+1-9 | hjkl, Ctrl+... | Space+... |
+| Console | Ctrl-Alt | Mod4+1-9 (F1-F9) | Alt+1-9 | Ctrl+... |
+| bwm | Mod4 | Mod4+1-9 | Alt+1-9 | Mod4+Enter/b |
+| tmux | Ctrl-b | Mod4+1-9 | Alt+1-9, hjkl | Ctrl+b |
+| bvi | Space | Space+1-9 | hjkl, Ctrl+... | Space+... |
 
-## Unified Keybindings
+## Neovim High-Productivity Keymaps
 
-### Session Management (Universal)
-```bash
-Mod4+1-9        # Jump to session 1-9
-Mod4+0            # Session dashboard
-Mod4+b            # Toggle session display
-```
-
-### Navigation (Universal)
-```bash
-hjkl              # Cursor/pane/window navigation  
-Alt+hjkl          # tmux windows
-Mod4+hjkl          # bwm tags/virtual desktops
-Ctrl+hjkl          # Vim cursor
-```
-
-### Editor Integration
-
-### Neovim High-Productivity Keymaps
 Based on community research and BAUX philosophy:
 
-#### Leader System
+### Leader System
 ```lua
--- Space is leader (consistent, easy to reach)
-vim.g.mapleader = " "
+vim.g.mapleader = " "  -- Space is leader (easy to reach)
 ```
 
-#### Quick Access (inspired by VS Code/intellij)
+### Quick Access (VS Code/intellij inspired)
 ```lua
 -- File operations (Space+f)
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
@@ -60,17 +39,13 @@ vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fe', builtin.file_browser, {})
 vim.keymap.set('n', '<leader>er', builtin.recent_files, {})
 
--- Search/Replace (Space+s)
-vim.keymap.set('n', '<leader>fs', builtin.current_search_fuzzy, {})
-vim.keymap.set('n', '<leader>fr', builtin.resume, {})
-
 -- Git integration (Space+g)
 vim.keymap.set('n', '<leader>gs', builtin.git_status, {})
 vim.keymap.set('n', '<leader>gb', builtin.git_branches, {})
 vim.keymap.set('n', '<leader>gc', builtin.git_commits, {})
 ```
 
-#### Window Management
+### Window Management
 ```lua
 -- Split navigation (Ctrl+hjkl - consistent with tmux)
 vim.keymap.set('n', '<C-h>', vim.cmd.wincmd('h'))
@@ -80,11 +55,10 @@ vim.keymap.set('n', '<C-l>', vim.cmd.wincmd('l'))
 
 -- Buffer switching (Alt+1-9 - consistent with tmux)
 vim.keymap.set('n', '<leader>1', function() vim.cmd.buffer(1) end, {})
-vim.keymap.set('n', '<leader>2', function() vim.cmd.buffer(2) end, {})
 -- ... up to 9
 ```
 
-#### Terminal Integration
+### Terminal Integration
 ```lua
 -- tmux integration (Ctrl+b actions)
 vim.keymap.set('n', '<C-b>s', ':!tmux new-window<CR>')
@@ -99,39 +73,19 @@ vim.keymap.set('v', '<leader>l', ':BauxSendLine<CR>')
 ## Cross-Application Consistency
 
 ### bwm Integration
-```bash
-# Mod4+1-9 switches bwm tags (same as tmux sessions)
-# Mod4+b toggles bwm status bar (same as tmux status)
-# Mod4+Enter spawns bterm (new terminal)
-```
+- Mod4+1-9 switches bwm tags (same as tmux sessions)
+- Mod4+b toggles bwm status bar (same as tmux status)
+- Mod4+Enter spawns bterm (new terminal)
 
-### tmux Integration  
-```bash
-# Alt+1-9 switches tmux windows
-# Mod4+1-9 switches tmux sessions (when BAUXWM unset)
-# Mod4+b toggles tmux status line (when BAUXWM unset)
-```
+### tmux Integration
+- Alt+1-9 switches tmux windows
+- Mod4+1-9 switches tmux sessions (when BAUXWM unset)
+- Mod4+b toggles tmux status line (when BAUXWM unset)
 
 ### Console Integration
-```bash
-# Mod4 mapped to Ctrl+Alt for session switching
-# Caps→Esc handled by baux.kbd
-# Ctrl+Alt+F1-F9 for TTY switching (same as Mod4+1-9)
-```
-
-## Advanced Features
-
-### Multi-Monitor Support
-```bash
-# Session-per-monitor: Mod4+1-3 for monitor 1, Mod4+4-6 for monitor 2
-# Cross-monitor window movement: Mod4+Shift+hjkl
-```
-
-### Emergency Recovery
-```bash
-Mod4+Escape      # Emergency reset to session 1
-Mod4+Shift+R    # Hard reset of all sessions
-```
+- Mod4 mapped to Ctrl+Alt for session switching
+- Caps→Esc handled by baux.kbd
+- Ctrl+Alt+F1-F9 for TTY switching (same as Mod4+1-9)
 
 ## Implementation Notes
 
@@ -144,8 +98,8 @@ Mod4+Shift+R    # Hard reset of all sessions
 ### Environment Variables
 ```bash
 BAUXWM=1         # Indicates bwm is running
-BAUX_SESSION=1     # Current session number
-BAUX_LEADER=" "    # Space key in neovim
+BAUX_SESSION=1   # Current session number
+BAUX_LEADER=" "  # Space key in neovim
 ```
 
 This unified keymap system ensures maximum productivity while maintaining consistency across all BAUXBSD components.

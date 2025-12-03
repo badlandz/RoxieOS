@@ -10,21 +10,21 @@ This is not a traditional distribution. This is a loaded USB stick that contains
 
 | Layer | Name | Purpose | Size | Target Hardware |
 |--------|------|-----------|-------|-----------------|
-| 1 | baux-base | System foundation + keymap | <50MB | Any machine |
-| 2 | baux | Shell/tmux session manager | +80MB | Every machine you touch |
+| 1 | bbase | System foundation + keymap | <50MB | Any machine |
+| 2 | baux | Shell/session manager | +80MB | Every machine you touch |
 | 3 | bwm | Window manager (dwm fork) | +25MB | Development machines |
 
 ## Package Architecture
 
 ### Core Packages (v0.1 Essential)
 
-1. **baux-base** - System foundation
+1. **bbase** - System foundation
    - Custom baux.kbd keymap (Caps→Esc global)
    - System-wide configurations
    - rc.d service scripts
    - Root autologin setup
 
-2. **baux** - Shell/session manager  
+2. **baux** - Shell/session manager
    - tmux with immortal pane resurrection
    - Bash wrapper with anti-nesting
    - SeaweedFS integration buffers
@@ -77,7 +77,7 @@ This is not a traditional distribution. This is a loaded USB stick that contains
 # Console keymap
 /usr/share/syscons/keymaps/baux.kbd
 
-# X11 keymap  
+# X11 keymap
 /usr/local/share/X11/xkb/symbols/baux
 
 # System configuration
@@ -105,14 +105,14 @@ baux revive --all  # Restore exact state on any machine
 
 ### Single Source of Truth
 - **bwm running:** bwm bar shows session names
-- **Console only:** tmux status shows session names  
+- **Console only:** tmux status shows session names
 - **Never both:** BAUXWM=1 controls visibility
 
 ## Installation Strategy
 
 ### Core Installation
 ```bash
-pkg install baux-base baux bwm bterm bvi bweb chaos
+pkg install bbase baux bwm bterm bvi bweb chaos
 # Auto-configures:
 # - baux.kbd keymap
 # - rc.d services
@@ -141,7 +141,7 @@ pkg install bview bmedia bbot bdrop
 - Cross-machine session synchronization
 - PostgreSQL knowledge base integration
 
-### v1.0 - Complete Vision  
+### v1.0 - Complete Vision
 - AI-powered development environment
 - Automatic project resurrection
 - Full digital twin implementation
@@ -149,7 +149,7 @@ pkg install bview bmedia bbot bdrop
 ---
 
 Root forever.
-Layers forever.  
+Layers forever.
 FreeBSD forever.
 
 – badlandz, December 2025

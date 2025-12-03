@@ -8,139 +8,87 @@ Every package starts with 'b' for muscle memory and minimal typing. Maximum 4 ch
 
 ### Core Packages (v0.1 Essential)
 ```
-baux-base/          # System foundation
-├── files/
-│   ├── usr/share/syscons/keymaps/baux.kbd
-│   ├── usr/local/share/X11/xkb/symbols/baux
-│   └── etc/rc.conf.d/baux
-├── pkg-descr         # Package description
-└── Makefile           # FreeBSD port build
-
-baux/                # Shell/session manager
-├── src/
-│   ├── baux           # Main wrapper script
-│   └── tmux/
-│       └── baux.conf   # tmux configuration
-├── files/
-│   └── usr/local/etc/baux/
-└── Makefile
-
-bwm/                  # Window manager
-├── files/
-│   └── usr/local/bin/
-│       ├── dwm          # Patched dwm binary
-│       └── status.sh     # Bar script
-├── patches/
-│   └── baux.patch      # dwm patches
-└── Makefile
-
-bterm/                # Terminal
-├── files/
-│   └── usr/local/bin/st   # Patched st binary
-├── patches/
-│   └── baux-term.patch   # st patches
-└── Makefile
-
-bvi/                  # Editor wrapper
-├── src/
-│   └── bvi.sh            # Neovim wrapper
-├── files/
-│   └── usr/local/etc/bvi/
-│       ├── init.lua        # Neovim config
-│       └── vimrc.tiny     # vi fallback
-└── Makefile
-
-bweb/                 # Browser
-├── files/
-│   └── usr/local/bin/bweb   # Browser launcher
-├── patches/
-│   └── qutebrowser-config/   # Theming
-└── Makefile
-
-chaos/                # Screensaver
-├── files/
-│   └── usr/local/bin/chaos   # tmux chaos script
-└── Makefile
+bauxbsd/ports/
+├── bbase/           # System foundation
+│   ├── Makefile
+│   ├── pkg-descr
+│   ├── pkg-plist
+│   └── files/
+│       └── usr/share/syscons/keymaps/baux.kbd
+├── baux/            # Shell/session manager
+├── bwm/             # Window manager
+├── bterm/           # Terminal
+├── bvi/             # Editor
+├── bweb/            # Browser
+└── chaos/           # Screensaver
 ```
 
 ### Optional Packages (-dev tier)
 
 ```
-bview/                # Image viewer
-├── files/
-│   └── usr/local/bin/bview   # sxiv wrapper
-└── Makefile
-
-bmedia/               # Media player
-├── files/
-│   └── usr/local/bin/bmedia  # mpv wrapper
-└── Makefile
-
-bbot/                 # AI assistant
-├── src/
-│   └── bbot.sh              # AI router script
-├── files/
-│   └── usr/local/etc/bbot/
-│       ├── models/              # Local models
-│       └── config.yaml         # Configuration
-└── Makefile
-
-bdrop/                # Session persistence
-├── src/
-│   └── bdrop.sh             # SeaweedFS scripts
-├── files/
-│   └── usr/local/etc/bdrop/
-│       └── seaweedfs.conf     # Config
-└── Makefile
+├── bview/           # Image viewer
+├── bmedia/          # Media player
+├── bbot/            # AI assistant
+└── bdrop/           # Session persistence
 ```
 
 ## FreeBSD Port Structure
 
-### Standard Makefile Template
+### Standard Port Layout
+```
+bbase/
+├── Makefile          # Port build instructions
+├── pkg-descr         # Package description
+├── pkg-plist         # File installation list
+├── distinfo          # Checksums for distfiles
+└── files/            # Additional files to install
+    └── usr/share/syscons/keymaps/baux.kbd
+```
+
+### Example Makefile
 ```makefile
-PORTNAME=    baux
+PORTNAME=    bbase
 CATEGORIES=   sysutils
-COMMENT=      BAUX shell and session manager
+COMMENT=      BAUXBSD system foundation with keymap
 
 MAINTAINER=   badlandz@bauxbsd.org
 WWW=          https://bauxbsd.org
 
 USES=         python
-RUN_DEPENDS=   tmux seaweedfs
+RUN_DEPENDS=   bash tmux
 
-PLIST_FILES=   bin/baux \
-               etc/baux/baux.conf \
-               etc/baux/tmux.conf
+PLIST_FILES=   share/syscons/keymaps/baux.kbd \
+               etc/rc.conf.d/baux
 
 do-install:
-	${MKDIR} ${STAGEDIR}${PREFIX}/bin
-	${INSTALL_SCRIPT} ${WRKSRC}/baux ${STAGEDIR}${PREFIX}/bin/baux
-	${MKDIR} ${STAGEDIR}${PREFIX}/etc/baux
-	${INSTALL_DATA} ${WRKSRC}/tmux/baux.conf ${STAGEDIR}${PREFIX}/etc/baux/baux.conf
+	${MKDIR} ${STAGEDIR}${PREFIX}/share/syscons/keymaps
+	${INSTALL_DATA} ${FILESDIR}/baux.kbd ${STAGEDIR}${PREFIX}/share/syscons/keymaps/baux.kbd
+	${MKDIR} ${STAGEDIR}${PREFIX}/etc/rc.conf.d
+	${INSTALL_DATA} ${FILESDIR}/baux.rc ${STAGEDIR}${PREFIX}/etc/rc.conf.d/baux
 
 .include <bsd.port.mk>
 ```
 
-### Package Dependencies
+### Port Dependencies
 
-| Package | Required Ports | Optional Ports |
-|---------|----------------|----------------|
-| baux-base | bash tmux |  |
-| baux | tmux seaweedfs rsync git |  |
-| bwm | dwm picom |  |
-| bterm | st libXft |  |
-| bvi | neovim |  |
-| bweb | qutebrowser | surf |
-| chaos | tmux |  |
-| bview | sxiv |  |
-| bmedia | mpv |  |
-| bbot | ollama |  |
-| bdrop | seaweedfs |  |
+| Package | Required Ports | Size |
+|---------|----------------|-------|
+| bbase | bash, tmux | 50MB |
+| baux | tmux, seaweedfs, rsync, git | 80MB |
+| bwm | dwm, picom | 25MB |
+| bterm | st, libXft | 5MB |
+| bvi | neovim | 90MB |
+| bweb | qutebrowser | 40MB |
+| chaos | tmux | 1MB |
+| bview | sxiv | 2MB |
+| bmedia | mpv | 15MB |
+| bbot | ollama | 4GB |
+| bdrop | seaweedfs | 50MB |
 
 ## Installation Order
 
 ### Core Installation Sequence
-1. **baux-base** - System foundation, keymap
+1. **bbase** - System foundation, keymap
 2. **baux** - Shell environment
 3. **bwm** - Window manager (if X11)
 4. **bterm** - Terminal (if X11)
@@ -153,7 +101,7 @@ do-install:
 ### System-wide Configs
 ```
 /usr/local/etc/baux/          # BAUX configurations
-/usr/local/etc/bauxwm/        # Window manager configs
+/usr/local/etc/bwm/           # Window manager configs
 /usr/local/etc/bvi/           # Editor configs
 ```
 
@@ -167,7 +115,7 @@ do-install:
 ## Naming Conventions
 
 ### Commands
-- **4 characters max**: bvi, bwm, bweb, bterm
+- **4 characters max**: bwm, bvi, bweb, bterm
 - **Descriptive**: baux, chaos, bview, bmedia
 - **No conflicts**: Avoid existing Unix commands
 
@@ -190,5 +138,15 @@ do-install:
 /usr/local/share/doc/baux*/      # Package docs
 /usr/local/man/man1/b*.1         # Manual pages
 ```
+
+## Special Considerations
+
+### bvi Conflict Resolution
+```makefile
+# In bvi/Makefile
+CONFLICTS_INSTALL= bvi-[0-9]*
+```
+
+This declares the intentional replacement of the basic binary editor with our enhanced Neovim wrapper.
 
 This structure ensures maximum compatibility with FreeBSD ports system while maintaining the minimal, consistent BAUX philosophy.

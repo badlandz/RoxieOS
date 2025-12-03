@@ -9,24 +9,24 @@ This is a complete rewrite from Debian to FreeBSD for maximum efficiency and min
 Boot USB → you are root → instant productivity in 5 seconds.
 
 - **No users, no sudo, no passwords**
-- **Caps Lock is dead, Escape lives there now**  
+- **Caps Lock is dead, Escape lives there now**
 - **Everything runs in RAM by default**
-- **Immortal sessions** that survive reboots and machine swaps
+- **Immortal sessions** that survive reboots/machine swaps
 - **Unified keybindings** across console, tmux, window manager, and editor
 
 ## The Three Layers
 
 | Layer | Name | Purpose | Size | Target Hardware |
 |--------|------|-----------|-------|-----------------|
-| 1 | baux-base | System foundation + keymap | <50MB | Any machine |
+| 1 | bbase | System foundation + keymap | <50MB | Any machine |
 | 2 | baux | Shell/session manager | +80MB | Every machine you touch |
-| 3 | bwm | Window manager | +25MB | Development machines |
+| 3 | bwm | Window manager (dwm fork) | +25MB | Development machines |
 
 ## Package Architecture
 
 ### Core Packages (v0.1 Essential)
 
-1. **baux-base** - System foundation with baux.kbd keymap
+1. **bbase** - System foundation with baux.kbd keymap
 2. **baux** - Immortal shell with tmux session management
 3. **bwm** - Minimal window manager (dwm fork)
 4. **bterm** - BAUX-themed terminal (st fork)
@@ -56,7 +56,7 @@ Boot USB → you are root → instant productivity in 5 seconds.
 dd if=BAUXBSD-15.0-RELEASE.iso of=/dev/da0 bs=1M
 
 # Boot and install core
-pkg install baux-base baux bwm bterm bvi bweb chaos
+pkg install bbase baux bwm bterm bvi bweb chaos
 
 # Start BAUX environment
 baux
@@ -84,9 +84,7 @@ baux
 ---
 
 Root forever.
-Layers forever.  
+Layers forever.
 FreeBSD forever.
 
 – badlandz, December 2025
-
-
