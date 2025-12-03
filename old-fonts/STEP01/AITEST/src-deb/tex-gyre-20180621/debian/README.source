@@ -1,0 +1,8 @@
+The following TeX Live packages were downloaded from 
+    http://www.ctan.org/tex-archive/systems/texlive/tlnet/archive/
+and merged into one orig.tar.gz file:
+    tex-gyre.tar.xz
+    tex-gyre.doc.tar.xz
+    tex-gyre-math.tar.xz
+    tex-gyre-math.doc.tar.xz
+This is done with the script debian/make-orig-tar

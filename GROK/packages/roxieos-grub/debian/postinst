@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+# Set RoxieOS as GRUB theme
+mkdir -p /etc/default/grub.d
+cat > /etc/default/grub.d/roxieos-theme.cfg <<EOF
+GRUB_THEME="/usr/share/grub/themes/roxieos/theme.txt"
+GRUB_BACKGROUND=""
+EOF
+
+# Update GRUB
+if command -v update-grub >/dev/null 2>&1; then
+    update-grub
+fi
+
+echo "RoxieOS GRUB theme installed and set as default"
+echo "Red radioactive boot menu will show on next boot"
+echo "You just got Roxanne'd"

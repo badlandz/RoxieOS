@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+# Symlink kernel to groksroxieos-linux
+if [ -f /boot/vmlinuz-$(uname -r) ]; then
+    ln -sf /boot/vmlinuz-$(uname -r) /boot/vmlinuz-groksroxieos
+fi
+
+if [ -f /boot/initrd.img-$(uname -r) ]; then
+    ln -sf /boot/initrd.img-$(uname -r) /boot/initrd.img-groksroxieos
+fi
+
+# Update GRUB if available
+if command -v update-grub >/dev/null 2>&1; then
+    update-grub
+fi
+
+exit 0

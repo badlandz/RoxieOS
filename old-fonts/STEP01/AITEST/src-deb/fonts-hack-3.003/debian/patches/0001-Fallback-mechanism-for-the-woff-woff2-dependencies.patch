@@ -1,0 +1,105 @@
+From: Paride Legovini <pl@ninthfloor.org>
+Date: Sun, 18 Feb 2018 18:59:12 +0100
+Subject: Fallback mechanism for the woff/woff2 dependencies
+
+If sfnt2woff-zopfli and woff2_compress binaries are not found in the
+installation directory targeted when the scripts are called with
+--install-dependencies, then look if the binaries are installed
+system-wide (i.e., in the $PATH).
+
+This patch will be submitted upstream.
+---
+ build-subsets.sh | 30 +++++++++++++++++++++---------
+ build-woff.sh    |  7 +++++++
+ build-woff2.sh   |  8 +++++++-
+ 3 files changed, 35 insertions(+), 10 deletions(-)
+
+diff --git a/build-subsets.sh b/build-subsets.sh
+index 42df0dc..45836b7 100755
+--- a/build-subsets.sh
++++ b/build-subsets.sh
+@@ -135,19 +135,31 @@ fi
+ # sfntwoff-zopfli installed
+ if ! [ -f "$SFNTWOFF_BIN" ]
+ 	then
+-	    echo "sfnt2woff-zopfli was not found on the path $SFNTWOFF_BIN.  Please install all build dependencies with 'make build-with-dependencies', then attempt your build again." 1>&2
+-	    INSTALLFLAG=1
+-else
+-	echo "sfnt2woff-zopfli executable identified"
++	    if ! which sfnt2woff-zopfli
++	    	then
++	            echo "sfnt2woff-zopfli was not found on the path $SFNTWOFF_BIN.  Please install all build dependencies with 'make build-with-dependencies', then attempt your build again." 1>&2
++	            INSTALLFLAG=1
++	    else
++	    	SFNTWOFF_BIN="sfnt2woff-zopfli"
++	    	echo "sfnt2woff-zopfli executable identified"
++	    fi
++	else
++		echo "sfnt2woff-zopfli executable identified"
+ fi
+ 
+-# woff2 installed
++# woff2_compress installed
+ if ! [ -f "$WOFF2_BIN" ]
+ 	then
+-	    echo "woff2_compress was not found on the path $WOFF2_BIN.  Please install all build dependencies with 'make build-with-dependencies', then attempt your build again." 1>&2
+-	    INSTALLFLAG=1
+-else
+-	echo "woff2_compress executable identified"
++	    if ! which woff2_compress
++	    	then
++	            echo "woff2_compress was not found on the path $SFNTWOFF_BIN.  Please install all build dependencies with 'make build-with-dependencies', then attempt your build again." 1>&2
++	            INSTALLFLAG=1
++	    else
++	    	WOFF2_BIN="woff2_compress"
++	    	echo "woff2_compress executable identified"
++	    fi
++	else
++		echo "woff2_compress executable identified"
+ fi
+ 
+ # if any of the dependency installs failed, exit and do not attempt build, notify user
+diff --git a/build-woff.sh b/build-woff.sh
+index e98fe14..b0d94ed 100755
+--- a/build-woff.sh
++++ b/build-woff.sh
+@@ -93,6 +93,13 @@ if [ "$1" = "--install-dependencies" ]
+ 		cd "$CUR_DIR" || exit 1
+ fi
+ 
++# If the binary is not found, look if it is installed system-wide
++if [ ! -x "$SFNTWOFF_BIN" ]; then
++	SFNTWOFF_SYSWIDE=$(command -pv sfnt2woff-zopfli)
++	if [ -x "$SFNTWOFF_SYSWIDE" ]; then
++		SFNTWOFF_BIN=$SFNTWOFF_SYSWIDE
++	fi
++fi
+ 
+ if [ -f "$SFNTWOFF_BIN" ]; then
+ 	echo "Beginning web font build with $SFNTWOFF"
+diff --git a/build-woff2.sh b/build-woff2.sh
+index 42cbbab..d5a2e0a 100755
+--- a/build-woff2.sh
++++ b/build-woff2.sh
+@@ -26,7 +26,6 @@ INST="$HOME/woff2"
+ # woff2 executable path
+ WOFF2_BIN="$BUILD/woff2/woff2_compress"
+ 
+-
+ # The font build directory paths and file paths for the woff builds
+ TTF_BUILD="build/ttf"
+ WOFF_BUILD="build/web/fonts"
+@@ -85,6 +84,13 @@ if [ "$1" = "--install-dependencies" ]
+ 		cd "$CUR_DIR" || exit 1
+ fi
+ 
++# If the binary is not found, look if it is installed system-wide
++if [ ! -x "$WOFF2_BIN" ]; then
++	WOFF2_SYSWIDE=$(command -pv woff2_compress)
++	if [ -x "$WOFF2_SYSWIDE" ]; then
++		WOFF2_BIN="$WOFF2_SYSWIDE"
++	fi
++fi
+ 
+ if [ -f "$WOFF2_BIN" ]; then
+ 	echo "Beginning web font build with $WOFF2_BIN"

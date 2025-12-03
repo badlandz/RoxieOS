@@ -1,0 +1,8 @@
+neovim (0.12.0+roxanne1) unstable; urgency=medium
+
+  * Initial RoxieOS roxanne packaging
+    - Custom build for RoxieOS roxanne distribution
+    - Based on Neovim 0.12.0 source code
+    - Built for amd64, arm64, and armhf architectures
+
+ -- Robert W. Current <robert.current@gmail.com>  Thu, 27 Nov 2025 16:43:23 -0700

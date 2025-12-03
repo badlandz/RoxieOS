@@ -1,0 +1,7 @@
+fonts/type1/public/tex-gyre/*.pfb usr/share/texmf/fonts/type1/public/tex-gyre
+fonts/afm/public/tex-gyre/*.afm usr/share/texmf/fonts/afm/public/tex-gyre
+fonts/tfm/public/tex-gyre/*.tfm usr/share/texmf/fonts/tfm/public/tex-gyre
+fonts/enc/dvips/tex-gyre/*.enc usr/share/texmf/fonts/enc/dvips/tex-gyre
+fonts/map/dvips/tex-gyre/*.map usr/share/texmf/fonts/map/dvips/tex-gyre
+tex/latex/tex-gyre/*.fd tex/latex/tex-gyre/*.sty usr/share/texmf/tex/latex/tex-gyre
+debian/tex-gyre.scale etc/X11/fonts/Type1

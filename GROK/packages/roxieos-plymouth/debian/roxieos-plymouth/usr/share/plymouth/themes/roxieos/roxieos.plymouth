@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=RoxieOS
+Description=RoxieOS boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/roxieos
+ScriptFile=/usr/share/plymouth/themes/roxieos/roxieos.script

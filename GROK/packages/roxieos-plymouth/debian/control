@@ -1,0 +1,14 @@
+Source: roxieos-plymouth
+Section: misc
+Priority: optional
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0
+Homepage: https://groksroxieos.cyberdeck
+
+Package: roxieos-plymouth
+Architecture: all
+Depends: plymouth, ${misc:Depends}
+Description: RoxieOS Plymouth Theme - Red Radioactive Boot Splash
+ RoxieOS Plymouth boot splash theme with red radioactive design
+ and "You just got Roxanne'd" message.

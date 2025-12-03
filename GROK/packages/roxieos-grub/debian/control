@@ -1,0 +1,14 @@
+Source: roxieos-grub
+Section: admin
+Priority: optional
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0
+Homepage: https://groksroxieos.cyberdeck
+
+Package: roxieos-grub
+Architecture: all
+Depends: grub-common, ${misc:Depends}
+Description: RoxieOS GRUB Theme - Red Boot Menu
+ RoxieOS GRUB boot menu theme with red radioactive styling
+ and "You just got Roxanne'd" branding.

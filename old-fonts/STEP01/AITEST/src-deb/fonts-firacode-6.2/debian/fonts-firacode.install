@@ -1,0 +1,3 @@
+distr/ttf/*/*.ttf usr/share/fonts/truetype/firacode/
+distr/woff/*/*.woff usr/share/fonts-firacode/woff/
+distr/woff2/*/*.woff2 usr/share/fonts-firacode/woff2/

@@ -1,0 +1,17 @@
+2025-11-25 01:54:58 URL:http://deb.debian.org/debian/dists/testing/InRelease [147955/147955] -> "/root/groksroxieos/live/chroot/var/lib/apt/lists/partial/deb.debian.org_debian_dists_testing_InRelease" [1]
+gpgv: Signature made Mon Nov 24 20:13:09 2025 UTC
+gpgv:                using RSA key 4CB50190207B4758A3F73A796ED0E7B82643E131
+gpgv: Good signature from "Debian Archive Automatic Signing Key (12/bookworm) <ftpmaster@debian.org>"
+gpgv: Signature made Mon Nov 24 20:13:15 2025 UTC
+gpgv:                using RSA key B8E5F13176D2A7A75220028078DBA3BC47EF2265
+gpgv: Good signature from "Debian Archive Automatic Signing Key (13/trixie) <ftpmaster@debian.org>"
+2025-11-25 01:55:05 URL:http://deb.debian.org/debian/dists/testing/main/binary-amd64/by-hash/SHA256/133ad211ffe9f21f60f03d8d0477ed650dae75942aec0969138f791a8c562fcc [9666152/9666152] -> "/root/groksroxieos/live/chroot/var/lib/apt/lists/partial/deb.debian.org_debian_dists_testing_main_binary-amd64_Packages.xz" [1]
+2025-11-25 01:55:25 URL:http://deb.debian.org/debian/pool/main/a/adduser/adduser_3.153_all.deb [191268/191268] -> "/root/groksroxieos/live/chroot//var/cache/apt/archives/partial/adduser_3.153_all.deb" [1]
+2025-11-25 01:55:31 URL:http://deb.debian.org/debian/pool/main/a/apt/apt_3.1.12_amd64.deb [1520288/1520288] -> "/root/groksroxieos/live/chroot//var/cache/apt/archives/partial/apt_3.1.12_amd64.deb" [1]
+2025-11-25 01:55:36 URL:http://deb.debian.org/debian/pool/main/a/apt/apt-utils_3.1.12_amd64.deb [366720/366720] -> "/root/groksroxieos/live/chroot//var/cache/apt/archives/partial/apt-utils_3.1.12_amd64.deb" [1]
+2025-11-25 01:55:42 URL:http://deb.debian.org/debian/pool/main/b/base-files/base-files_14_amd64.deb [72928/72928] -> "/root/groksroxieos/live/chroot//var/cache/apt/archives/partial/base-files_14_amd64.deb" [1]
+2025-11-25 01:55:42 URL:http://deb.debian.org/debian/pool/main/b/base-passwd/base-passwd_3.6.8_amd64.deb [54624/54624] -> "/root/groksroxieos/live/chroot//var/cache/apt/archives/partial/base-passwd_3.6.8_amd64.deb" [1]
+2025-11-25 01:55:42 URL:http://deb.debian.org/debian/pool/main/b/bash/bash_5.3-1_amd64.deb [1555936/1555936] -> "/root/groksroxieos/live/chroot//var/cache/apt/archives/partial/bash_5.3-1_amd64.deb" [1]
+2025-11-25 01:55:42 URL:http://deb.debian.org/debian/pool/main/u/util-linux/bsdutils_2.41.2-4_amd64.deb [93548/93548] -> "/root/groksroxieos/live/chroot//var/cache/apt/archives/partial/bsdutils_1%3a2.41.2-4_amd64.deb" [1]
+2025-11-25 01:55:48 URL:http://deb.debian.org/debian/pool/main/c/coreutils/coreutils_9.7-3_amd64.deb [3023556/3023556] -> "/root/groksroxieos/live/chroot//var/cache/apt/archives/partial/coreutils_9.7-3_amd64.deb" [1]
+2025-11-25 01:55:54 URL:http://deb.debian.org/debian/pool/main/c/cpio/cpio_2.15+dfsg-2_amd64.deb [252116/252116] -> "/root/groksroxieos/live/chroot//var/cache/apt/archives/partial/cpio_2.15+dfsg-2_amd64.deb" [1]

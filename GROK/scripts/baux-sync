@@ -1,0 +1,390 @@
+#!/bin/bash
+# baux-sync — synchronize BAUX sessions and configs across nodes
+# Robust distributed config management with conflict resolution
+# Based on rsync best practices and distributed systems patterns
+
+set -euo pipefail
+
+SYNC_DIR="$HOME/.baux/sync"
+CONFIG_FILE="$SYNC_DIR/config"
+HOSTS_FILE="$SYNC_DIR/hosts"
+BAUX_HOME="/usr/share/baux"
+LOG_FILE="$SYNC_DIR/sync.log"
+
+# Configuration defaults
+REMOTE_USER="${BAUX_SYNC_USER:-root}"
+REMOTE_PATH="${BAUX_SYNC_PATH:-$HOME/.baux/sync}"
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10"
+RSYNC_OPTS="-avz --delete --exclude='.git' --exclude='*.log' --exclude='backup'"
+ 
+# Logging
+log() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] SYNC: $*" | tee -a "$LOG_FILE"; }
+error() { log "ERROR: $*" >&2; exit 1; }
+warn() { log "WARN: $*"; }
+
+# Initialize sync system with proper structure
+init() {
+    log "Initializing BAUX sync system"
+    mkdir -p "$SYNC_DIR/backup" "$SYNC_DIR/remote"
+    
+    if [ ! -f "$CONFIG_FILE" ]; then
+        cat > "$CONFIG_FILE" <<EOF
+# BAUX Sync Configuration v2.0
+AUTO_SYNC=true
+SYNC_INTERVAL=300
+PRIMARY_NODE=
+CONFLICT_RESOLUTION=merge
+BACKUP_RETENTION=7
+COMPRESSION=true
+ENCRYPTION=false
+EOF
+        log "Created default config at $CONFIG_FILE"
+    fi
+    
+    if [ ! -f "$HOSTS_FILE" ]; then
+        cat > "$HOSTS_FILE" <<EOF
+# BAUX Cluster Hosts v2.0
+# Format: hostname ip user port priority
+# Priority: 1=primary, 2=secondary, 3=backup
+EOF
+        log "Created hosts file at $HOSTS_FILE"
+    fi
+    
+    # Create .gitkeep for empty directories
+    touch "$SYNC_DIR/backup/.gitkeep" "$SYNC_DIR/remote/.gitkeep"
+    
+    log "Sync system initialized"
+}
+
+# Discover BAUX nodes via multiple methods
+discover_nodes() {
+    log "Discovering BAUX nodes on network"
+    
+    local discovered=()
+    
+    # Method 1: Avahi/mDNS discovery
+    if command -v avahi-browse >/dev/null 2>&1; then
+        log "Using Avahi for discovery"
+        while read -r line; do
+            if [[ $line =~ ^'=' ]]; then
+                local name ip
+                read -r _ name ip <<< "$line"
+                discovered+=("$name $ip $REMOTE_USER 22 3")
+            fi
+        done < <(avahi-browse -t _baux._tcp 2>/dev/null | head -20)
+    fi
+    
+    # Method 2: Local network scan (basic)
+    if command -v nmap >/dev/null 2>&1; then
+        log "Using nmap for local network scan"
+        local subnet
+        subnet=$(ip route | grep -oP 'src \K[\d.]+' | head -1 | sed 's/\.[0-9]*$/.0\/24/')
+        if [ -n "$subnet" ]; then
+            while read -r ip; do
+                # Quick SSH check (non-blocking)
+                if timeout 2 bash -c "echo > /dev/tcp/$ip/22" 2>/dev/null; then
+                    discovered+=("node-$ip $ip $REMOTE_USER 22 3")
+                fi
+            done < <(nmap -sn "$subnet" 2>/dev/null | grep "Nmap scan report" | awk '{print $5}' | head -10)
+        fi
+    fi
+    
+    # Method 3: Existing hosts file
+    if [ -f "$HOSTS_FILE" ]; then
+        while read -r line; do
+            [[ $line =~ ^# ]] && continue
+            discovered+=("$line")
+        done < "$HOSTS_FILE"
+    fi
+    
+    # Deduplicate and update hosts file
+    printf '%s\n' "${discovered[@]}" | sort -u > "$HOSTS_FILE.tmp"
+    mv "$HOSTS_FILE.tmp" "$HOSTS_FILE"
+    
+    log "Found $(wc -l < "$HOSTS_FILE") nodes"
+}
+
+# Test connectivity to a host
+test_connection() {
+    local host_info="$1"
+    local hostname ip user port priority
+    
+    read -r hostname ip user port priority <<< "$host_info"
+    
+    if [ -z "$ip" ] || [ -z "$user" ]; then
+        return 1
+    fi
+    
+    # Test SSH connection
+    if ssh -o BatchMode=yes -o ConnectTimeout=5 $SSH_OPTS -p "${port:-22}" "$user@$ip" "echo 'BAUX node online'" >/dev/null 2>&1; then
+        return 0
+    else
+        warn "Connection test failed for $hostname ($ip)"
+        return 1
+    fi
+}
+
+# Sync from remote node with conflict resolution
+pull() {
+    local remote_host="$1"
+    local force="${2:-false}"
+    
+    if [ -z "$remote_host" ]; then
+        error "Usage: baux sync pull <hostname> [force]"
+    fi
+    
+    log "Pulling configs from $remote_host"
+    
+    # Get host info
+    local host_info
+    host_info=$(grep "^$remote_host " "$HOSTS_FILE" | head -1)
+    if [ -z "$host_info" ]; then
+        error "Host $remote_host not found in $HOSTS_FILE. Run 'baux sync discover' first."
+    fi
+    
+    if ! test_connection "$host_info"; then
+        error "Cannot connect to $remote_host"
+    fi
+    
+    local hostname ip user port priority
+    read -r hostname ip user port priority <<< "$host_info"
+    
+    # Create backup before sync
+    local backup_dir="$SYNC_DIR/backup/pre-sync-$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "$backup_dir"
+    cp -r "$SYNC_DIR"/* "$backup_dir/" 2>/dev/null || true
+    
+    # Rsync configs
+    log "Syncing configuration files"
+    rsync $RSYNC_OPTS -e "ssh $SSH_OPTS -p ${port:-22}" \
+        "$user@$ip:$REMOTE_PATH/" "$SYNC_DIR/remote/" || {
+        warn "Config sync failed, restoring backup"
+        rm -rf "$SYNC_DIR"/*
+        cp -r "$backup_dir"/* "$SYNC_DIR/" 2>/dev/null || true
+        return 1
+    }
+    
+    # Rsync tmux resurrect data
+    log "Syncing tmux session data"
+    rsync $RSYNC_OPTS -e "ssh $SSH_OPTS -p ${port:-22}" \
+        "$user@$ip:/var/tmp/baux-resurrect/" "/var/tmp/baux-resurrect/" || warn "Session data sync failed"
+    
+    # Conflict resolution
+    resolve_conflicts "$force"
+    
+    log "Pull from $remote_host completed successfully"
+}
+
+# Sync to remote node
+push() {
+    local remote_host="$1"
+    local force="${2:-false}"
+    
+    if [ -z "$remote_host" ]; then
+        error "Usage: baux sync push <hostname> [force]"
+    fi
+    
+    log "Pushing configs to $remote_host"
+    
+    # Get host info
+    local host_info
+    host_info=$(grep "^$remote_host " "$HOSTS_FILE" | head -1)
+    if [ -z "$host_info" ]; then
+        error "Host $remote_host not found in $HOSTS_FILE"
+    fi
+    
+    if ! test_connection "$host_info"; then
+        error "Cannot connect to $remote_host"
+    fi
+    
+    local hostname ip user port priority
+    read -r hostname ip user port priority <<< "$host_info"
+    
+    # Rsync configs
+    rsync $RSYNC_OPTS -e "ssh $SSH_OPTS -p ${port:-22}" \
+        "$SYNC_DIR/" "$user@$ip:$REMOTE_PATH/" || error "Push failed"
+    
+    # Rsync tmux resurrect data
+    rsync $RSYNC_OPTS -e "ssh $SSH_OPTS -p ${port:-22}" \
+        "/var/tmp/baux-resurrect/" "$user@$ip:/var/tmp/baux-resurrect/" || warn "Session push failed"
+    
+    log "Push to $remote_host completed"
+}
+
+# Resolve conflicts between local and remote configs
+resolve_conflicts() {
+    local force="$1"
+    local conflict_resolution
+    conflict_resolution=$(grep "^CONFLICT_RESOLUTION=" "$CONFIG_FILE" | cut -d'=' -f2 || echo "merge")
+    
+    if [ "$force" = "true" ]; then
+        conflict_resolution="overwrite"
+    fi
+    
+    case "$conflict_resolution" in
+        overwrite)
+            log "Conflict resolution: overwriting local with remote"
+            cp -r "$SYNC_DIR/remote"/* "$SYNC_DIR/" 2>/dev/null || true
+            ;;
+        merge)
+            log "Conflict resolution: merging configs"
+            # Simple merge: remote takes precedence for known files
+            for file in tmux.conf nvim-config local.conf; do
+                if [ -f "$SYNC_DIR/remote/$file" ]; then
+                    cp "$SYNC_DIR/remote/$file" "$SYNC_DIR/$file"
+                fi
+            done
+            ;;
+        backup)
+            log "Conflict resolution: backing up conflicts"
+            mkdir -p "$SYNC_DIR/conflicts/$(date +%Y%m%d_%H%M%S)"
+            for file in $(find "$SYNC_DIR/remote" -type f); do
+                local base_file="${file#$SYNC_DIR/remote/}"
+                if [ -f "$SYNC_DIR/$base_file" ] && ! diff -q "$file" "$SYNC_DIR/$base_file" >/dev/null; then
+                    cp "$SYNC_DIR/$base_file" "$SYNC_DIR/conflicts/$(date +%Y%m%d_%H%M%S)/"
+                    cp "$file" "$SYNC_DIR/$base_file"
+                fi
+            done
+            ;;
+        *)
+            warn "Unknown conflict resolution method: $conflict_resolution, using merge"
+            resolve_conflicts false
+            ;;
+    esac
+}
+
+# Add a host to the cluster
+add_host() {
+    local hostname="$1"
+    local ip="$2"
+    local user="${3:-$REMOTE_USER}"
+    local port="${4:-22}"
+    local priority="${5:-3}"
+    
+    if [ -z "$hostname" ] || [ -z "$ip" ]; then
+        error "Usage: baux sync add-host <hostname> <ip> [user] [port] [priority]"
+    fi
+    
+    # Remove existing entry
+    sed -i "/^$hostname /d" "$HOSTS_FILE"
+    
+    # Add new entry
+    echo "$hostname $ip $user $port $priority" >> "$HOSTS_FILE"
+    
+    log "Added host $hostname ($ip:$port) as $user (priority $priority)"
+}
+
+# Remove a host from the cluster
+remove_host() {
+    local hostname="$1"
+    
+    if [ -z "$hostname" ]; then
+        error "Usage: baux sync remove-host <hostname>"
+    fi
+    
+    if grep -q "^$hostname " "$HOSTS_FILE"; then
+        sed -i "/^$hostname /d" "$HOSTS_FILE"
+        log "Removed host $hostname"
+    else
+        warn "Host $hostname not found"
+    fi
+}
+
+# List known hosts with status
+list_hosts() {
+    echo "BAUX Cluster Hosts:"
+    echo "Hostname          IP              User    Port  Priority  Status"
+    echo "----------------  --------------  ------  ----  --------  ------"
+    
+    while read -r line; do
+        [[ $line =~ ^# ]] && continue
+        local hostname ip user port priority
+        read -r hostname ip user port priority <<< "$line"
+        
+        local status="unknown"
+        if test_connection "$line" 2>/dev/null; then
+            status="online"
+        else
+            status="offline"
+        fi
+        
+        printf "%-16s  %-15s  %-6s  %-4s  %-8s  %s\n" \
+               "$hostname" "$ip" "$user" "${port:-22}" "${priority:-3}" "$status"
+    done < "$HOSTS_FILE"
+}
+
+# Clean old backups
+cleanup() {
+    local retention_days
+    retention_days=$(grep "^BACKUP_RETENTION=" "$CONFIG_FILE" | cut -d'=' -f2 || echo "7")
+    
+    log "Cleaning backups older than $retention_days days"
+    find "$SYNC_DIR/backup" -type d -mtime +"$retention_days" -exec rm -rf {} + 2>/dev/null || true
+    
+    log "Cleanup completed"
+}
+
+# Main command router
+case "${1:-}" in
+    init)
+        init
+        ;;
+    discover)
+        discover_nodes
+        ;;
+    pull)
+        pull "$2" "${3:-false}"
+        ;;
+    push)
+        push "$2" "${3:-false}"
+        ;;
+    add-host)
+        add_host "$2" "$3" "$4" "$5" "$6"
+        ;;
+    remove-host)
+        remove_host "$2"
+        ;;
+    list|ls)
+        list_hosts
+        ;;
+    cleanup)
+        cleanup
+        ;;
+    status)
+        echo "BAUX Sync Status:"
+        echo "  Config file: $CONFIG_FILE"
+        echo "  Hosts file: $HOSTS_FILE"
+        echo "  Sync dir: $SYNC_DIR"
+        echo "  Auto sync: $(grep "^AUTO_SYNC=" "$CONFIG_FILE" | cut -d'=' -f2 || echo "false")"
+        echo "  Last sync: $(stat -c %y "$SYNC_DIR" 2>/dev/null | cut -d'.' -f1 || echo "never")"
+        echo "  Hosts count: $(grep -c -v '^#' "$HOSTS_FILE" 2>/dev/null || echo "0")"
+        ;;
+    *)
+        cat <<'HELP'
+BAUX Sync — distributed config management v2.0
+
+Usage: baux sync <command> [args]
+
+Commands:
+   init           — initialize sync system
+   discover       — discover BAUX nodes on network
+   pull <host>    — pull configs from remote host
+   push <host>    — push configs to remote host
+   add-host <name> <ip> [user] [port] [priority] — add host to cluster
+   remove-host <name> — remove host from cluster
+   list           — list known hosts with status
+   cleanup        — clean old backups
+   status         — show sync status
+
+Configuration: $HOME/.baux/sync/config
+Hosts: $HOME/.baux/sync/hosts
+
+Examples:
+   baux sync init
+   baux sync discover
+   baux sync add-host mypi 192.168.1.100
+   baux sync pull mypi
+HELP
+        exit 1
+        ;;
+esac

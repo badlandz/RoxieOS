@@ -1,0 +1,28 @@
+Format: 1.8
+Date: Mon, 25 Nov 2025 12:00:00 +0000
+Source: bauxwm
+Binary: bauxwm bauxwm-dbgsym
+Architecture: amd64
+Version: 1.0-1
+Distribution: unstable
+Urgency: medium
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Changed-By: groksroxieos <roxie@cyberdeck.local>
+Description:
+ bauxwm     - BAUX Window Manager - Roxanne Cyberdeck WM
+Changes:
+ bauxwm (1.0-1) unstable; urgency=medium
+ .
+   * Initial release of groksroxieos bauxwm window manager
+Checksums-Sha1:
+ 230d29767a128c75e591586a917cc6af802adbab 4840 bauxwm-dbgsym_1.0-1_amd64.deb
+ af1e3e7676e14538949331c379da6b25eedb0d28 6347 bauxwm_1.0-1_amd64.buildinfo
+ 72141df3d89c1fc9d832f004a44e515b2ab6024b 21092 bauxwm_1.0-1_amd64.deb
+Checksums-Sha256:
+ 2490e9fe3e70c13aa2ecf89571cff357e45b9c4c90a8f7d7bdda1659303beb22 4840 bauxwm-dbgsym_1.0-1_amd64.deb
+ cf2e8a64900a0c20c235bd6186e6def834acee2286d32488f39dcf6bf3cddbde 6347 bauxwm_1.0-1_amd64.buildinfo
+ 1d53e794d807347dc62676730b495deba05ad2e717944a09d43e28079e7658c9 21092 bauxwm_1.0-1_amd64.deb
+Files:
+ 1067f29fdf4a9848433dda71a770522b 4840 debug optional bauxwm-dbgsym_1.0-1_amd64.deb
+ 166e8c9bc3b1c7809ea6c76a66697d51 6347 x11 optional bauxwm_1.0-1_amd64.buildinfo
+ 3d18af20eaf14752c480febd18baecd0 21092 x11 optional bauxwm_1.0-1_amd64.deb

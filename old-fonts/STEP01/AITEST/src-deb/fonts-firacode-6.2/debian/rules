@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+
+export SHELL = bash
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	$(SHELL) script/build.sh
+
+override_dh_clean:
+	$(SHELL) script/clean.sh
+	$(RM) -rf instance_ufo/ master_ufo/
+	$(RM) "Fira Code.glyphs"
+	dh_clean
+
+override_dh_install:
+	dh_install -X FiraCode-VF

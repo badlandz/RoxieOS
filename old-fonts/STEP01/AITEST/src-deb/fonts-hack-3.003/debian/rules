@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	# Parallel building is not supported.
+	dh_auto_build --no-parallel
+
+override_dh_installchangelogs:
+	dh_installchangelogs CHANGELOG.md

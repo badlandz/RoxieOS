@@ -1,0 +1,22 @@
+name tex-gyre.source
+category Package
+revision 48058
+shortdesc source files of tex-gyre
+relocated 1
+srcfiles size=3204
+ RELOC/source/fonts/tex-gyre/texgyreadventor-bold.fea
+ RELOC/source/fonts/tex-gyre/texgyreadventor-bold.sfd
+ RELOC/source/fonts/tex-gyre/texgyreadventor-bolditalic.fea
+ RELOC/source/fonts/tex-gyre/texgyreadventor-bolditalic.sfd
+ RELOC/source/fonts/tex-gyre/texgyreadventor-italic.fea
+ RELOC/source/fonts/tex-gyre/texgyreadventor-italic.sfd
+ RELOC/source/fonts/tex-gyre/texgyreadventor-regular.fea
+ RELOC/source/fonts/tex-gyre/texgyreadventor-regular.sfd
+ RELOC/source/fonts/tex-gyre/texgyrepagella-bold.fea
+ RELOC/source/fonts/tex-gyre/texgyrepagella-bold.sfd
+ RELOC/source/fonts/tex-gyre/texgyrepagella-bolditalic.fea
+ RELOC/source/fonts/tex-gyre/texgyrepagella-bolditalic.sfd
+ RELOC/source/fonts/tex-gyre/texgyrepagella-italic.fea
+ RELOC/source/fonts/tex-gyre/texgyrepagella-italic.sfd
+ RELOC/source/fonts/tex-gyre/texgyrepagella-regular.fea
+ RELOC/source/fonts/tex-gyre/texgyrepagella-regular.sfd

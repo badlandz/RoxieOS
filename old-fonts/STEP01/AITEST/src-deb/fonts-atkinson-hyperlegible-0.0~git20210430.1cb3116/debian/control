@@ -1,0 +1,44 @@
+Source: fonts-atkinson-hyperlegible
+Section: fonts
+Priority: optional
+Maintainer: Debian Fonts Task Force <pkg-fonts-devel@lists.alioth.debian.org>
+Uploaders: Boyuan Yang <byang@debian.org>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+Homepage: https://github.com/googlefonts/atkinson-hyperlegible
+Vcs-Browser: https://salsa.debian.org/fonts-team/fonts-atkinson-hyperlegible
+Vcs-Git: https://salsa.debian.org/fonts-team/fonts-atkinson-hyperlegible.git
+Description: Font focused on legibility and readability
+ Atkinson Hyperlegible is a typeface created in partnership with
+ Braille Institute. It has been developed specifically to increase
+ legibility for readers with low vision, and to improve comprehension.
+ It supports Latin scripts, and covers accent characters for 27
+ languages.
+
+Package: fonts-atkinson-hyperlegible
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Description: ${source:Synopsis} (OTF)
+ ${source:Extended-Description}
+ .
+ This package contains the Opentype font files.
+
+Package: fonts-atkinson-hyperlegible-ttf
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Description: ${source:Synopsis} (TTF)
+ ${source:Extended-Description}
+ .
+ This package contains the Truetype font files.
+
+Package: fonts-atkinson-hyperlegible-web
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Description: ${source:Synopsis} (WOFF2)
+ ${source:Extended-Description}
+ .
+ This package contains the woff2 font files.

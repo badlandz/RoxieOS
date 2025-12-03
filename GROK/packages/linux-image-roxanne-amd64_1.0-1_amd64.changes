@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Mon, 25 Nov 2025 12:00:00 +0000
+Source: linux-image-roxanne-amd64
+Binary: linux-image-roxanne-amd64
+Architecture: amd64
+Version: 1.0-1
+Distribution: unstable
+Urgency: medium
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Changed-By: groksroxieos <roxie@cyberdeck.local>
+Description:
+ linux-image-roxanne-amd64 - RoxieOS Branded Linux Kernel (amd64)
+Changes:
+ linux-image-roxanne-amd64 (1.0-1) unstable; urgency=medium
+ .
+   * Initial release of RoxieOS branded kernel package
+Checksums-Sha1:
+ 9903b5eb5b7f5a634279d55424d8ea498b181d88 4622 linux-image-roxanne-amd64_1.0-1_amd64.buildinfo
+ b58b9f256b01da2e1b2d0319865b943b8c2d8905 1432 linux-image-roxanne-amd64_1.0-1_amd64.deb
+Checksums-Sha256:
+ e55df00019370d1e29b90b6c65d8ee26de7435903941ffc841f3ac5770f2034e 4622 linux-image-roxanne-amd64_1.0-1_amd64.buildinfo
+ 38fc9a1b1ae676f5b575ddb23f593990c5b1dac113f766e1ae708425d7ae101c 1432 linux-image-roxanne-amd64_1.0-1_amd64.deb
+Files:
+ 244cff0a88170470b71b9a8539af6105 4622 kernel optional linux-image-roxanne-amd64_1.0-1_amd64.buildinfo
+ 07c0502a1f7ab22518b50bc01e9e04d2 1432 kernel optional linux-image-roxanne-amd64_1.0-1_amd64.deb

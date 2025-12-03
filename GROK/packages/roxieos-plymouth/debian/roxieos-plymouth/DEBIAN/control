@@ -1,0 +1,12 @@
+Package: roxieos-plymouth
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 13
+Depends: plymouth
+Section: misc
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Plymouth Theme - Red Radioactive Boot Splash
+ RoxieOS Plymouth boot splash theme with red radioactive design
+ and "You just got Roxanne'd" message.

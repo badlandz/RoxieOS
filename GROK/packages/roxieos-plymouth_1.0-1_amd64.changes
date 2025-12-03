@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Mon, 25 Nov 2025 12:00:00 +0000
+Source: roxieos-plymouth
+Binary: roxieos-plymouth
+Architecture: all
+Version: 1.0-1
+Distribution: unstable
+Urgency: medium
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Changed-By: groksroxieos <roxie@cyberdeck.local>
+Description:
+ roxieos-plymouth - RoxieOS Plymouth Theme - Red Radioactive Boot Splash
+Changes:
+ roxieos-plymouth (1.0-1) unstable; urgency=medium
+ .
+   * Initial release of RoxieOS Plymouth theme
+Checksums-Sha1:
+ 9f93e25cd88be86c2dd85117b970229231dd479c 1784 roxieos-plymouth_1.0-1_all.deb
+ 33a5542fa0b451b7bba8a8aed158e1b51edadab6 4569 roxieos-plymouth_1.0-1_amd64.buildinfo
+Checksums-Sha256:
+ 94ae3a7c1e02f127d01c6dc89312a64684893a81a7bde2848f91a1abc6889091 1784 roxieos-plymouth_1.0-1_all.deb
+ 61cde46411c321c07ea4fe9b60ec4c79ba26680369fb4800bddb7b2cc455c787 4569 roxieos-plymouth_1.0-1_amd64.buildinfo
+Files:
+ 224cbb0966e75d42da8b0e359387b3de 1784 misc optional roxieos-plymouth_1.0-1_all.deb
+ 6f1e55ad890bb8103924968c4abbfe03 4569 misc optional roxieos-plymouth_1.0-1_amd64.buildinfo

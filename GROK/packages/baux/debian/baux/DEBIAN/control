@@ -1,0 +1,12 @@
+Package: baux
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 51
+Depends: tmux, neovim, btop, fastfetch, starship, rsync, openssh-client, curl, git
+Section: utils
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: Badlandz Auxiliary UniX - distributed terminal IDE
+ BAUX replaces the shell with a persistent, host-aware tmux+Neovim IDE
+ for embedded electronics development with AI integration.

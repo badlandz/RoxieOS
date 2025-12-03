@@ -1,0 +1,35 @@
+[2025-11-25 01:54:52] lb build 
+P: live-build 20250505+deb13u1
+P: Building for a debian/testing/amd64 system
+[2025-11-25 01:54:52] lb bootstrap 
+P: Setting up clean exit handler
+[2025-11-25 01:54:52] lb bootstrap_cache restore
+[2025-11-25 01:54:52] lb bootstrap_debootstrap 
+P: Begin bootstrapping system...
+P: If the following stage fails, the most likely cause of the problem is with your mirror configuration or a caching proxy.
+P: Running debootstrap (download-only)...
+I: Retrieving InRelease 
+I: Checking Release signature
+I: Valid Release signature (key id B8E5F13176D2A7A75220028078DBA3BC47EF2265)
+I: Retrieving Packages 
+I: Validating Packages 
+I: Resolving dependencies of required packages...
+I: Resolving dependencies of base packages...
+I: Checking component main on http://deb.debian.org/debian...
+I: Retrieving adduser 3.153
+I: Validating adduser 3.153
+I: Retrieving apt 3.1.12
+I: Validating apt 3.1.12
+I: Retrieving apt-utils 3.1.12
+I: Validating apt-utils 3.1.12
+I: Retrieving base-files 14
+I: Validating base-files 14
+I: Retrieving base-passwd 3.6.8
+I: Validating base-passwd 3.6.8
+I: Retrieving bash 5.3-1
+I: Validating bash 5.3-1
+I: Retrieving bsdutils 1:2.41.2-4
+I: Validating bsdutils 1:2.41.2-4
+I: Retrieving coreutils 9.7-3
+I: Validating coreutils 9.7-3
+I: Retrieving cpio 2.15+dfsg-2

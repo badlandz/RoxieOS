@@ -1,0 +1,10 @@
+Package: roxieos-release
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 8
+Section: admin
+Priority: required
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Release Identity
+ Identity package setting uname -r to groksroxieos-linux

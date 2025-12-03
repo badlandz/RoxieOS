@@ -1,0 +1,13 @@
+StartChar: uni1ECF
+Encoding: 7887 7887 1178
+GlifName: uni1E_C_F_
+Width: 495
+VWidth: 0
+Flags: HM
+LayerCount: 3
+Fore
+Refer: 1170 777 N 1 0 0 1 110 0 2
+Refer: 3 111 N 1 0 0 1 0 0 3
+Validated: 1
+MultipleSubs2: "CCMP_Precomp subtable" o hookabovecomb
+EndChar

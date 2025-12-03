@@ -1,0 +1,217 @@
+#!/usr/bin/env bash
+# baux-bot — Intelligent AI & Search Orchestrator v1.0
+# Routes queries through AI models, local search, integrates with bvi
+# Based on multi-model orchestration for maximum utility, minimum bloat
+
+set -euo pipefail
+
+# Configuration
+SOCKET_PATH="/tmp/baux-bot.sock"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/baux-bot"
+LOG_FILE="$CONFIG_DIR/bot.log"
+PID_FILE="$CONFIG_DIR/bot.pid"
+CACHE_DIR="$CONFIG_DIR/cache"
+
+# AI Model priorities (fast to slow)
+FAST_MODELS=("grok-cli" "ollama")
+SLOW_MODELS=("claude-cli" "openai-cli")
+SEARCH_TOOLS=("ripgrep" "postgresql" "web")
+
+# Ensure directories
+mkdir -p "$CONFIG_DIR" "$CACHE_DIR"
+
+# Logging
+log() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] BOT: $*" >> "$LOG_FILE"; }
+
+# Check if command available
+has_cmd() { command -v "$1" >/dev/null 2>&1; }
+
+# Query analysis - extract topic from least frequent words
+analyze_query() {
+    local query="$1"
+    # Simple topic extraction (can be enhanced)
+    echo "$query" | tr ' ' '\n' | sort | uniq -c | sort -n | head -3 | awk '{print $2}'
+}
+
+# Route to appropriate tool
+route_query() {
+    local query="$1"
+    local context="${2:-}"
+    
+    # Check for code-related keywords
+    if echo "$query" | grep -qi "function\|class\|error\|debug\|code"; then
+        if has_cmd rg; then
+            echo "ripgrep"
+            return
+        fi
+    fi
+    
+    # Check for search keywords
+    if echo "$query" | grep -qi "search\|find\|lookup"; then
+        echo "web"
+        return
+    fi
+    
+    # Default to fast AI
+    for model in "${FAST_MODELS[@]}"; do
+        if has_cmd "$model"; then
+            echo "$model"
+            return
+        fi
+    done
+    
+    echo "none"
+}
+
+# Execute query with routed tool
+execute_query() {
+    local tool="$1"
+    local query="$2"
+    local context="${3:-}"
+    
+    case "$tool" in
+        ripgrep)
+            if [ -n "$context" ] && [ -d "$context" ]; then
+                cd "$context"
+                rg --line-number --color never "$query" | head -20
+            else
+                echo "No context directory provided for ripgrep"
+            fi
+            ;;
+        postgresql)
+            # Assume baux database connection
+            if has_cmd psql; then
+                psql -h localhost -U baux -d baux -c "SELECT * FROM files WHERE content ILIKE '%$query%' LIMIT 10;"
+            else
+                echo "PostgreSQL not available"
+            fi
+            ;;
+        grok-cli)
+            if has_cmd grok-cli; then
+                grok-cli "$query"
+            else
+                echo "grok-cli not available"
+            fi
+            ;;
+        claude-cli)
+            if has_cmd claude-cli; then
+                claude-cli "$query"
+            else
+                echo "claude-cli not available"
+            fi
+            ;;
+        web)
+            # Simple web search (placeholder)
+            echo "Web search for: $query"
+            if has_cmd curl; then
+                curl -s "https://api.duckduckgo.com/?q=$query&format=json" | jq -r '.Abstract' 2>/dev/null || echo "Web search failed"
+            fi
+            ;;
+        *)
+            echo "No suitable tool found for query: $query"
+            ;;
+    esac
+}
+
+# Handle bvi integration
+handle_bvi_request() {
+    local request="$1"
+    # Parse bvi request (simple protocol)
+    local cmd action query
+    read -r cmd action query <<< "$request"
+    
+    case "$action" in
+        explain)
+            local tool
+            tool=$(route_query "$query")
+            local result
+            result=$(execute_query "$tool" "$query")
+            echo "EXPLAIN>$tool: $result"
+            ;;
+        complete)
+            local tool="grok-cli"
+            local result
+            result=$(execute_query "$tool" "complete this code: $query")
+            echo "COMPLETE>$result"
+            ;;
+        search)
+            local tool="ripgrep"
+            local result
+            result=$(execute_query "$tool" "$query" "$(pwd)")
+            echo "SEARCH>$result"
+            ;;
+        *)
+            echo "UNKNOWN>Unknown action: $action"
+            ;;
+    esac
+}
+
+# Daemon mode
+run_daemon() {
+    log "Starting baux-bot daemon"
+    
+    # Remove old socket
+    rm -f "$SOCKET_PATH"
+    
+    # Create socket
+    if ! mkfifo "$SOCKET_PATH"; then
+        log "Failed to create socket"
+        exit 1
+    fi
+    
+    echo $$ > "$PID_FILE"
+    
+    log "Listening on $SOCKET_PATH"
+    
+    while true; do
+        if read -r request < "$SOCKET_PATH"; then
+            log "Received request: $request"
+            response=$(handle_bvi_request "$request")
+            echo "$response" > "$SOCKET_PATH"
+        fi
+    done
+}
+
+# Client mode
+send_request() {
+    local request="$1"
+    
+    if [ ! -p "$SOCKET_PATH" ]; then
+        echo "baux-bot daemon not running"
+        exit 1
+    fi
+    
+    echo "$request" > "$SOCKET_PATH"
+    read -r response < "$SOCKET_PATH"
+    echo "$response"
+}
+
+# Main
+case "${1:-}" in
+    daemon)
+        run_daemon
+        ;;
+    stop)
+        if [ -f "$PID_FILE" ]; then
+            kill "$(cat "$PID_FILE")" 2>/dev/null || true
+            rm -f "$PID_FILE" "$SOCKET_PATH"
+            echo "baux-bot stopped"
+        else
+            echo "baux-bot not running"
+        fi
+        ;;
+    status)
+        if [ -p "$SOCKET_PATH" ] && [ -f "$PID_FILE" ]; then
+            echo "baux-bot running (PID: $(cat "$PID_FILE"))"
+        else
+            echo "baux-bot not running"
+        fi
+        ;;
+    *)
+        if [ $# -eq 0 ]; then
+            echo "Usage: baux-bot [daemon|stop|status] or send request"
+            exit 1
+        fi
+        send_request "$*"
+        ;;
+esac

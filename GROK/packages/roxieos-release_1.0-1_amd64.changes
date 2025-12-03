@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Mon, 25 Nov 2025 12:00:00 +0000
+Source: roxieos-release
+Binary: roxieos-release
+Architecture: all
+Version: 1.0-1
+Distribution: unstable
+Urgency: medium
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Changed-By: groksroxieos <roxie@cyberdeck.local>
+Description:
+ roxieos-release - RoxieOS Release Identity
+Changes:
+ roxieos-release (1.0-1) unstable; urgency=medium
+ .
+   * Initial release of groksroxieos release identity
+Checksums-Sha1:
+ 3c04cfc025c3c6ac3cdf14355558005c81049a28 1292 roxieos-release_1.0-1_all.deb
+ af8c71f5808ccc36766250005ada8d2952c0b96c 4564 roxieos-release_1.0-1_amd64.buildinfo
+Checksums-Sha256:
+ 13de636b54723dccb60e706832f1f709b747abddd7a77eab442fc5922bd3aaba 1292 roxieos-release_1.0-1_all.deb
+ d8ec8bc1511f334de4c6abec71ae76a05cc298b5d8f71e9a24a6ee259cccc6de 4564 roxieos-release_1.0-1_amd64.buildinfo
+Files:
+ a9af8e6f5279911570797c12d3ea60ae 1292 admin required roxieos-release_1.0-1_all.deb
+ 0d1884bb3f50aefa4ebdfe53a29b5a58 4564 admin required roxieos-release_1.0-1_amd64.buildinfo

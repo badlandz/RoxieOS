@@ -1,0 +1,12 @@
+Package: roxieos-grub
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 12
+Depends: grub-common
+Section: admin
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS GRUB Theme - Red Boot Menu
+ RoxieOS GRUB boot menu theme with red radioactive styling
+ and "You just got Roxanne'd" branding.

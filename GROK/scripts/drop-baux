@@ -1,0 +1,173 @@
+#!/usr/bin/env bash
+# drop-baux — Distributed Storage System v1.0
+# Simple, secure distributed file storage with FUSE integration
+# Interconnects with baux and bvi for seamless access
+
+set -euo pipefail
+
+# Configuration
+MOUNT_BASE="/mnt/drop-baux"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/drop-baux"
+PEERS_FILE="$CONFIG_DIR/peers"
+LOG_FILE="$CONFIG_DIR/drop.log"
+
+# Ensure directories
+mkdir -p "$CONFIG_DIR" "$MOUNT_BASE"
+
+# Logging
+log() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] DROP: $*" >> "$LOG_FILE"; }
+
+# Initialize peer list
+init_peers() {
+    if [ ! -f "$PEERS_FILE" ]; then
+        cat > "$PEERS_FILE" <<EOF
+# Drop-BAUX Peers
+# Format: name ip user port priority
+# Priority: 1=primary, 2=secondary, 3=backup
+localhost 127.0.0.1 root 22 1
+EOF
+        log "Initialized peers file"
+    fi
+}
+
+# Mount distributed storage
+mount_drop() {
+    local mount_point="$1"
+    local peer="${2:-localhost}"
+    
+    log "Mounting drop-baux at $mount_point from $peer"
+    
+    mkdir -p "$mount_point"
+    
+    # Get peer info
+    local peer_info
+    peer_info=$(grep "^$peer " "$PEERS_FILE" | head -1)
+    if [ -z "$peer_info" ]; then
+        echo "Peer $peer not found"
+        return 1
+    fi
+    
+    local name ip user port priority
+    read -r name ip user port priority <<< "$peer_info"
+    
+    # Use sshfs for mounting (requires fuse)
+    if command -v sshfs >/dev/null 2>&1; then
+        sshfs -o allow_other -o reconnect -p "$port" "$user@$ip:/var/drop-baux" "$mount_point"
+        log "Mounted via sshfs"
+    else
+        echo "sshfs not available, trying rsync sync"
+        rsync -avz -e "ssh -p $port" "$user@$ip:/var/drop-baux/" "$mount_point/"
+        log "Synced via rsync"
+    fi
+}
+
+# Unmount
+umount_drop() {
+    local mount_point="$1"
+    
+    log "Unmounting $mount_point"
+    
+    if mount | grep -q "$mount_point"; then
+        fusermount -u "$mount_point" 2>/dev/null || umount "$mount_point"
+    fi
+}
+
+# Sync to peers
+sync_to_peers() {
+    local source_dir="${1:-$MOUNT_BASE}"
+    
+    log "Syncing $source_dir to peers"
+    
+    while read -r line; do
+        [[ $line =~ ^# ]] && continue
+        local name ip user port priority
+        read -r name ip user port priority <<< "$line"
+        
+        if [ "$name" = "localhost" ]; then
+            continue
+        fi
+        
+        log "Syncing to $name ($ip)"
+        rsync -avz --delete -e "ssh -p $port" "$source_dir/" "$user@$ip:/var/drop-baux/" || log "Sync to $name failed"
+    done < "$PEERS_FILE"
+}
+
+# Add peer
+add_peer() {
+    local name="$1"
+    local ip="$2"
+    local user="${3:-root}"
+    local port="${4:-22}"
+    local priority="${5:-3}"
+    
+    # Remove existing
+    sed -i "/^$name /d" "$PEERS_FILE"
+    
+    # Add new
+    echo "$name $ip $user $port $priority" >> "$PEERS_FILE"
+    log "Added peer $name"
+}
+
+# List peers
+list_peers() {
+    echo "Drop-BAUX Peers:"
+    echo "Name          IP              User    Port  Priority"
+    echo "------------  --------------  ------  ----  --------"
+    
+    while read -r line; do
+        [[ $line =~ ^# ]] && continue
+        local name ip user port priority
+        read -r name ip user port priority <<< "$line"
+        printf "%-12s  %-15s  %-6s  %-4s  %s\n" "$name" "$ip" "$user" "$port" "$priority"
+    done < "$PEERS_FILE"
+}
+
+# Main
+init_peers
+
+case "${1:-}" in
+    mount)
+        mount_drop "${2:-$MOUNT_BASE}"
+        ;;
+    umount)
+        umount_drop "${2:-$MOUNT_BASE}"
+        ;;
+    sync)
+        sync_to_peers "${2:-}"
+        ;;
+    add-peer)
+        add_peer "$2" "$3" "$4" "$5" "$6"
+        ;;
+    list|ls)
+        list_peers
+        ;;
+    status)
+        echo "Drop-BAUX Status:"
+        echo "  Config: $CONFIG_DIR"
+        echo "  Mount base: $MOUNT_BASE"
+        echo "  Peers: $(grep -c -v '^#' "$PEERS_FILE")"
+        if mount | grep -q "$MOUNT_BASE"; then
+            echo "  Mounted: yes"
+        else
+            echo "  Mounted: no"
+        fi
+        ;;
+    *)
+        cat <<'HELP'
+Drop-BAUX — Distributed Storage
+
+Usage: drop-baux <command> [args]
+
+Commands:
+    mount [point]     — mount distributed storage
+    umount [point]    — unmount storage
+    sync [dir]        — sync to all peers
+    add-peer <name> <ip> [user] [port] [priority] — add peer
+    list              — list peers
+    status            — show status
+
+Peers file: ~/.config/drop-baux/peers
+HELP
+        exit 1
+        ;;
+esac

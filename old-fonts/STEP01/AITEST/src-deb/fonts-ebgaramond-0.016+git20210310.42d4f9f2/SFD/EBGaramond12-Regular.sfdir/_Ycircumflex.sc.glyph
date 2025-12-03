@@ -1,0 +1,12 @@
+StartChar: Ycircumflex.sc
+Encoding: 1114904 -1 1903
+GlifName: Y_circumflex.sc
+Width: 510
+VWidth: 0
+Flags: HMW
+LayerCount: 3
+Fore
+Refer: 1904 -1 N 1 0 0 1 0 0 2
+Validated: 1
+Comment: "."
+EndChar

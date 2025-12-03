@@ -1,0 +1,15 @@
+StartChar: Idotaccent.sc
+Encoding: 1114834 -1 1833
+GlifName: I_dotaccent.sc
+Width: 315
+VWidth: 0
+Flags: HMW
+LayerCount: 3
+Back
+Refer: 1643 -1 N 1 0 0 1 0 0 3
+Fore
+Refer: 2782 -1 N 1 0 0 1 47 65 2
+Refer: 1643 -1 N 1 0 0 1 0 0 3
+Validated: 1
+Comment: "."
+EndChar

@@ -1,0 +1,12 @@
+StartChar: Hcircumflex.sc
+Encoding: 1114822 -1 1821
+GlifName: H_circumflex.sc
+Width: 640
+VWidth: 0
+Flags: HMW
+LayerCount: 3
+Fore
+Refer: 1822 -1 N 1 0 0 1 0 0 2
+Validated: 1
+Comment: "."
+EndChar

@@ -1,0 +1,39 @@
+
+tlnet=${1:-$HOME/public_html/tlnet}
+
+package=tex-gyre
+contents="tex-gyre tex-gyre-math"
+
+
+version=`dpkg-parsechangelog --show-field version | sed -e s/-.*$//`
+
+pkg="${package}-${version}"
+orig="${package}_${version}.orig.tar.gz"
+
+if [ -r $pkg ] ; then
+  echo "already here: $pkg"
+  exit 1
+fi
+
+unpackone() {
+  what=$1
+  for i in "" .doc .source .i386-linux ; do
+    fn="$tlnet/archive/$what${i}.tar.xz"
+    if [ -r "$fn" ] ; then
+      echo "unpacking $fn"
+      tar -xf "$fn"
+    fi
+  done
+}
+
+echo "installing from $tlnet"
+
+mkdir -p $pkg
+cd $pkg
+for i in $contents ; do
+  unpackone $i
+done
+cd ..
+
+GZIP=-9 tar -czf $orig $pkg
+

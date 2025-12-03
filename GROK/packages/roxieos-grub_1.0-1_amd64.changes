@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Mon, 25 Nov 2025 12:00:00 +0000
+Source: roxieos-grub
+Binary: roxieos-grub
+Architecture: all
+Version: 1.0-1
+Distribution: unstable
+Urgency: medium
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Changed-By: groksroxieos <roxie@cyberdeck.local>
+Description:
+ roxieos-grub - RoxieOS GRUB Theme - Red Boot Menu
+Changes:
+ roxieos-grub (1.0-1) unstable; urgency=medium
+ .
+   * Initial release of RoxieOS GRUB theme
+Checksums-Sha1:
+ 3cb6027128f25671516df3639fe02673720e509d 1848 roxieos-grub_1.0-1_all.deb
+ 6ce6401bd91c8cde82890f9291a7f29ed559cbae 4549 roxieos-grub_1.0-1_amd64.buildinfo
+Checksums-Sha256:
+ 6cc7bc83d80ea7fe2b763715f3e12d358115442f0a4db823324210a1b29eea0d 1848 roxieos-grub_1.0-1_all.deb
+ 4bafa37a34bc86825e8684c6f7876b71e7a15986a9cc2f1c5e2316dfb24ebf10 4549 roxieos-grub_1.0-1_amd64.buildinfo
+Files:
+ 008a979224e6388f0ae0188f57730e64 1848 admin optional roxieos-grub_1.0-1_all.deb
+ 6cb9b20061c8d31f12fbe117971b3dc7 4549 admin optional roxieos-grub_1.0-1_amd64.buildinfo

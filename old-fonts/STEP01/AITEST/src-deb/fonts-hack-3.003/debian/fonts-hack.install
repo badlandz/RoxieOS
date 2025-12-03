@@ -1,0 +1,6 @@
+build/ttf/*.ttf         usr/share/fonts/truetype/hack/
+build/web/fonts/*.woff  usr/share/fonts-hack/woff
+build/web/fonts/*.woff2 usr/share/fonts-hack/woff2
+debian/fonts-hack.metainfo.xml usr/share/metainfo
+
+config/fontconfig/45-Hack.conf usr/share/fontconfig/conf.avail/

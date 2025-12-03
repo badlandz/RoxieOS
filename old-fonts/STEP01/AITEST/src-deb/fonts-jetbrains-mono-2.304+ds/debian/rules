@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+
+override_dh_auto_build:
+	./sources/old-build-scripts/build-statics.sh
+	./sources/old-build-scripts/build-webfonts.sh
+	kotlinc scripts/GenerateNLVersion.kt -d scripts/GenerateNLVersion.jar
+	kotlin -classpath scripts/GenerateNLVersion.jar GenerateNLVersionKt

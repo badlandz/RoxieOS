@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+# Set RoxieOS as default plymouth theme
+if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+    plymouth-set-default-theme roxieos
+fi
+
+# Update initramfs
+if command -v update-initramfs >/dev/null 2>&1; then
+    update-initramfs -u
+fi
+
+echo "RoxieOS Plymouth theme installed and set as default"
+echo "Red radioactive boot splash will show on next boot"
+
+exit 0

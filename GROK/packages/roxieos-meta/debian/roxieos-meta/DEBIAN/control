@@ -1,0 +1,11 @@
+Package: roxieos-meta
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 13
+Depends: roxieos-base, baux, bauxwm, neovim-roxanne, roxieos-plymouth, roxieos-grub, roxieos-release
+Section: metapackages
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Meta Package
+ Meta package that depends on all RoxieOS components

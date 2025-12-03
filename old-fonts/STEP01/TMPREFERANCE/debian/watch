@@ -1,0 +1,5 @@
+Format: https://www.debian.org/doc/packaging-manuals/fmt-version.html
+Upstream-Name: neovim
+Upstream-Contact: https://github.com/neovim/neovim/issues
+Source: https://github.com/neovim/neovim
+Files-Excluded: .git .gitignore

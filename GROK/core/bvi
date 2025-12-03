@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# bvi — BAUX Vi Improved v1.0
+# Full-blown editor wrapper with neovim backend
+# Falls back to vi/vim if bvi not available
+# Integrates with baux-bot and drop-baux
+
+set -euo pipefail
+
+# Configuration
+BVI_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bvi"
+BVI_DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bvi"
+BVI_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/bvi"
+BAUX_BOT_SOCKET="${BAUX_BOT_SOCKET:-/tmp/baux-bot.sock}"
+DROP_BAUX_MOUNT="${DROP_BAUX_MOUNT:-/mnt/drop-baux}"
+
+# Ensure directories exist
+mkdir -p "$BVI_CONFIG_DIR" "$BVI_DATA_DIR" "$BVI_CACHE_DIR"
+
+# Logging
+log() { echo "[BVI] $*" >&2; }
+
+# Check if we're in BAUX environment
+in_baux() { [ -n "${BAUX_HOME:-}" ] || [ -x /usr/bin/baux ]; }
+
+# Launch neovim with bvi config
+launch_nvim() {
+    local args=("$@")
+    
+    # Add bvi-specific args
+    args+=(--cmd "let g:bvi_mode=1")
+    
+    # If in BAUX, integrate with bot
+    if in_baux && [ -S "$BAUX_BOT_SOCKET" ]; then
+        args+=(--cmd "let g:baux_bot_socket='$BAUX_BOT_SOCKET'")
+    fi
+    
+    # If drop-baux available, add project detection
+    if [ -d "$DROP_BAUX_MOUNT" ]; then
+        args+=(--cmd "let g:drop_baux_mount='$DROP_BAUX_MOUNT'")
+    fi
+    
+    exec nvim "${args[@]}"
+}
+
+# Main logic
+main() {
+    # If called as bvi, always use our enhanced version
+    if [[ "${0##*/}" == "bvi" ]]; then
+        launch_nvim "$@"
+    fi
+    
+    # If vi/vim called and bvi available, use bvi
+    if [[ "${0##*/}" =~ ^(vi|vim|vimdiff)$ ]] && command -v bvi >/dev/null 2>&1; then
+        log "Redirecting ${0##*/} to bvi for enhanced editing"
+        exec bvi "$@"
+    fi
+    
+    # Fallback to system vi/vim
+    if command -v nvim >/dev/null 2>&1; then
+        launch_nvim "$@"
+    elif command -v vim >/dev/null 2>&1; then
+        exec vim "$@"
+    elif command -v vi >/dev/null 2>&1; then
+        exec vi "$@"
+    else
+        log "No editor found!"
+        exit 1
+    fi
+}
+
+# Run main if not sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

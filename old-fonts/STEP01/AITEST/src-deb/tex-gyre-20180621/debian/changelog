@@ -1,0 +1,215 @@
+tex-gyre (20180621-6) unstable; urgency=medium
+
+  * Fix "Breaks" statement of fonts-texgyre-math (Closes: #1022719).
+
+ -- Hilmar Preusse <hille42@web.de>  Mon, 24 Oct 2022 23:34:23 +0200
+
+tex-gyre (20180621-5) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * debian/copyright: use spaces rather than tabs to start continuation lines.
+  * Remove constraints unnecessary since buster (oldstable):
+    + fonts-texgyre: Drop versioned constraint on fontconfig-config in Breaks.
+    + fonts-texgyre-math: Drop versioned constraint on fontconfig-config in
+      Breaks.
+
+  [ Hilmar Preusse ]
+  * Demote fonts-texgyre Depend on fonts-texgyre-math to Recommends.
+    (Closes: #1021347)
+  * Bump Standards version to 4.6.1 , no changes needed.
+
+ -- Hilmar Preusse <hille42@web.de>  Fri, 07 Oct 2022 09:16:32 +0200
+
+tex-gyre (20180621-4) unstable; urgency=medium
+
+  [ Hilmar Preusse ]
+  * Add me to list of Uploaders.
+  * Lintian
+    W: tex-gyre source: package-has-a-duplicate-build-relation
+    W: tex-gyre source: debhelper-but-no-misc-depends
+    I: tex-gyre source: unused-override no-debian-copyright-in-source
+    I: fonts-texgyre: unused-override extra-license-file
+    P: tex-gyre source: silent-on-rules-requiring-root
+    P: tex-gyre source: no-dep5-copyright
+    X: tex-gyre: maintainer-script-supports-ancient-package-version
+  * Lintian Overrides:
+    I: tex-gyre source: debian-watch-file-is-missing
+    I: tex-gyre(-math): package-contains-documentation-outside-usr-share-doc
+    I: tex-gyre: font-in-non-font-package
+    I: tex-gyre: font-outside-font-dir
+
+  [ Norbert Preining ]
+  * separate math fonts out into their own package
+
+  [ Debian Janitor ]
+  * Trim trailing whitespace.
+  * Move source package lintian overrides to debian/source.
+  * Bump debhelper from old 11 to 13.
+  * Add missing build dependency on dh addon.
+  * Update renamed lintian tag names in lintian overrides.
+  * Remove Section on tex-gyre that duplicates source.
+  * Remove constraints unnecessary since stretch:
+    + Build-Depends: Drop versioned constraint on tex-common.
+    + fonts-texgyre: Drop versioned constraint on tex-gyre in Replaces.
+    + fonts-texgyre: Drop versioned constraint on tex-gyre in Breaks.
+    + Remove 2 maintscript entries from 1 files.
+  * Use secure URI in Homepage field.
+  * Remove 1 obsolete maintscript entry.
+
+ -- Hilmar Preusse <hille42@web.de>  Wed, 28 Sep 2022 21:04:51 +0200
+
+tex-gyre (20180621-3) unstable; urgency=medium
+
+  * update VCS, my email, standards
+
+ -- Norbert Preining <norbert@preining.info>  Thu, 28 Feb 2019 23:58:28 +0900
+
+tex-gyre (20180621-2) unstable; urgency=medium
+
+  * move call to dh_installxfonts below link creation (Closes: #905880)
+    Thanks to Paul Wise for the analysis.
+  * remove defoma stuff, rewrite .scale and .links generation
+
+ -- Norbert Preining <preining@debian.org>  Mon, 13 Aug 2018 14:59:58 +0900
+
+tex-gyre (20180621-1) unstable; urgency=medium
+
+  * new upstream release 2.501
+  * bump compatibility to dh 11
+  * update VCS fields
+  * bump standards version, no changes necessary
+
+ -- Norbert Preining <preining@debian.org>  Thu, 21 Jun 2018 14:05:52 +0900
+
+tex-gyre (20160520-1) unstable; urgency=medium
+
+  * new upstream release with new math fonts (TL2016)
+  * bump standards version, no changes necessary
+
+ -- Norbert Preining <preining@debian.org>  Fri, 20 May 2016 13:56:07 +0900
+
+tex-gyre (20150923-3) unstable; urgency=medium
+
+  * fix dh_installtex fonts (Closes: #819164)
+
+ -- Norbert Preining <preining@debian.org>  Fri, 25 Mar 2016 00:02:39 +0900
+
+tex-gyre (20150923-2) unstable; urgency=medium
+
+  * drop dh_installtex call for fonts-texgyre, as all work is done
+    via triggers, remove misc-depends (Closes: #818548)
+  * bump standards version, no changes necessary
+  * bump tex-common build-dep to 6
+
+ -- Norbert Preining <preining@debian.org>  Fri, 18 Mar 2016 16:31:24 +0900
+
+tex-gyre (20150923-1) unstable; urgency=medium
+
+  * new upstream release with new math fonts
+  * override license-problem-font-adobe-copyrighted-fragment
+  * bump standards version to 3.9.6, no changes necessary
+
+ -- Norbert Preining <preining@debian.org>  Thu, 24 Sep 2015 20:09:08 +0900
+
+tex-gyre (20140520-1) unstable; urgency=medium
+
+  * changed versioning of fonts, as it is a mixture of too many
+    releases and versions
+  * new upstream based on TL 2014 prerelease which includes new
+    TeX Gyre Math fonts for Bonum and Schola
+  * Remove the fontconfig patch which registered the fonts as aliases for the
+    Adobe PostScript Base fonts. This is already handled by fontconfig
+    upstream in recent versions. (Closes: #735143) Thanks Fabian Greffrath.
+  * drop fonts-texgyre to recommends (Closes: #737269)
+  * bump standards version, no changes necessary
+  * add multiarch: foreign to all packages
+
+ -- Norbert Preining <preining@debian.org>  Tue, 20 May 2014 12:55:56 +0900
+
+tex-gyre (2.004.2-4) unstable; urgency=low
+
+  * fix dangling symlinks of doc files (Closes: #706993)
+
+ -- Norbert Preining <preining@debian.org>  Tue, 07 May 2013 13:42:30 +0900
+
+tex-gyre (2.004.2-3) experimental; urgency=low
+
+  * fix Vcs fields
+  * move doc files into /usr/share/texmf/doc
+  * build-depend on tex-common >= 4.01
+  * bump standards version to 3.9.4, no changes necessary
+  * adjust lintian ignore for new location
+
+ -- Norbert Preining <preining@debian.org>  Wed, 19 Dec 2012 14:20:41 +0900
+
+tex-gyre (2.004.2-2) unstable; urgency=low
+
+  * fix wrong symlinks for fonts.conf files, thanks Fabian for spotting it
+
+ -- Norbert Preining <preining@debian.org>  Wed, 31 Oct 2012 07:27:42 +0900
+
+tex-gyre (2.004.2-1) unstable; urgency=low
+
+  * New upstream release: inclusion of tex-gyre-math fonts, that is
+    TeX Gyre Pagella Math and TeX Gyre Thermes Math fonts opentype format
+    (adapt packaging, adjust copyright file)
+  * split OTF fonts into a separate package fonts-texgyre
+    (Closes: #689580, #689581)
+  * make OTF fonts available to fontconfig, and disable the Type1 fonts
+    for fontconfig, but keep them for normal X (Closes: #686098)
+  * register fonts as metric compatible alternatives to the Adobe Fonts
+    (Closes: #616419)
+  Thanks to Fabian Greffrath who provided the fontconfig conf files,
+  did lots of inquire and testing.
+  * bump standards version, shut lintian up since we create the
+    copyright file, use .install files, bump compat level to 7
+
+ -- Norbert Preining <preining@debian.org>  Tue, 30 Oct 2012 12:22:04 +0900
+
+tex-gyre (2.004.1-4) unstable; urgency=low
+
+  * upload to unstable
+
+ -- Norbert Preining <preining@debian.org>  Thu, 22 Mar 2012 18:24:07 +0900
+
+tex-gyre (2.004.1-3) experimental; urgency=low
+
+  * fix dangling symlink after the renaming qzcri -> qzcmi (Closes: #566986)
+  * ack NMU (Closes: #649830)
+  * build from tex-common v3 for TL2012, remove updmap.d conffile
+  * build-dep on tex-common >= 3
+
+  [ Hilmar Preuße ]
+  * Use maintscript support in dh_installdeb rather than writing out
+    dpkg-maintscript-helper commands by hand. Thanks to Colin Watson
+    (Closes: #659746)
+
+ -- Norbert Preining <preining@debian.org>  Mon, 05 Mar 2012 09:33:53 +0900
+
+tex-gyre (2.004.1-2.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Transition away from defoma. Closes: #649830
+
+ -- Christian Perrier <bubulle@sesostris.kheops.frmug.org>  Sat, 17 Dec 2011 18:55:59 +0100
+
+tex-gyre (2.004.1-2) unstable; urgency=low
+
+  * forced rebuild due to defoma breakage (Closes: #560776)
+
+ -- Norbert Preining <preining@debian.org>  Sat, 26 Dec 2009 18:25:28 +0900
+
+tex-gyre (2.004.1-1) unstable; urgency=low
+
+  * new upstream release without changed version number
+  * TeX Gyre Schola in fact is now ver 2.005.
+  * link the -hist files also into /u/s/d/tex-gyre as they contain
+    the changes of the fonts (see #552238)
+
+ -- Norbert Preining <preining@debian.org>  Tue, 17 Nov 2009 19:49:02 +0900
+
+tex-gyre (2.004-1) unstable; urgency=low
+
+  * First upload to Debian after the license cleanup
+
+ -- Norbert Preining <preining@debian.org>  Sun, 11 Oct 2009 14:48:01 +0900

@@ -1,0 +1,19 @@
+fonts-atkinson-hyperlegible (0.0~git20210430.1cb3116-3) unstable; urgency=medium
+
+  * debian/control:
+    + Move main description to the source package section.
+    + Upload maintainers list and remove retired package maintainer.
+
+ -- Boyuan Yang <byang@debian.org>  Thu, 04 Apr 2024 17:36:46 -0400
+
+fonts-atkinson-hyperlegible (0.0~git20210430.1cb3116-2) unstable; urgency=medium
+
+  * Source-only upload
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Sun, 06 Aug 2023 20:56:45 +0200
+
+fonts-atkinson-hyperlegible (0.0~git20210430.1cb3116-1) unstable; urgency=medium
+
+  * Initial release (closes: #1042061)
+
+ -- Gunnar Hjalmarsson <gunnarhj@debian.org>  Wed, 26 Jul 2023 01:55:38 +0200

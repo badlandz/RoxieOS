@@ -1,0 +1,53 @@
+#!/bin/sh
+set -e
+
+# Create os-release (don't overwrite existing)
+if [ ! -f /usr/lib/os-release ]; then
+    mkdir -p /usr/lib
+    cat > /usr/lib/os-release <<EOF
+PRETTY_NAME="RoxieOS GrokSxanne (v1.0)"
+NAME="RoxieOS"
+VERSION_ID="grok"
+ID=roxieos
+EOF
+fi
+
+# Root autologin on tty1
+mkdir -p /etc/systemd/system/getty@tty1.service.d
+cat > /etc/systemd/system/getty@tty1.service.d/override.conf <<EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear %I \$TERM
+TTYVTDisallocate=no
+EOF
+
+# Caps = Esc
+mkdir -p /etc/systemd/system/getty@.service.d
+cat > /etc/systemd/system/getty@.service.d/override.conf <<EOF
+[Service]
+ExecStartPre=/bin/sh -c "setkeycodes 0x3a 1"
+EOF
+
+# Auto-start X on tty1
+cat > /root/.xinitrc <<EOF
+#!/bin/sh
+exec bauxwm
+EOF
+chmod +x /root/.xinitrc
+
+# Keyboard layout
+cat > /etc/default/keyboard <<EOF
+XKBMODEL="pc105"
+XKBLAYOUT="us"
+XKBVARIANT=""
+XKBOPTIONS="caps:escape"
+BACKSPACE="guess"
+EOF
+
+# Console font
+cat > /etc/vconsole.conf <<EOF
+KEYMAP=us
+FONT=Lat2-Terminus16
+EOF
+
+exit 0

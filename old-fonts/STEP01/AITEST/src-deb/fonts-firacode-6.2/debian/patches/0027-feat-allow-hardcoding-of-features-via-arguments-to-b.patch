@@ -1,0 +1,808 @@
+From 31adb247e53ff2f58dc4136e61feac806e84b9de Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Preu=C3=9F?= <preuss_fabian@gmx.de>
+Date: Tue, 8 Mar 2022 12:33:10 +0100
+Subject: [PATCH 27/40] feat: allow hardcoding of features via arguments to
+ build script
+
+All features that were not already in their own files were pulled out of
+FiraCode.glyphs into individual files. There is no way I will write
+a parser for the glyphs file to do that at runtime. The build script
+will then read the code in these feature files and appends it to the
+`calt` property inside the glyphs file. Features to be baked in can be
+given to build.sh as a comma separated list with the `-f / --features`
+flag.
+
+To more easily generate multiple font versions with different features
+baked in, there are flags `-n / --family-name` for build.sh that will
+allow users to set a custom family name for the font. The special value
+"features" will append the feature list to the font name. The family
+name is exported and used by the other build scripts as a directory to
+separate different font versions. The filenames were not changed, the
+directory name is enough separation.
+
+The flag `-g / --generate-glyphs-only` will cause the script to exit
+after the custom glyphs file has been created without actually building
+the font. The custom .glyphs file will be saved as
+`${family_name}.glyphs`.
+
+Via another flag, `-w / --weights`, a comma separated list of font
+weights to be generated can be given to build.sh.
+
+The README received a hint to the new capabilities.
+
+Fixed a mixup of cv25 and cv32.
+
+The .gitignore was adjusted to better deal with the new directories and
+files.
+---
+ .gitignore                 |  15 +++---
+ README.md                  |  14 ++++++
+ features/cv01.fea          |  12 +++++
+ features/cv02.fea          |   7 +++
+ features/cv03.fea          |  13 +++++
+ features/cv04.fea          |  13 +++++
+ features/cv05.fea          |  13 +++++
+ features/cv06.fea          |  13 +++++
+ features/cv07.fea          |   8 +++
+ features/cv08.fea          |   8 +++
+ features/cv09.fea          |   8 +++
+ features/cv10.fea          |   8 +++
+ features/cv11.fea          |   4 ++
+ features/cv12.fea          |   4 ++
+ features/cv13.fea          |   4 ++
+ features/cv14.fea          |   8 +++
+ features/cv17.fea          |   3 ++
+ features/cv18.fea          |   5 ++
+ features/cv25.fea          |   4 +-
+ features/cv29.fea          |   5 ++
+ features/cv30.fea          |  18 +++++++
+ features/cv31.fea          |   4 ++
+ features/cv32.fea          |   4 +-
+ features/zero.fea          |   4 ++
+ script/bake_in_features.sh |  28 +++++++++++
+ script/build.sh            | 100 +++++++++++++++++++++++++++++++++++--
+ script/build_ttf.sh        |  39 +++++++++------
+ script/build_variable.sh   |  47 ++++++++++-------
+ script/build_woff.sh       |  29 +++++++----
+ script/build_woff2.sh      |  28 +++++++----
+ 30 files changed, 401 insertions(+), 69 deletions(-)
+ create mode 100644 features/cv01.fea
+ create mode 100644 features/cv02.fea
+ create mode 100644 features/cv03.fea
+ create mode 100644 features/cv04.fea
+ create mode 100644 features/cv05.fea
+ create mode 100644 features/cv06.fea
+ create mode 100644 features/cv07.fea
+ create mode 100644 features/cv08.fea
+ create mode 100644 features/cv09.fea
+ create mode 100644 features/cv10.fea
+ create mode 100644 features/cv11.fea
+ create mode 100644 features/cv12.fea
+ create mode 100644 features/cv13.fea
+ create mode 100644 features/cv14.fea
+ create mode 100644 features/cv17.fea
+ create mode 100644 features/cv18.fea
+ create mode 100644 features/cv29.fea
+ create mode 100644 features/cv30.fea
+ create mode 100644 features/cv31.fea
+ create mode 100644 features/zero.fea
+ create mode 100755 script/bake_in_features.sh
+
+diff --git a/.gitignore b/.gitignore
+index 22548fc..ba78569 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,18 +1,15 @@
+ *.zip
+-FiraCode_liga.glyphs
+-FiraCode_mess.glyphs
+ target
+ clojure/*.edn
+-FiraCode\ (Autosaved).glyphs
+-FiraCode_VF.glyphs
+ .cpcache
+ master_ufo
+ instance_ufo
+ venv
+ .DS_Store
+ *.numbers
+-distr/ttf
+-distr/otf
+-distr/woff
+-distr/woff2
+-distr/variable_ttf
+\ No newline at end of file
++
++distr/*/
++
++*.glyphs
++!FiraCode.glyphs
++
+diff --git a/README.md b/README.md
+index 2548cdc..d0ff2e3 100644
+--- a/README.md
++++ b/README.md
+@@ -247,6 +247,20 @@ make
+ make package
+ ```
+ 
++If you want to *permanently enable* certain style sets or character variations, maybe because your editor of choice does not allow you to toggle these individually, you can provide the desired features as a comma separated list to the build script via the `-f / --features` flag.<br>Default: none.
++
++To separate different versions of your font you can specify the desired font family name with the `-n / --family-name` flag. The special value 'features' will append a sorted, space separated list of enabled features to the default family name.<br>Default: "Fira Code"
++
++You can also limit the font weights that will be created with the `-w / --weights` option.<br>Default: "Light,Regular,Retina,Medium,SemiBold,Bold"
++
++```bash
++# locally in your shell
++./script/build.sh --features "ss02,ss08,ss10,cv03,cv07,cv14" --family-name "Fira Code straight" --weights "Regular,Bold"
++
++# or via a docker container (creates the family name 'Fira Code cv01 cv02 cv06 cv31 onum ss01 ss03 ss04 zero')
++docker run --rm -v "${PWD}":/opt tonsky/firacode:latest ./script/build.sh -f "cv01,cv02,cv06,ss01,zero,onum,ss03,ss04,cv31" -n "features"
++```
++
+ ### Credits
+ 
+ - Author: Nikita Prokopov [@nikitonsky](https://twitter.com/nikitonsky)
+diff --git a/features/cv01.fea b/features/cv01.fea
+new file mode 100644
+index 0000000..e6e6bd8
+--- /dev/null
++++ b/features/cv01.fea
+@@ -0,0 +1,12 @@
++# Name: alternate lowercase a
++
++sub a by a.cv01;
++sub aacute by aacute.cv01;
++sub abreve by abreve.cv01;
++sub acircumflex by acircumflex.cv01;
++sub adieresis by adieresis.cv01;
++sub agrave by agrave.cv01;
++sub amacron by amacron.cv01;
++sub aogonek by aogonek.cv01;
++sub aring by aring.cv01;
++sub atilde by atilde.cv01;
+diff --git a/features/cv02.fea b/features/cv02.fea
+new file mode 100644
+index 0000000..f9dac8c
+--- /dev/null
++++ b/features/cv02.fea
+@@ -0,0 +1,7 @@
++# Name: single story lowercase g
++
++sub g by g.cv02;
++sub gbreve by gbreve.cv02;
++sub gcircumflex by gcircumflex.cv02;
++sub gcommaaccent by gcommaaccent.cv02;
++sub gdotaccent by gdotaccent.cv02;
+diff --git a/features/cv03.fea b/features/cv03.fea
+new file mode 100644
+index 0000000..3d07411
+--- /dev/null
++++ b/features/cv03.fea
+@@ -0,0 +1,13 @@
++# Name: lowercase I without any horizontal decorations
++
++sub i by i.cv03;
++sub idotless by idotless.cv03;
++sub iacute by iacute.cv03;
++sub ibreve by ibreve.cv03;
++sub icircumflex by icircumflex.cv03;
++sub idieresis by idieresis.cv03;
++sub idotaccent by idotaccent.cv03;
++sub igrave by igrave.cv03;
++sub imacron by imacron.cv03;
++sub iogonek by iogonek.cv03;
++sub itilde by itilde.cv03;
+diff --git a/features/cv04.fea b/features/cv04.fea
+new file mode 100644
+index 0000000..3fa3250
+--- /dev/null
++++ b/features/cv04.fea
+@@ -0,0 +1,13 @@
++# Name: lowercase I with horizontal left line at the top
++
++sub i by i.cv04;
++sub idotless by idotless.cv04;
++sub iacute by iacute.cv04;
++sub ibreve by ibreve.cv04;
++sub icircumflex by icircumflex.cv04;
++sub idieresis by idieresis.cv04;
++sub idotaccent by idotaccent.cv04;
++sub igrave by igrave.cv04;
++sub imacron by imacron.cv04;
++sub iogonek by iogonek.cv04;
++sub itilde by itilde.cv04;
+diff --git a/features/cv05.fea b/features/cv05.fea
+new file mode 100644
+index 0000000..5a606a7
+--- /dev/null
++++ b/features/cv05.fea
+@@ -0,0 +1,13 @@
++# Name: lowercase I with horizontal left line at the top and right line at the bottom
++
++sub i by i.cv05;
++sub idotless by idotless.cv05;
++sub iacute by iacute.cv05;
++sub ibreve by ibreve.cv05;
++sub icircumflex by icircumflex.cv05;
++sub idieresis by idieresis.cv05;
++sub idotaccent by idotaccent.cv05;
++sub igrave by igrave.cv05;
++sub imacron by imacron.cv05;
++sub iogonek by iogonek.cv05;
++sub itilde by itilde.cv05;
+diff --git a/features/cv06.fea b/features/cv06.fea
+new file mode 100644
+index 0000000..ccfea4a
+--- /dev/null
++++ b/features/cv06.fea
+@@ -0,0 +1,13 @@
++# Name: lowercase I with horizontal left line at the top and curved right hook at the bottom
++
++sub i by i.cv06;
++sub idotless by idotless.cv06;
++sub iacute by iacute.cv06;
++sub ibreve by ibreve.cv06;
++sub icircumflex by icircumflex.cv06;
++sub idieresis by idieresis.cv06;
++sub idotaccent by idotaccent.cv06;
++sub igrave by igrave.cv06;
++sub imacron by imacron.cv06;
++sub iogonek by iogonek.cv06;
++sub itilde by itilde.cv06;
+diff --git a/features/cv07.fea b/features/cv07.fea
+new file mode 100644
+index 0000000..a0b5cd0
+--- /dev/null
++++ b/features/cv07.fea
+@@ -0,0 +1,8 @@
++# Name: lowercase L without any horizontal decorations
++
++sub l by l.cv07;
++sub lacute by lacute.cv07;
++sub lcaron by lcaron.cv07;
++sub lcommaaccent by lcommaaccent.cv07;
++sub ldot by ldot.cv07;
++sub lslash by lslash.cv07;
+diff --git a/features/cv08.fea b/features/cv08.fea
+new file mode 100644
+index 0000000..590aaac
+--- /dev/null
++++ b/features/cv08.fea
+@@ -0,0 +1,8 @@
++# Name: lowercase L with horizontal left line at the top
++
++sub l by l.cv08;
++sub lacute by lacute.cv08;
++sub lcaron by lcaron.cv08;
++sub lcommaaccent by lcommaaccent.cv08;
++sub ldot by ldot.cv08;
++sub lslash by lslash.cv08;
+diff --git a/features/cv09.fea b/features/cv09.fea
+new file mode 100644
+index 0000000..c22f514
+--- /dev/null
++++ b/features/cv09.fea
+@@ -0,0 +1,8 @@
++# Name: lowercase L with horizontal left line at the top and right line at the bottom
++
++sub l by l.cv09;
++sub lacute by lacute.cv09;
++sub lcaron by lcaron.cv09;
++sub lcommaaccent by lcommaaccent.cv09;
++sub ldot by ldot.cv09;
++sub lslash by lslash.cv09;
+diff --git a/features/cv10.fea b/features/cv10.fea
+new file mode 100644
+index 0000000..6ad26cb
+--- /dev/null
++++ b/features/cv10.fea
+@@ -0,0 +1,8 @@
++# Name: lowercase L with horizontal left line at the top and horizontal base
++
++sub l by l.cv10;
++sub lacute by lacute.cv10;
++sub lcaron by lcaron.cv10;
++sub lcommaaccent by lcommaaccent.cv10;
++sub ldot by ldot.cv10;
++sub lslash by lslash.cv10;
+diff --git a/features/cv11.fea b/features/cv11.fea
+new file mode 100644
+index 0000000..0bff833
+--- /dev/null
++++ b/features/cv11.fea
+@@ -0,0 +1,4 @@
++# Name: zero without anything inside
++
++sub zero by zero.cv11;
++sub zero.tosf by zero.tosf.cv11;
+diff --git a/features/cv12.fea b/features/cv12.fea
+new file mode 100644
+index 0000000..18021bd
+--- /dev/null
++++ b/features/cv12.fea
+@@ -0,0 +1,4 @@
++# Name: zero with a backslash inside
++
++sub zero by zero.cv12;
++sub zero.tosf by zero.tosf.cv12;
+diff --git a/features/cv13.fea b/features/cv13.fea
+new file mode 100644
+index 0000000..f3be7cd
+--- /dev/null
++++ b/features/cv13.fea
+@@ -0,0 +1,4 @@
++# Name: zero with a vertical line inside
++
++sub zero by zero.cv13;
++sub zero.tosf by zero.tosf.cv13;
+diff --git a/features/cv14.fea b/features/cv14.fea
+new file mode 100644
+index 0000000..35466d9
+--- /dev/null
++++ b/features/cv14.fea
+@@ -0,0 +1,8 @@
++# Name: 3 with straight lines for the top half
++
++sub three by three.cv14;
++sub three.tosf by three.tosf.cv14;
++sub threeinferior by threeinferior.cv14;
++sub three.dnom by three.dnom.cv14;
++sub three.numr by three.numr.cv14;
++sub threesuperior by threesuperior.cv14;
+diff --git a/features/cv17.fea b/features/cv17.fea
+new file mode 100644
+index 0000000..81ce39c
+--- /dev/null
++++ b/features/cv17.fea
+@@ -0,0 +1,3 @@
++# Name: Top-aligned tilde
++
++sub asciitilde by asciitilde.cv17;
+diff --git a/features/cv18.fea b/features/cv18.fea
+new file mode 100644
+index 0000000..d34f100
+--- /dev/null
++++ b/features/cv18.fea
+@@ -0,0 +1,5 @@
++# Name: percent sign with dots instead of hollow circles
++
++sub percent by percent.cv18;
++sub perthousand by perthousand.cv18;
++sub percent_percent.liga by percent_percent.liga.cv18;
+diff --git a/features/cv25.fea b/features/cv25.fea
+index 928a2e3..019aff7 100644
+--- a/features/cv25.fea
++++ b/features/cv25.fea
+@@ -3,6 +3,6 @@
+ lookup period_hyphen {
+   ignore sub period period' hyphen;
+   ignore sub period' hyphen hyphen;
+-  sub period.spacer hyphen' by period_hyphen.cv32;
++  sub period.spacer hyphen' by period_hyphen.cv25;
+   sub period'       hyphen  by period.spacer;
+-} period_hyphen;
+\ No newline at end of file
++} period_hyphen;
+diff --git a/features/cv29.fea b/features/cv29.fea
+new file mode 100644
+index 0000000..65a92ff
+--- /dev/null
++++ b/features/cv29.fea
+@@ -0,0 +1,5 @@
++# Name: Rounded curly braces {}
++
++sub braceleft by braceleft.cv29;
++sub braceright by braceright.cv29;
++sub numbersign_braceleft.liga by numbersign_braceleft.liga.cv29;
+diff --git a/features/cv30.fea b/features/cv30.fea
+new file mode 100644
+index 0000000..1e4cc7e
+--- /dev/null
++++ b/features/cv30.fea
+@@ -0,0 +1,18 @@
++# Name: longer pipe symbol
++
++sub bar by bar.cv30;
++sub bar_bar.liga by bar_bar.liga.cv30;
++sub bar_bar_bar.liga by bar_bar_bar.liga.cv30;
++sub bar_bar_equal_middle.seq by bar_bar_equal_middle.seq.cv30;
++sub bar_equal_middle.seq by bar_equal_middle.seq.cv30;
++sub bar_bar_equal_end.seq by bar_bar_equal_end.seq.cv30;
++sub bar_bar_equal_start.seq by bar_bar_equal_start.seq.cv30;
++sub bar_bar_hyphen_middle.seq by bar_bar_hyphen_middle.seq.cv30;
++sub bar_hyphen_middle.seq by bar_hyphen_middle.seq.cv30;
++sub bar_bar_hyphen_end.seq by bar_bar_hyphen_end.seq.cv30;
++sub bar_bar_hyphen_start.seq by bar_bar_hyphen_start.seq.cv30;
++sub bar_equal_end.seq by bar_equal_end.seq.cv30;
++sub bar_equal_start.seq by bar_equal_start.seq.cv30;
++sub bar_hyphen_end.seq by bar_hyphen_end.seq.cv30;
++sub bar_hyphen_start.seq by bar_hyphen_start.seq.cv30;
++sub bar_underscore_middle.seq by bar_underscore_middle.seq.cv30;
+diff --git a/features/cv31.fea b/features/cv31.fea
+new file mode 100644
+index 0000000..29f935b
+--- /dev/null
++++ b/features/cv31.fea
+@@ -0,0 +1,4 @@
++# Name: Circular parentheses
++
++sub parenleft by parenleft.cv31;
++sub parenright by parenright.cv31;
+diff --git a/features/cv32.fea b/features/cv32.fea
+index d836480..0eeae43 100644
+--- a/features/cv32.fea
++++ b/features/cv32.fea
+@@ -3,6 +3,6 @@
+ lookup period_equal {
+   ignore sub period period' equal;
+   ignore sub period' equal equal;
+-  sub period.spacer equal' by period_equal.cv25;
++  sub period.spacer equal' by period_equal.cv32;
+   sub period'       equal  by period.spacer;
+-} period_equal;
+\ No newline at end of file
++} period_equal;
+diff --git a/features/zero.fea b/features/zero.fea
+new file mode 100644
+index 0000000..f4dc336
+--- /dev/null
++++ b/features/zero.fea
+@@ -0,0 +1,4 @@
++# Name: Zero with a dot inside
++
++sub zero by zero.zero;
++sub zero.tosf by zero.tosf.zero;
+diff --git a/script/bake_in_features.sh b/script/bake_in_features.sh
+new file mode 100755
+index 0000000..8e76ac8
+--- /dev/null
++++ b/script/bake_in_features.sh
+@@ -0,0 +1,28 @@
++#!/bin/bash
++set -o errexit -o nounset -o pipefail
++cd "$(dirname "$0")/.."
++
++glyphs_file=${FIRACODE_GLYPHS_FILE:-"FiraCode.glyphs"}
++
++code_blocks=()
++
++for feat in "$@"; do
++
++	file="features/${feat}.fea"
++	if [ ! -f "${file}" ]; then
++		echo "Error: No file for feature ${feat} found!" >&2
++		exit 1
++	fi
++
++	# don't grab the "lookup" surroundings or comments or whitespace lines
++	code="$(grep -v '^[[:space:]]*lookup\|^[[:space:]]*}\|^[[:space:]]*#\|^[[:space:]]*$' "${file}")" \
++		|| { echo "Error: No code for feature ${feat} found!" >&2; exit 1; }
++
++	code_blocks+=("$(tr '\n' ' ' <<< "${code}")")
++done
++
++# code block is one line above name declaration
++linenum=$(sed -n "/name = calt;/=" "${glyphs_file}")
++linenum=$((linenum - 1))
++# replace end of line (";) with code on specified line number
++sed -i -e "${linenum}s@\";\$@\n${code_blocks[*]}\";@" "${glyphs_file}"
+diff --git a/script/build.sh b/script/build.sh
+index 8116b7d..61904be 100755
+--- a/script/build.sh
++++ b/script/build.sh
+@@ -1,8 +1,100 @@
+ #!/bin/bash
+-set -o errexit -o nounset -o pipefail
+-cd "`dirname $0`"
++set -o errexit -o pipefail
++cd "$(dirname "$0")"
+ 
+-./build_ttf.sh
++features=()
++weights=()
++gen_glyphs_file_only=0
++use_features_for_family_name=0
++export FIRACODE_FAMILY_NAME="Fira Code"
++
++########### Parsing inputs ########### {{{
++check_required_args()
++{
++	if [ -z "$2" ] || [ "${2:0:1}" = "-" ]; then
++		echo "Error: Missing argument for '$1'" >&2
++		return 1
++	fi
++	return 0
++}
++while [ $# -gt 0 ]; do
++	# split parameters like '-f="1,2,3"' into '-f "1,2,3"'
++	[[ "$1" == -*=* ]] && set -- "${1%%=*}" "${1#*=}" "${@:2}"
++	case "$1" in
++		-f | --features)
++			check_required_args "$1" "$2" || exit 1
++			# turn comma separated list into sorted array
++			IFS=',' read -r -a features <<< "$(echo "$2" | tr ',' '\n' | sort -u | tr '\n' ',')"
++			shift 2 # remove two params (flag + arg)
++			;;
++		-w | --weights)
++			check_required_args "$1" "$2" || exit 1
++			IFS=',' read -r -a weights <<< "$2"
++			shift 2 # remove two params (flag + arg)
++			;;
++		-n | --family-name)
++			check_required_args "$1" "$2" || exit 1
++			if [ "$2" = "features" ]; then
++				use_features_for_family_name=1
++			else
++				FIRACODE_FAMILY_NAME=$2
++			fi
++			shift 2 # remove two params (flag + arg)
++			;;
++		-g | --generate-glyphs-only)
++			gen_glyphs_file_only=1
++			shift 1
++			;;
++		-*) # unsupported flags
++			echo "Error: Unsupported flag '$1'" >&2
++			exit 1
++			;;
++		*) # positional parameters
++			echo "Error: No use case for positional paramter '$1'" >&2
++			exit 1
++			;;
++	esac
++done
++########### ############## ########### }}}
++
++# Create a temporary file that can be manipulated without messing with the original
++FIRACODE_GLYPHS_FILE=$(mktemp --suffix=".glyphs")
++export FIRACODE_GLYPHS_FILE
++cp ../FiraCode.glyphs "${FIRACODE_GLYPHS_FILE}"
++
++feat_string=""
++if [ -n "${features[*]}" ]; then
++	echo "Creating font with these features: ${features[*]}"
++	./bake_in_features.sh "${features[@]}"
++
++	feat_string=" ${features[*]}"
++fi
++
++if [ "${use_features_for_family_name}" -ne 0 ]; then
++	FIRACODE_FAMILY_NAME=${FIRACODE_FAMILY_NAME}${feat_string}
++fi
++
++if [ "${FIRACODE_FAMILY_NAME}" != "Fira Code" ]; then
++	tmp_glyphs=$(mktemp --suffix=".glyphs")
++	echo "Creating font with family name: ${FIRACODE_FAMILY_NAME}"
++
++	awk '/familyName = "Fira Code";/ {$0=nc}1' nc="familyName = \"${FIRACODE_FAMILY_NAME}\";" \
++		"${FIRACODE_GLYPHS_FILE}" > "${tmp_glyphs}"
++
++	mv "${tmp_glyphs}" "${FIRACODE_GLYPHS_FILE}"
++fi
++
++cp "${FIRACODE_GLYPHS_FILE}" "../${FIRACODE_FAMILY_NAME}.glyphs"
++echo "Generated glyphs file: ${FIRACODE_FAMILY_NAME}.glyphs"
++
++if [ "${gen_glyphs_file_only}" -ne 0 ]; then
++	echo "Custom .glyphs file created. Exiting here!"
++	exit 0
++fi
++
++./build_ttf.sh "${weights[@]}"
+ ./build_variable.sh
+ ./build_woff2.sh
+-./build_woff.sh
+\ No newline at end of file
++./build_woff.sh
++
++rm -f "${FIRACODE_GLYPHS_FILE}"
+diff --git a/script/build_ttf.sh b/script/build_ttf.sh
+index 022a233..e9af987 100755
+--- a/script/build_ttf.sh
++++ b/script/build_ttf.sh
+@@ -1,25 +1,34 @@
+ #!/bin/bash
+ set -o errexit -o nounset -o pipefail
+-cd "`dirname $0`/.."
++cd "$(dirname "$0")/.."
+ [ -d venv ] && source venv/bin/activate
+-mkdir -p distr/ttf
+-rm -rf distr/ttf/*
++
++family_name=${FIRACODE_FAMILY_NAME:-"Fira Code"}
++glyphs_file=${FIRACODE_GLYPHS_FILE:-"FiraCode.glyphs"}
++
++dir="distr/ttf/${family_name}"
++
++mkdir -p "${dir}"
++rm -rf "${dir:?}/"*
+ 
+ args=( "$@" )
+ default_weights=( "Light" "Regular" "Retina" "Medium" "SemiBold" "Bold" )
+ weights=( "${args[@]:-"${default_weights[@]}"}" )
+ 
+ for weight in "${weights[@]}"; do
+-    file=distr/ttf/FiraCode-${weight}.ttf
+-    
+-    echo "Making " ${file}
+-    rm -rf ${file}
+-    fontmake -g FiraCode.glyphs -o ttf --output-dir distr/ttf -i "Fira Code ${weight}"
+-
+-    echo "Fixing DSIG in " ${file}
+-    gftools fix-dsig --autofix ${file}
+-
+-    echo "TTFautohint " ${file}
+-    ttfautohint --no-info --ignore-restrictions ${file} ${file}.hinted
+-    mv ${file}.hinted ${file}
++	file="${dir}/FiraCode-${weight}.ttf"
++
++	echo "=============="
++	echo
++	echo "  [i] Creating ${file}"
++	echo
++
++	fontmake -g "${glyphs_file}" -o ttf --output-path "${file}" -i ".* ${weight}"
++
++	echo "  [i] Fixing DSIG in ${file}"
++	gftools fix-dsig --autofix "${file}"
++
++	echo "  [i] TTFautohint ${file}"
++	ttfautohint --no-info --ignore-restrictions "${file}" "${file}.hinted"
++	mv "${file}.hinted" "${file}"
+ done
+diff --git a/script/build_variable.sh b/script/build_variable.sh
+index 0915b76..a2389ad 100755
+--- a/script/build_variable.sh
++++ b/script/build_variable.sh
+@@ -1,34 +1,45 @@
+ #!/bin/bash
+ set -o errexit -o nounset -o pipefail
+-cd "`dirname $0`/.."
++cd "$(dirname "$0")/.."
+ [ -d venv ] && source venv/bin/activate
+-mkdir -p distr/variable_ttf
+-rm -rf distr/variable_ttf/*
+ 
+-FILE=FiraCode-VF.ttf
++family_name=${FIRACODE_FAMILY_NAME:-"Fira Code"}
++glyphs_file=${FIRACODE_GLYPHS_FILE:-"FiraCode.glyphs"}
+ 
+-awk '/name = Retina;/ { print; print "exports = 0;"; next }1' FiraCode.glyphs > FiraCode_VF.glyphs
+-fontmake -g FiraCode_VF.glyphs -o variable --output-dir distr/variable_ttf
+-rm FiraCode_VF.glyphs
++dir="distr/variable_ttf/${family_name}"
++file="${dir}/FiraCode-VF.ttf"
+ 
+-pushd distr/variable_ttf
++echo "=============="
++echo
++echo "  [i] Creating variable font file!"
++echo
++
++mkdir -p "${dir}"
++rm -rf "${dir:?}/"*
++
++# make a temporary file here to avoid parallel runs from stepping on each other's toes
++vf_glyphs=$(mktemp --suffix=".glyphs")
++
++awk '/name = Retina;/ { print; print "exports = 0;"; next }1' \
++	"${glyphs_file}" > "${vf_glyphs}"
++
++fontmake -g "${vf_glyphs}" -o variable --output-path "${file}"
++rm -f "${vf_glyphs}"
+ 
+ # fix variable font metadata – very important
+-gftools fix-vf-meta $FILE
+-mv $FILE.fix $FILE
++gftools fix-vf-meta "${file}"
++mv "${file}.fix" "${file}"
+ 
+ # other fixes for metadata and hinting
+-gftools fix-nonhinting $FILE $FILE.fix
+-mv $FILE.fix $FILE
++gftools fix-nonhinting "${file}" "${file}.fix"
++mv "${file}.fix" "${file}"
+ 
+-gftools fix-gasp --autofix $FILE
+-mv $FILE.fix $FILE
++gftools fix-gasp --autofix "${file}"
++mv "${file}.fix" "${file}"
+ 
+-gftools fix-dsig --autofix $FILE
++gftools fix-dsig --autofix "${file}"
+ 
+ # cleanup of temp files
+-rm -rf *-gasp.ttf
++rm -rf "${dir}/"*-gasp.ttf
+ 
+ # TODO (late 2019?): use TTFautohint-VF for variable font (current support is minimal)
+-
+-popd
+\ No newline at end of file
+diff --git a/script/build_woff.sh b/script/build_woff.sh
+index 3ec4b09..7537efa 100755
+--- a/script/build_woff.sh
++++ b/script/build_woff.sh
+@@ -1,18 +1,27 @@
+ #!/bin/bash
+ set -o errexit -o nounset -o pipefail
+-cd "`dirname $0`/.."
++cd "$(dirname "$0")/.."
+ [ -d venv ] && source venv/bin/activate
+-mkdir -p distr/woff
+-rm -rf distr/woff/*
++
++family_name=${FIRACODE_FAMILY_NAME:-"Fira Code"}
++
++ttf_dir="distr/ttf/${family_name}"
++woff_dir="distr/woff/${family_name}"
++
++echo "=============="
++echo
++echo "  [i] Creating .woff files!"
++echo
++
++mkdir -p "${woff_dir}"
++rm -rf "${woff_dir:?}/"*
+ 
+ # requires sfnt2woff-zopfli (get from https://github.com/bramstein/homebrew-webfonttools)
+ 
+-ttfs=$(ls distr/*/*.ttf)
+-for ttf in $ttfs; do
+-    echo "sfnt2woff-zopfli $ttf"
+-    sfnt2woff-zopfli $ttf
++for ttf in "${ttf_dir}/"*.ttf; do
++	echo "sfnt2woff-zopfli ${ttf}"
++	sfnt2woff-zopfli "${ttf}"
+ done
+ 
+-mkdir -p distr/woff
+-mv distr/*/*.woff distr/woff
+-rm distr/woff/FiraCode-Retina.woff
++mv "${ttf_dir}/"*.woff "${woff_dir}"
++rm -f "${woff_dir}/FiraCode-Retina.woff"
+diff --git a/script/build_woff2.sh b/script/build_woff2.sh
+index 1625503..de259fc 100755
+--- a/script/build_woff2.sh
++++ b/script/build_woff2.sh
+@@ -1,17 +1,27 @@
+ #!/bin/bash
+ set -o errexit -o nounset -o pipefail
+-cd "`dirname $0`/.."
++cd "$(dirname "$0")/.."
+ [ -d venv ] && source venv/bin/activate
+-mkdir -p distr/woff2
+-rm -rf distr/woff2/*
++
++family_name=${FIRACODE_FAMILY_NAME:-"Fira Code"}
++
++ttf_dir="distr/ttf/${family_name}"
++woff_dir="distr/woff2/${family_name}"
++
++echo "=============="
++echo
++echo "  [i] Creating .woff2 files!"
++echo
++
++mkdir -p "${woff_dir}"
++rm -rf "${woff_dir:?}/"*
+ 
+ # requires woff2_compress (get from https://github.com/bramstein/homebrew-webfonttools)
+ 
+-ttfs=$(ls distr/*/*.ttf)
+-for ttf in $ttfs; do
+-    woff2_compress $ttf
++for ttf in "${ttf_dir}/"*.ttf; do
++	echo "woff2_compress ${ttf}"
++	woff2_compress "${ttf}"
+ done
+ 
+-mkdir -p distr/woff2
+-mv distr/*/*.woff2 distr/woff2
+-rm -f distr/woff2/FiraCode-Retina.woff2
++mv "${ttf_dir}/"*.woff2 "${woff_dir}"
++rm -f "${woff_dir}/FiraCode-Retina.woff2"
+-- 
+2.35.1
+

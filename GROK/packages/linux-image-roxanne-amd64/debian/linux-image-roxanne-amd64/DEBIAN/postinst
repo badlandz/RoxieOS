@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+# Create branded kernel symlinks
+if [ -f /boot/vmlinuz-$(uname -r) ]; then
+    ln -sf /boot/vmlinuz-$(uname -r) /boot/vmlinuz-roxanne
+fi
+
+if [ -f /boot/initrd.img-$(uname -r) ]; then
+    ln -sf /boot/initrd.img-$(uname -r) /boot/initrd.img-roxanne
+fi
+
+# Update GRUB if available
+if command -v update-grub >/dev/null 2>&1; then
+    update-grub
+fi
+
+echo "RoxieOS Roxanne kernel symlinks created"
+echo "uname -r will show: $(uname -r)"
+echo "Branded kernel available as: roxanne"
+
+exit 0

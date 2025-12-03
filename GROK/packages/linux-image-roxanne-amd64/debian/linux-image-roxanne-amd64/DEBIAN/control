@@ -1,0 +1,13 @@
+Package: linux-image-roxanne-amd64
+Version: 1.0-1
+Architecture: amd64
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 8
+Depends: linux-image-amd64
+Provides: linux-image-roxanne
+Section: kernel
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Branded Linux Kernel (amd64)
+ Branded kernel package for RoxieOS Roxanne.
+ Provides linux-image-roxanne symlink to Debian's linux-image-amd64.

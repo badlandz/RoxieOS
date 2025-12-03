@@ -1,0 +1,165 @@
+#! /usr/bin/make -f
+
+PKG                   := tex-gyre
+PKGFONTS              := fonts-texgyre
+PKGMATH               := fonts-texgyre-math
+PKG_INSTALL_DIR       := debian/$(PKG)
+PKGFONTS_INSTALL_DIR  := debian/$(PKGFONTS)
+PKGMATH_INSTALL_DIR   := debian/$(PKGMATH)
+
+FAMILIES              := qag qbk qzc qcr qcs qhv qpl qtm
+FAMILYNAMES           := Adventor Bonum Chorus Cursor Heros Pagella \
+                         Schola Termes
+
+INSTALL               := install
+INSTALL_FILE          := $(INSTALL) -p -o root -g root -m 644
+
+
+SHELL                 := /bin/bash
+
+^build: build-arch build-indep
+# We have nothing to do here but the Debian Policy says this target must
+# exist.
+
+build-arch:
+# Nothing to do here
+
+build-indep: build-indep-stamp
+
+build-indep-stamp:
+	dh_testdir fonts/type1/public/tex-gyre/qtmr.pfb tex/latex/tex-gyre/tgtermes.sty
+	# Warn the person building the package if new files were added
+	# to the .orig.tar.gz + .diff.gz that this script is not aware of.
+	@newfiles=$$(find . -type f | grep -Ev \
+		-e '^\./.git/' \
+		-e '^\./.pc/' \
+		-e '^\./debian/' \
+		-e '^\./tlpkg/' \
+		-e '^\./fonts/type1/public/tex-gyre/[^/]*\.pf[bm]$$' \
+		-e '^\./fonts/afm/public/tex-gyre/[^/]*\.afm$$' \
+		-e '^\./fonts/tfm/public/tex-gyre/[^/]*\.tfm$$' \
+		-e '^\./fonts/map/dvips/tex-gyre/[^/]*\.map$$' \
+		-e '^\./fonts/enc/dvips/tex-gyre/[^/]*\.enc$$' \
+		-e '^\./fonts/opentype/public/tex-gyre/[^/]*\.otf$$' \
+		-e '^\./fonts/opentype/public/tex-gyre-math/[^/]*\.otf$$' \
+		-e '^\./tex/latex/tex-gyre/[^/]*\.(fd|sty)$$' \
+		-e '^\./source/fonts/tex-gyre-math/texgyredejavu-math\.sfd$$' \
+		-e '^\./doc/fonts/tex-gyre-math/[^/]*\.(tex|pdf|txt|fea|docx)$$' \
+		-e '^\./doc/fonts/tex-gyre-math/README$$' \
+		-e '^\./source/fonts/tex-gyre/[^/]*\.(fea|sfd)$$' \
+		-e '^\./doc/fonts/tex-gyre/[^/]*\.(tex|pdf|txt|fea|nam)$$' || true) && \
+	if [ -n "$$newfiles" ]; then \
+		{ echo "New files were found in the patched tarball" \
+			"(.orig.tar.gz + .diff.gz):"; \
+			echo "$$newfiles" | sed 's/^\(.*\)$$/  \1/'; \
+			echo; \
+			echo "Please update the debian/rules file accordingly."; \
+		} >&2; \
+		exit 1; \
+	fi
+
+	# Upstream provides <texmf>/fonts/map/dvips/tex-gyre/q??.map that
+	# should be equivalent to all the encoding-specific map files in
+	# <texmf>/fonts/map/dvips/tex-gyre/
+	# Let's check if this is really the case.
+	@export LC_COLLATE=C && for fam in $(FAMILIES) ; do \
+	   a=$$(find fonts/map/dvips/tex-gyre -name "$$fam-*.map" \
+              -print0 | xargs -0r cat | grep -Ev -e '^(%|[[:space:]]*$$)' \
+                      | sort) \
+	&& b=$$(sort < fonts/map/dvips/tex-gyre/$$fam.map | grep -Ev -e \
+                                                        '^(%|[[:space:]]*$$)') \
+	&& if [ "$$a" != "$$b" ]; then \
+             { echo; \
+               echo "Warning: fonts/map/dvips/tex-gyre/$$fam.map does not appear to" \
+                    "be equivalent to"; \
+               echo "the concatenation of the other family's map files found in" \
+                    "fonts/map/dvips/tex-gyre/."; \
+               echo; \
+             } >&2; \
+           fi ; \
+	done
+
+	# Generate $(PKG).scale from $(PKG).x-names
+	# count two times the number of fonts for total number of lines, since we generate
+	# entries for both iso8859-1 and -15
+	( cat debian/$(PKG).x-names ; cat debian/$(PKG).x-names ) | wc -l > debian/$(PKG).scale
+	cat debian/$(PKG).x-names | while read f a ; do \
+	  echo "$$f.pfb -unregistered-$$a-0-0-0-0-p-0-iso8859-1"; \
+	  echo "$$f.pfb -unregistered-$$a-0-0-0-0-p-0-iso8859-15"; \
+	done >> debian/$(PKG).scale
+
+	cat debian/$(PKG).x-names | while read f a ; do \
+	  echo "usr/share/texmf/fonts/type1/public/tex-gyre/$$f.pfb usr/share/fonts/X11/Type1/$$f.pfb" ; \
+	  echo "usr/share/texmf/fonts/afm/public/tex-gyre/$$f.afm usr/share/fonts/X11/Type1/$$f.afm" ; \
+	done > debian/$(PKG).links
+
+	touch build-indep-stamp
+
+clean:
+	dh_testdir fonts/type1/public/tex-gyre/qtmr.pfb tex/latex/tex-gyre/tgtermes.sty
+	dh_testroot
+	# debian/$(PKG).links/scale are automatically generated from the list of
+	# fonts to declare to X11 among other things, so we have to delete
+	# them here.
+	rm -f build-indep-stamp "debian/$(PKG).scale" "debian/$(PKG).links"
+	dh_clean
+
+binary-indep: build-indep
+	dh_testdir fonts/type1/public/tex-gyre/qtmr.pfb tex/latex/tex-gyre/tgtermes.sty
+	dh_testroot
+	dh_clean
+
+	dh_install
+	dh_installtex --package=$(PKG) mapfile=debian/tex-gyre.cfg
+
+	$(foreach PPP, $(PKG) $(PKGFONTS), \
+	  dh_link -p $(PPP) \
+            $(foreach FAM, $(FAMILYNAMES), \
+              usr/share/texmf/doc/fonts/tex-gyre/README-TeX-Gyre-$(FAM).txt \
+	      usr/share/doc/$(PPP)/README-TeX-Gyre-$(FAM).txt) \
+            $(foreach FAM, $(FAMILIES), \
+	      usr/share/texmf/doc/fonts/tex-gyre/$(FAM)-info.pdf \
+	      usr/share/doc/$(PPP)/$(FAM)-info.pdf) \
+            $(foreach FAM, $(FAMILIES), \
+	      usr/share/texmf/doc/fonts/tex-gyre/$(FAM)-hist.txt \
+	      usr/share/doc/$(PPP)/$(FAM)-hist.txt) \
+	    ; )
+
+	dh_link \
+	    usr/share/texmf/doc/fonts/tex-gyre-math/README-TeX-Gyre-Bonum-Math.txt \
+	    usr/share/doc/$(PKGMATH)/README-TeX-Gyre-Bonum-Math.txt \
+	    usr/share/texmf/doc/fonts/tex-gyre-math/README-TeX-Gyre-Pagella-Math.txt \
+	    usr/share/doc/$(PKGMATH)/README-TeX-Gyre-Pagella-Math.txt \
+	    usr/share/texmf/doc/fonts/tex-gyre-math/README-TeX-Gyre-Schola-Math.txt \
+	    usr/share/doc/$(PKGMATH)/README-TeX-Gyre-Schola-Math.txt \
+	    usr/share/texmf/doc/fonts/tex-gyre-math/README-TeX-Gyre-Termes-Math.txt \
+	    usr/share/doc/$(PKGMATH)/README-TeX-Gyre-Termes-Math.txt \
+	    usr/share/texmf/doc/fonts/tex-gyre-math/README-TeX-Gyre-DejaVu-Math.txt \
+	    usr/share/doc/$(PKGMATH)/README-TeX-Gyre-DejaVu-Math.txt
+
+	dh_link -p $(PKGFONTS) \
+	    etc/fonts/conf.avail/65-$(PKGFONTS).conf \
+	    etc/fonts/conf.d/65-$(PKGFONTS).conf
+
+	dh_link -p $(PKGMATH) \
+	    etc/fonts/conf.avail/65-$(PKGMATH).conf \
+	    etc/fonts/conf.d/65-$(PKGMATH).conf
+
+	dh_installxfonts
+	dh_installdocs debian/VERSIONS
+	dh_installchangelogs
+	dh_lintian
+	dh_compress -X.pdf
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary-arch:
+# We have nothing to do here but the Debian Policy says this target must
+# exist.
+
+binary: binary-indep binary-arch
+
+.PHONY: clean build build-arch build-indep binary binary-indep binary-arch

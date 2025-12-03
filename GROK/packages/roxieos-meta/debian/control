@@ -1,0 +1,13 @@
+Source: roxieos-meta
+Section: metapackages
+Priority: optional
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0
+Homepage: https://groksroxieos.cyberdeck
+
+Package: roxieos-meta
+Architecture: all
+Depends: roxieos-base, baux, bauxwm, neovim-roxanne, roxieos-plymouth, roxieos-grub, roxieos-release, ${misc:Depends}
+Description: RoxieOS Meta Package
+ Meta package that depends on all RoxieOS components

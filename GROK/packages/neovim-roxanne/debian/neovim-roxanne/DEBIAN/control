@@ -1,0 +1,13 @@
+Package: neovim-roxanne
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 22
+Depends: neovim
+Provides: bvi
+Section: editors
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Enhanced Neovim with BVI Integration
+ Enhanced Neovim configuration for RoxieOS with AI bot integration,
+ bvi wrapper, and optimized settings for productivity.

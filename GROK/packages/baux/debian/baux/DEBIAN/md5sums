@@ -1,0 +1,7 @@
+b725a89e898c844189b1c3802023b04f  usr/bin/baux
+3da7acc554c8a159654e581c1f4e1fd5  usr/share/baux/scripts/baux-bot
+b33f30f3283dd1ea7f377c351ea2d81d  usr/share/baux/scripts/baux-sync
+45d6c7d8ffa148a96c9545fb1be7d481  usr/share/baux/scripts/drop-baux
+9ef5e0802e9fab15aa30fb708ef6315a  usr/share/baux/scripts/terminal-baux
+9d705f9eacbfd9c844509e579905028e  usr/share/baux/tmux/baux.conf
+8d834435fc5a6fc70d5fa6c1d811aa48  usr/share/doc/baux/changelog.Debian.gz

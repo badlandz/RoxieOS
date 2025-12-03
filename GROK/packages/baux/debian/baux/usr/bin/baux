@@ -1,0 +1,327 @@
+#!/usr/bin/env bash
+# baux — BAUX entrypoint v1.0 (cluster-ready + sync + health + bvi integration)
+# Enhanced with session sync, error handling, diagnostics, and hooks
+# Interconnects with bvi, baux-bot, drop-baux
+
+set -euo pipefail
+
+export BAUX_HOME="/usr/share/baux"
+export NVIM_INIT="$BAUX_HOME/nvim/init.lua"
+TMUX_CONF="$BAUX_HOME/tmux/baux.conf"
+SESSION="baux-$(hostname)"
+SYNC_DIR="$HOME/.baux/sync"
+LOG_FILE="$HOME/.baux/baux.log"
+HEALTH_CHECK_INTERVAL=${BAUX_HEALTH_INTERVAL:-300}
+BAUX_BOT_SOCKET="/tmp/baux-bot.sock"
+DROP_BAUX_MOUNT="/mnt/drop-baux"
+
+# Trap for cleanup
+trap 'log "BAUX interrupted"; exit 1' INT TERM
+
+# Ensure directories exist
+mkdir -p "$HOME/.baux"
+
+# Logging with rotation
+log() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*" >> "$LOG_FILE"
+    # Rotate log if too large
+    if [ -f "$LOG_FILE" ] && [ $(stat -f%z "$LOG_FILE" 2>/dev/null || stat -c%s "$LOG_FILE" 2>/dev/null || echo 0) -gt 1048576 ]; then
+        mv "$LOG_FILE" "$LOG_FILE.old"
+    fi
+}
+error() { log "ERROR: $*"; echo "BAUX ERROR: $*" >&2; }
+warn() { log "WARN: $*"; }
+
+# ──────────────────────────────────────────────────────────────
+# 1. Anti-nesting & remote detection (enhanced with diagnostics)
+# ──────────────────────────────────────────────────────────────
+if [[ -n "${BAUX_REMOTE:-}" || -n "${SSH_TTY:-}" || -n "${SSH_CONNECTION:-}" ]]; then
+    log "Remote connection detected from ${SSH_CONNECTION:-unknown}, providing clean shell"
+    export BAUX_INSIDE_REMOTE=1
+    # Hook for future remote-specific configs
+    if [ -f "$BAUX_HOME/hooks/remote-init.sh" ]; then
+        source "$BAUX_HOME/hooks/remote-init.sh"
+    fi
+    exec bash --login
+fi
+
+# ──────────────────────────────────────────────────────────────
+# 2. Health checks and diagnostics
+# ──────────────────────────────────────────────────────────────
+check_system_health() {
+    local issues=()
+    
+    # Check memory (critical for Pi Zero)
+    local mem_kb
+    mem_kb=$(grep MemAvailable /proc/meminfo | awk '{print $2}')
+    if [ "$mem_kb" -lt 50000 ]; then
+        issues+=("Low memory: ${mem_kb}KB available")
+    fi
+    
+    # Check disk space
+    local disk_usage
+    disk_usage=$(df / | tail -1 | awk '{print $5}' | sed 's/%//')
+    if [ "$disk_usage" -gt 90 ]; then
+        issues+=("Low disk space: ${disk_usage}% used")
+    fi
+    
+    # Check tmux
+    if ! command -v tmux >/dev/null 2>&1; then
+        issues+=("tmux not found")
+    fi
+    
+    # Check nvim/bvi
+    if ! command -v nvim >/dev/null 2>&1 && ! command -v bvi >/dev/null 2>&1; then
+        issues+=("No editor found (nvim or bvi)")
+    fi
+    
+    # Check baux-bot
+    if [ ! -S "$BAUX_BOT_SOCKET" ]; then
+        warn "baux-bot not running (socket missing: $BAUX_BOT_SOCKET)"
+    fi
+    
+    # Check drop-baux
+    if [ ! -d "$DROP_BAUX_MOUNT" ]; then
+        warn "drop-baux not mounted ($DROP_BAUX_MOUNT)"
+    fi
+    
+    if [ ${#issues[@]} -gt 0 ]; then
+        warn "Health issues detected: ${issues[*]}"
+        return 1
+    fi
+    
+    return 0
+}
+
+check_dependencies() {
+    local missing=()
+    local required=(tmux)
+    
+    for cmd in "${required[@]}"; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            missing+=("$cmd")
+        fi
+    done
+    
+    if [ ${#missing[@]} -gt 0 ]; then
+        error "Missing dependencies: ${missing[*]}"
+        echo "Please install: apt install ${missing[*]}"
+        exit 1
+    fi
+}
+
+# ──────────────────────────────────────────────────────────────
+# 3. Session management and persistence
+# ──────────────────────────────────────────────────────────────
+backup_configs() {
+    log "Backing up current configs"
+    local backup_dir="$SYNC_DIR/backup/$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "$backup_dir"
+    
+    # Backup tmux resurrect data
+    if [ -d "/var/tmp/baux-resurrect" ]; then
+        cp -r "/var/tmp/baux-resurrect" "$backup_dir/"
+    fi
+    
+    # Backup local configs
+    if [ -f "/etc/baux/tmux.local.conf" ]; then
+        cp "/etc/baux/tmux.local.conf" "$backup_dir/"
+    fi
+    
+    # Backup bvi configs
+    if [ -d "$HOME/.config/bvi" ]; then
+        cp -r "$HOME/.config/bvi" "$backup_dir/"
+    fi
+    
+    # Hook for future -DEV backups
+    if [ -f "$BAUX_HOME/hooks/backup.sh" ]; then
+        source "$BAUX_HOME/hooks/backup.sh" "$backup_dir"
+    fi
+    
+    log "Backup completed to $backup_dir"
+}
+
+restore_session() {
+    local session_name="$1"
+    if [ -d "/var/tmp/baux-resurrect/$(hostname -s)" ]; then
+        log "Attempting to restore session $session_name"
+        tmux start-server
+        tmux run-shell "$BAUX_HOME/tmux/plugins/resurrect/scripts/restore.sh" || warn "Session restore failed"
+    fi
+}
+
+# ──────────────────────────────────────────────────────────────
+# 4. Sub-command routing (expanded with new features)
+# ──────────────────────────────────────────────────────────────
+if [[ $# -gt 0 ]]; then
+    case "$1" in
+    sync)
+        # Distributed config sync
+        exec "$BAUX_HOME/scripts/baux-sync" "${@:2}"
+        ;;
+    vpn)
+        # WireGuard cluster management
+        exec "$BAUX_HOME/scripts/baux-vpn" "${@:2}"
+        ;;
+    hosts)
+        # Node discovery and management
+        exec "$BAUX_HOME/scripts/baux-hosts" "${@:2}"
+        ;;
+    pull)
+        # Pull remote pane/session
+        exec "$BAUX_HOME/scripts/baux-pull" "${@:2}"
+        ;;
+    push)
+        # Push current session
+        exec "$BAUX_HOME/scripts/baux-push" "${@:2}"
+        ;;
+    bot)
+        # AI assistant integration
+        exec "$BAUX_HOME/scripts/baux-bot" "${@:2}"
+        ;;
+    drop)
+        # Distributed storage
+        exec "$BAUX_HOME/scripts/drop-baux" "${@:2}"
+        ;;
+    edit|e)
+        # Launch bvi editor
+        shift
+        exec bvi "$@"
+        ;;
+    --version | -v)
+        echo "BAUX v1.0-pre (cluster-ready + sync + health + bvi integration)"
+        exit 0
+        ;;
+    --health)
+        if check_system_health; then
+            echo "BAUX health check passed"
+        else
+            echo "BAUX health check failed - check $LOG_FILE"
+            exit 1
+        fi
+        exit 0
+        ;;
+    --backup)
+        backup_configs
+        echo "Configs backed up to $SYNC_DIR/backup/"
+        exit 0
+        ;;
+    --restore)
+        restore_session "${2:-baux}"
+        echo "Session restore attempted"
+        exit 0
+        ;;
+    --diag | --diagnostics)
+        echo "BAUX Diagnostics:"
+        echo "  Session: $SESSION"
+        echo "  Config: $TMUX_CONF"
+        echo "  Log: $LOG_FILE"
+        echo "  Sync dir: $SYNC_DIR"
+        echo "  BVI socket: $BAUX_BOT_SOCKET"
+        echo "  Drop mount: $DROP_BAUX_MOUNT"
+        echo "  Health check:"
+        if check_system_health 2>/dev/null; then
+            echo "    ✓ System healthy"
+        else
+            echo "    ✗ Issues detected (see log)"
+        fi
+        exit 0
+        ;;
+    --help | -h)
+        cat <<'HELP'
+BAUX — the immortal terminal OS
+
+Usage: baux [command] [options]
+
+Commands:
+   sync      — synchronize sessions/configs across nodes
+   vpn       — manage WireGuard cluster (init / add / status)
+   hosts     — list all online BAUX nodes
+   pull      — pull a remote pane (future)
+   push      — push current session (future)
+   bot       — manage BAUX BOT
+   drop      — manage DROP-BAUX storage
+   edit      — launch BVI editor
+   --health  — run health checks
+   --backup  — backup current configs
+   --restore — restore tmux session
+   --diag    — show diagnostics
+   --version — show version
+
+Environment:
+   BAUX_HEALTH_INTERVAL — health check interval in seconds (default: 300)
+   BAUX_REMOTE_USER     — remote sync user (default: root)
+   BAUX_SYNC_PATH       — remote sync path (default: ~/.baux/sync)
+
+Just type "baux" to enter the workspace.
+HELP
+        exit 0
+        ;;
+    *)
+        error "Unknown command: $1"
+        echo "Run 'baux --help' for usage"
+        exit 1
+        ;;
+    esac
+fi
+
+# ──────────────────────────────────────────────────────────────
+# 5. Pre-start initialization
+# ──────────────────────────────────────────────────────────────
+log "Starting BAUX session: $SESSION"
+check_dependencies
+
+# Periodic health monitoring (background)
+(
+    while true; do
+        if ! check_system_health >/dev/null 2>&1; then
+            warn "Health check failed during session"
+        fi
+        sleep "$HEALTH_CHECK_INTERVAL"
+    done
+) &
+HEALTH_PID=$!
+
+# Auto-sync if configured
+if [ -f "$SYNC_DIR/config" ] && grep -q "AUTO_SYNC=true" "$SYNC_DIR/config"; then
+    log "Auto-sync enabled, pulling latest configs"
+    "$BAUX_HOME/scripts/baux-sync" pull >/dev/null 2>&1 || warn "Auto-sync failed, continuing"
+fi
+
+# Start baux-bot if not running
+if [ ! -S "$BAUX_BOT_SOCKET" ] && [ -x "$BAUX_HOME/scripts/baux-bot" ]; then
+    log "Starting baux-bot"
+    "$BAUX_HOME/scripts/baux-bot" daemon &
+    BOT_PID=$!
+fi
+
+# Mount drop-baux if available
+if [ -x "$BAUX_HOME/scripts/drop-baux" ] && [ ! -d "$DROP_BAUX_MOUNT" ]; then
+    log "Mounting drop-baux"
+    "$BAUX_HOME/scripts/drop-baux" mount "$DROP_BAUX_MOUNT" || warn "drop-baux mount failed"
+fi
+
+# Hook for pre-session initialization
+if [ -f "$BAUX_HOME/hooks/pre-session.sh" ]; then
+    source "$BAUX_HOME/hooks/pre-session.sh"
+fi
+
+# ──────────────────────────────────────────────────────────────
+# 6. Start tmux with enhanced error handling
+# ──────────────────────────────────────────────────────────────
+cleanup() {
+    kill "$HEALTH_PID" 2>/dev/null || true
+    kill "$BOT_PID" 2>/dev/null || true
+    log "BAUX session ended"
+}
+trap cleanup EXIT
+
+if tmux has-session -t "$SESSION" 2>/dev/null; then
+    log "Attaching to existing session"
+    exec tmux attach-session -t "$SESSION"
+else
+    log "Creating new session"
+    # Try to restore previous session first
+    restore_session "$SESSION"
+    exec tmux -f "$TMUX_CONF" new-session -A -s "$SESSION" -n "main" "bash --login"
+fi

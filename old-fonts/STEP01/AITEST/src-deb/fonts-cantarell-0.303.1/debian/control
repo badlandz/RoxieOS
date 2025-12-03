@@ -1,0 +1,40 @@
+Source: fonts-cantarell
+Section: fonts
+Priority: optional
+Maintainer: Debian Fonts Task Force <debian-fonts@lists.debian.org>
+Uploaders:
+ Hideki Yamane <henrich@debian.org>,
+ Nicolas Spalinger <nicolas.spalinger@sil.org>,
+ Fabian Greffrath <fabian@debian.org>,
+ Jeremy Bícha <jbicha@ubuntu.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ meson,
+ pkgconf
+Build-Depends-Indep:
+ afdko-bin,
+ appstream,
+ fontmake,
+ psautohint,
+ python3-statmake,
+Standards-Version: 4.7.0
+Homepage: https://cantarell.gnome.org/
+Vcs-Git: https://salsa.debian.org/fonts-team/fonts-cantarell.git
+Vcs-Browser: https://salsa.debian.org/fonts-team/fonts-cantarell
+Rules-Requires-Root: no
+
+Package: fonts-cantarell
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ fontconfig,
+ ${misc:Depends}
+Description: sans serif font family designed for on-screen readability
+ The Cantarell font family is designed as a contemporary Humanist sans serif
+ and is particularly designed for on-screen reading on mobile devices at small
+ sizes, such as phones and tablets.
+ .
+ This is the open font officially chosen by default for the GNOME 3 desktop and
+ for Fedora branding materials.
+ .
+ This package contains the variable font.

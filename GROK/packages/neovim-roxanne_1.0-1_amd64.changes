@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Mon, 25 Nov 2025 12:00:00 +0000
+Source: neovim-roxanne
+Binary: neovim-roxanne
+Architecture: all
+Version: 1.0-1
+Distribution: unstable
+Urgency: medium
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Changed-By: groksroxieos <roxie@cyberdeck.local>
+Description:
+ neovim-roxanne - RoxieOS Enhanced Neovim with BVI Integration
+Changes:
+ neovim-roxanne (1.0-1) unstable; urgency=medium
+ .
+   * Initial release of RoxieOS enhanced neovim with BVI integration
+Checksums-Sha1:
+ 0ee57c704497155eb9d662086fae9ba91baa057e 5304 neovim-roxanne_1.0-1_all.deb
+ 2e4034b430c59baa4ae84999cfd3f5f86092dd4d 4559 neovim-roxanne_1.0-1_amd64.buildinfo
+Checksums-Sha256:
+ 3811690f60d156cc228184605e7f5bd3b699947234958b5dcfaf829818289884 5304 neovim-roxanne_1.0-1_all.deb
+ f88da8128a4c8f0ebdeef49d101b57a592fe31cc7c5d4cb3f911326e22ce93ab 4559 neovim-roxanne_1.0-1_amd64.buildinfo
+Files:
+ 61f2b3da07a744d6ff6d069186704e96 5304 editors optional neovim-roxanne_1.0-1_all.deb
+ a91e63ad292281a09a44507e820593f0 4559 editors optional neovim-roxanne_1.0-1_amd64.buildinfo

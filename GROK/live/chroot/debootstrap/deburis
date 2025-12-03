@@ -1,0 +1,8 @@
+adduser 3.153 http://deb.debian.org/debian/pool/main/a/adduser/adduser_3.153_all.deb
+apt 3.1.12 http://deb.debian.org/debian/pool/main/a/apt/apt_3.1.12_amd64.deb
+apt-utils 3.1.12 http://deb.debian.org/debian/pool/main/a/apt/apt-utils_3.1.12_amd64.deb
+base-files 14 http://deb.debian.org/debian/pool/main/b/base-files/base-files_14_amd64.deb
+base-passwd 3.6.8 http://deb.debian.org/debian/pool/main/b/base-passwd/base-passwd_3.6.8_amd64.deb
+bash 5.3-1 http://deb.debian.org/debian/pool/main/b/bash/bash_5.3-1_amd64.deb
+bsdutils 1:2.41.2-4 http://deb.debian.org/debian/pool/main/u/util-linux/bsdutils_2.41.2-4_amd64.deb
+coreutils 9.7-3 http://deb.debian.org/debian/pool/main/c/coreutils/coreutils_9.7-3_amd64.deb

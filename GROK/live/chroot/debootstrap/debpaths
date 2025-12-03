@@ -1,0 +1,8 @@
+adduser /var/cache/apt/archives/adduser_3.153_all.deb
+apt /var/cache/apt/archives/apt_3.1.12_amd64.deb
+apt-utils /var/cache/apt/archives/apt-utils_3.1.12_amd64.deb
+base-files /var/cache/apt/archives/base-files_14_amd64.deb
+base-passwd /var/cache/apt/archives/base-passwd_3.6.8_amd64.deb
+bash /var/cache/apt/archives/bash_5.3-1_amd64.deb
+bsdutils /var/cache/apt/archives/bsdutils_1%3a2.41.2-4_amd64.deb
+coreutils /var/cache/apt/archives/coreutils_9.7-3_amd64.deb

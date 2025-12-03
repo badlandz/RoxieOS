@@ -1,0 +1,15 @@
+Source: linux-image-roxanne-amd64
+Section: kernel
+Priority: optional
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0
+Homepage: https://groksroxieos.cyberdeck
+
+Package: linux-image-roxanne-amd64
+Architecture: amd64
+Depends: linux-image-amd64, ${misc:Depends}
+Provides: linux-image-roxanne
+Description: RoxieOS Branded Linux Kernel (amd64)
+ Branded kernel package for RoxieOS Roxanne.
+ Provides linux-image-roxanne symlink to Debian's linux-image-amd64.

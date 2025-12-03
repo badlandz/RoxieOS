@@ -1,0 +1,65 @@
+How to use the TeX Gyre fonts with LaTeX-based engines[1]?
+--------------------------------------------------------------
+
+By adding:
+
+For TeX Gyre Adventor:
+   \usepackage{tgadventor} 
+For TeX Gyre Bonum:
+   \usepackage{tgbonum} 
+For TeX Gyre Cursor:
+    \usepackage{tgcursor}
+For TeX Gyre Heros:
+   \usepackage{tgheros} 
+For TeX Gyre Pagella:
+   \usepackage{tgpagella} 
+For TeX Gyre Schola:
+   \usepackage{tgschola} 
+For TeX Gyre Termes:
+   \usepackage{tgtermes} 
+
+Please don't forget to select a suitable font encoding. For example, for
+most texts using the latin script you should include:
+
+   \usepackage[T1]{fontenc}
+   \usepackage{textcomp}
+
+in the preamble.
+
+[1] By LaTeX-based engine, I mean a program such as latex or pdflatex. 
+
+
+How to use the TeX Gyre fonts with TeX?
+---------------------------------------
+
+If you are using TeX directly, you should know that. ;-)
+You can find the name of the fonts as far as TeX sees them with the
+following command (this assumes lmodern is installed):
+
+  dpkg -L tex-gyre | grep '\.tfm$' | sed 's@.*/\([^/]\{1,\}\)\.tfm$@\1@'
+
+Then, to use Termes Roman in T1 encoding (Cork), for instance, you can do:
+
+  \font\Myfont=ec-qtmr {\Myfont Sample text in ec-qtmr Termes}
+
+However, you should be aware that ec-qtmr being T1-encoded makes things
+difficult when using TeX directly; you cannot access all its characters as
+easily as with the LaTeX packages 'inputenc' and 'fontenc'. For instance,
+things such as \'e will probably not do what you would like.
+
+
+The PFM files are not included
+------------------------------
+
+The upstream tarball of the TeX Gyre fonts comes with PFM files
+(Printer Font Metrics). As they seem to be hardly ever used in the free
+software world, they are not included in this Debian package in order to
+save space. The package contains the AFM files (Adobe Font Metrics)
+however, which should be equivalent to the PFM files but are much more
+common in the free software world in my experience.
+
+If you have a reason to think that the PFM files should be included,
+please contact me.
+
+
+ -- Norbert Preining <preining@debian.org>, Thu Aug 23 19:03:35 CEST 2007

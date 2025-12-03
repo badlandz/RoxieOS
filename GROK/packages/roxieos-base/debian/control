@@ -1,0 +1,30 @@
+# FreeBSD Port: cbsd-base
+# Converted from Debian package to FreeBSD port
+
+PORTNAME=    cbsd-base
+DISTVERSION= 1.0
+CATEGORIES=   sysutils
+MASTER_SITES= # Will be set dynamically
+
+MAINTAINER=   team@coseismic.org
+COMMENT=      CoseismicBSD Base System Configuration
+WWW=          https://coseismic.org
+
+LICENSE=      BSD2CLAUSE
+LICENSE_FILE=  ${WRKSRC}/LICENSE
+
+RUN_DEPENDS=  # Base system, no additional dependencies
+
+CONFLICTS=    roxieos-base
+
+# FreeBSD-specific: Base system configuration
+# Key changes: systemd → rc.d, Debian paths → BSD paths, apt → pkg
+
+# Post-install script for base configuration
+post-install:
+    @${ECHO_MSG} "Configuring CoseismicBSD base system..."
+    @${CP} ${FILESDIR}/rc.conf ${PREFIX}/etc/rc.conf
+    @${CP} ${FILESDIR}/login.conf ${PREFIX}/etc/login.conf
+    @${CHMOD} 644 ${PREFIX}/etc/rc.conf
+    @${CHMOD} 644 ${PREFIX}/etc/login.conf
+    @${ECHO_MSG} "Base system configured. Reboot for full effect."

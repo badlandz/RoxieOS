@@ -1,0 +1,15 @@
+Source: neovim-roxanne
+Section: editors
+Priority: optional
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0
+Homepage: https://groksroxieos.cyberdeck
+
+Package: neovim-roxanne
+Architecture: all
+Depends: neovim, ${misc:Depends}
+Provides: bvi
+Description: RoxieOS Enhanced Neovim with BVI Integration
+ Enhanced Neovim configuration for RoxieOS with AI bot integration,
+ bvi wrapper, and optimized settings for productivity.

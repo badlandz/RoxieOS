@@ -1,0 +1,50 @@
+Source: fonts-jetbrains-mono
+Section: fonts
+Priority: optional
+Maintainer: Debian Fonts Team <debian-fonts@lists.debian.org>
+Uploaders:
+ Agathe Porte <gagath@debian.org>,
+Build-Depends:
+ debhelper-compat (= 13),
+ fontmake,
+ fonttools,
+ gftools,
+ ttfautohint,
+ kotlin,
+Standards-Version: 4.7.2
+Homepage: https://www.jetbrains.com/lp/mono/
+Vcs-Git: https://salsa.debian.org/fonts-team/fonts-jetbrains-mono.git
+Vcs-Browser: https://salsa.debian.org/fonts-team/fonts-jetbrains-mono
+Rules-Requires-Root: no
+
+Package: fonts-jetbrains-mono
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ ${misc:Depends},
+Description: free and open-source typeface for developers
+ JetBrains Mono. A typeface for developers.
+ Features include:
+  - Increased height for a better reading experience
+  - Adapted to reading code
+  - 139 code-specific ligatures
+  - 145 languages
+  - 7 weights with matching italics
+ .
+ This package contains the TrueType fonts.
+
+Package: fonts-jetbrains-mono-web
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ ${misc:Depends},
+Description: free and open-source typeface for developers (WOFF2)
+ JetBrains Mono. A typeface for developers.
+ Features include:
+  - Increased height for a better reading experience
+  - Adapted to reading code
+  - 139 code-specific ligatures
+  - 145 languages
+  - 7 weights with matching italics
+ .
+ This package contains the web fonts in the WOFF2 format.

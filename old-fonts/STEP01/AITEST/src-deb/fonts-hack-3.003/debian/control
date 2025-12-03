@@ -1,0 +1,71 @@
+Source: fonts-hack
+Section: fonts
+Priority: optional
+Maintainer: Debian Fonts Task Force <pkg-fonts-devel@lists.alioth.debian.org>
+Uploaders:
+ Paride Legovini <pl@ninthfloor.org>,
+ Fabian Greffrath <fabian@debian.org>
+Build-Depends: debhelper-compat (= 12), fontmake, python3-fonttools, sfnt2woff-zopfli,
+ woff2
+Standards-Version: 4.4.1
+Homepage: https://sourcefoundry.org/hack/
+Vcs-Git: https://salsa.debian.org/fonts-team/fonts-hack.git
+Vcs-Browser: https://salsa.debian.org/fonts-team/fonts-hack
+Rules-Requires-Root: no
+
+Package: fonts-hack
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Breaks: fonts-hack-otf (<< 3.002-1~), fonts-hack-ttf (<< 3.002-1~), fonts-hack-web (<< 3.002-1~)
+Replaces: fonts-hack-otf (<< 3.002-1~), fonts-hack-ttf (<< 3.002-1~), fonts-hack-web (<< 3.002-1~)
+Description: Typeface designed for source code
+ No frills. No gimmicks. Hack is hand groomed and optically balanced to be a
+ workhorse face for code.
+ .
+ It has deep roots in the libre, open source typeface community and expands upon
+ the contributions of the Bitstream Vera & DejaVu projects. The face has been
+ re-designed with a larger glyph set, modifications of the original glyph shapes
+ (including distinct point styles and semi-bold punctuation weight in the
+ regular set to make analphabetic characters less transparent), and meticulous
+ attention to metrics (including numerous spacing adjustments to improve the
+ rhythm of the face and the legibility of code at small text sizes). The large
+ x-height + wide aperture + low contrast design combined with PostScript
+ hinting/hint replacement programs and a TrueType instruction set make it highly
+ legible at commonly used source code text sizes with a sweet spot that runs in
+ the 8px - 12px range on modern desktop and laptop monitors.
+ .
+ This package contains the TrueType fonts and the Webfont (WOFF/WOFF2) versions.
+
+Package: fonts-hack-ttf
+Section: oldlibs
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}, fonts-hack
+Description: Hack TrueType fonts (transitional package for fonts-hack)
+ This package used to contain the TTF variants of the Hack font, which
+ are now part of the consolidated fonts-hack package.
+ .
+ This package is a dummy transitional package. It can be safely removed.
+
+Package: fonts-hack-web
+Section: oldlibs
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}, fonts-hack
+Description: Hack web fonts (transitional package for fonts-hack)
+ This package used to contain the web variants of the Hack font, which
+ are now part of the consolidated fonts-hack package.
+ .
+ This package is a dummy transitional package. It can be safely removed.
+
+Package: fonts-hack-otf
+Section: oldlibs
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}, fonts-hack
+Description: Hack OpenType fonts (transitional package for fonts-hack)
+ This package used to contain the OTF variant of the Hack font, which
+ has been discontinued upstream. It now pulls in the TTF variant instead.
+ .
+ This package is a dummy transitional package. It can be safely removed.

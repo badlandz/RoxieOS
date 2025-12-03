@@ -1,0 +1,13 @@
+Package: bauxwm
+Version: 1.0-1
+Architecture: amd64
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 63
+Depends: libc6 (>= 2.34), libfontconfig1 (>= 2.12.6), libx11-6, libxft2 (>> 2.1.1), libxinerama1 (>= 2:1.1.4), alacritty, xinit, x11-xserver-utils
+Provides: window-manager, x-window-manager
+Section: x11
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: BAUX Window Manager - Roxanne Cyberdeck WM
+ DWM fork optimized for RoxieOS with unified keymap, toxic green theme,
+ and seamless BAUX integration. Includes status bar and terminal config.

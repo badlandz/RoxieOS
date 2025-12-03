@@ -1,0 +1,8 @@
+#!/bin/bash
+# stupid script to check whether there are differences between the files here 
+# and the ones in the TL repository
+# 2018 Norbert Preining, public domain
+for i in $(find . -type f -a ! -path './debian/*' -a ! -path './.git/*' -a ! -path './tlpkg/*') ; do
+  cmp $i ~/Development/TeX/texlive.git/Master/texmf-dist/$i
+done
+

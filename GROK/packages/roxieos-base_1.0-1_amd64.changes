@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Mon, 25 Nov 2025 12:00:00 +0000
+Source: roxieos-base
+Binary: roxieos-base
+Architecture: all
+Version: 1.0-1
+Distribution: unstable
+Urgency: medium
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Changed-By: groksroxieos <roxie@cyberdeck.local>
+Description:
+ roxieos-base - RoxieOS Base System
+Changes:
+ roxieos-base (1.0-1) unstable; urgency=medium
+ .
+   * Initial release of groksroxieos base system
+Checksums-Sha1:
+ d9261ea7a742ae89279491d7f19dcf58a5020dd0 1668 roxieos-base_1.0-1_all.deb
+ 7ed2d37384a484109d81e0fd9d7e1fc603974a84 4549 roxieos-base_1.0-1_amd64.buildinfo
+Checksums-Sha256:
+ 7f56fab1923c8576e1e33636fb371b7f97d57ac4103a10a6fbc77a0a0ae60ff6 1668 roxieos-base_1.0-1_all.deb
+ 135826f6e83d6dc3413f29973311fef6c94f9acc8263e430cfba65153c9b64cf 4549 roxieos-base_1.0-1_amd64.buildinfo
+Files:
+ 152f204d24b03c535bda8ac114bae23b 1668 admin required roxieos-base_1.0-1_all.deb
+ 65d2afd16c284d432a8fc994b507e2cc 4549 admin required roxieos-base_1.0-1_amd64.buildinfo

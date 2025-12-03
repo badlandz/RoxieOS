@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Mon, 25 Nov 2025 12:00:00 +0000
+Source: baux
+Binary: baux
+Architecture: all
+Version: 1.0-1
+Distribution: unstable
+Urgency: medium
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Changed-By: groksroxieos <roxie@cyberdeck.local>
+Description:
+ baux       - Badlandz Auxiliary UniX - distributed terminal IDE
+Changes:
+ baux (1.0-1) unstable; urgency=medium
+ .
+   * Initial release of groksroxieos baux package
+Checksums-Sha1:
+ 225a6c23b988597695ed94a58f87ca02388ae1ea 11148 baux_1.0-1_all.deb
+ 6665cef4f2dde586dc59e1295b183b7aac0fd002 4512 baux_1.0-1_amd64.buildinfo
+Checksums-Sha256:
+ 39965055936f23ac116471b2efb309a9dce99d81c0077af8adffca584ad272fb 11148 baux_1.0-1_all.deb
+ 0c4518c5d8083d623af4cd78806a257b75a82f0ac647cb18058d6a14fbe6e76e 4512 baux_1.0-1_amd64.buildinfo
+Files:
+ cd19e4769bc78addc799a87dd1d84583 11148 utils optional baux_1.0-1_all.deb
+ e67537c9bdffa81b59d604a1cd328bce 4512 utils optional baux_1.0-1_amd64.buildinfo

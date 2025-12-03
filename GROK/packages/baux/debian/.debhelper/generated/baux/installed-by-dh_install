@@ -1,0 +1,6 @@
+./usr/bin/baux
+./usr/share/baux/tmux/baux.conf
+./usr/share/baux/scripts/baux-bot
+./usr/share/baux/scripts/baux-sync
+./usr/share/baux/scripts/drop-baux
+./usr/share/baux/scripts/terminal-baux

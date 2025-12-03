@@ -1,0 +1,11 @@
+Package: roxieos-base
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 8
+Section: admin
+Priority: required
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Base System
+ Base system configuration for RoxieOS cyberdeck.
+ Includes root autologin, Caps=Esc remapping, and X auto-start.

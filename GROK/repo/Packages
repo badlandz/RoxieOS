@@ -1,0 +1,179 @@
+Package: baux
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 61
+Depends: tmux, neovim, btop, fastfetch, starship, rsync, openssh-client, curl, git
+Filename: ./baux_1.0-1_all.deb
+Size: 13800
+MD5sum: d9e364a6da6d35c2142e431959ac214a
+SHA1: f4047b8467f083a00739ab09917f6654470c4e36
+SHA256: 9f758415fe541eb60f5caf5d9eee7d56a4731ab007b2f26bd89cc2ec9d5ffa3a
+Section: utils
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: Badlandz Auxiliary UniX - distributed terminal IDE
+ BAUX replaces the shell with a persistent, host-aware tmux+Neovim IDE
+ for embedded electronics development with AI integration.
+
+Package: bauxwm
+Version: 1.0-1
+Architecture: amd64
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 63
+Depends: libc6 (>= 2.34), libfontconfig1 (>= 2.12.6), libx11-6, libxft2 (>> 2.1.1), libxinerama1 (>= 2:1.1.4), alacritty, xinit, x11-xserver-utils
+Provides: window-manager, x-window-manager
+Filename: ./bauxwm_1.0-1_amd64.deb
+Size: 21092
+MD5sum: 3d18af20eaf14752c480febd18baecd0
+SHA1: 72141df3d89c1fc9d832f004a44e515b2ab6024b
+SHA256: 1d53e794d807347dc62676730b495deba05ad2e717944a09d43e28079e7658c9
+Section: x11
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: BAUX Window Manager - Roxanne Cyberdeck WM
+ DWM fork optimized for RoxieOS with unified keymap, toxic green theme,
+ and seamless BAUX integration. Includes status bar and terminal config.
+
+Package: bauxwm-dbgsym
+Source: bauxwm
+Version: 1.0-1
+Auto-Built-Package: debug-symbols
+Architecture: amd64
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 34
+Depends: bauxwm (= 1.0-1)
+Filename: ./bauxwm-dbgsym_1.0-1_amd64.deb
+Size: 4840
+MD5sum: 1067f29fdf4a9848433dda71a770522b
+SHA1: 230d29767a128c75e591586a917cc6af802adbab
+SHA256: 2490e9fe3e70c13aa2ecf89571cff357e45b9c4c90a8f7d7bdda1659303beb22
+Section: debug
+Priority: optional
+Description: debug symbols for bauxwm
+Build-Ids: 17ca6c64d9774620aae0e56d07726dba5d42ad8c
+
+Package: linux-image-roxanne-amd64
+Version: 1.0-1
+Architecture: amd64
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 8
+Depends: linux-image-amd64
+Provides: linux-image-roxanne
+Filename: ./linux-image-roxanne-amd64_1.0-1_amd64.deb
+Size: 1432
+MD5sum: 07c0502a1f7ab22518b50bc01e9e04d2
+SHA1: b58b9f256b01da2e1b2d0319865b943b8c2d8905
+SHA256: 38fc9a1b1ae676f5b575ddb23f593990c5b1dac113f766e1ae708425d7ae101c
+Section: kernel
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Branded Linux Kernel (amd64)
+ Branded kernel package for RoxieOS Roxanne.
+ Provides linux-image-roxanne symlink to Debian's linux-image-amd64.
+
+Package: neovim-roxanne
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 22
+Depends: neovim
+Provides: bvi
+Filename: ./neovim-roxanne_1.0-1_all.deb
+Size: 5304
+MD5sum: 61f2b3da07a744d6ff6d069186704e96
+SHA1: 0ee57c704497155eb9d662086fae9ba91baa057e
+SHA256: 3811690f60d156cc228184605e7f5bd3b699947234958b5dcfaf829818289884
+Section: editors
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Enhanced Neovim with BVI Integration
+ Enhanced Neovim configuration for RoxieOS with AI bot integration,
+ bvi wrapper, and optimized settings for productivity.
+
+Package: roxieos-base
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 8
+Filename: ./roxieos-base_1.0-1_all.deb
+Size: 1668
+MD5sum: 9c9ccdc325e548fe6ccccb7fd01f5ae8
+SHA1: 6607060604359be6ff9d5b8b25152de88e132129
+SHA256: 8bd787e34ad49a6d279c1f91c5d8290e343b8b6a5f01eeabae3fb9c5decaa23b
+Section: admin
+Priority: required
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Base System
+ Base system configuration for RoxieOS cyberdeck.
+ Includes root autologin, Caps=Esc remapping, and X auto-start.
+
+Package: roxieos-grub
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 12
+Depends: grub-common
+Filename: ./roxieos-grub_1.0-1_all.deb
+Size: 1848
+MD5sum: 008a979224e6388f0ae0188f57730e64
+SHA1: 3cb6027128f25671516df3639fe02673720e509d
+SHA256: 6cc7bc83d80ea7fe2b763715f3e12d358115442f0a4db823324210a1b29eea0d
+Section: admin
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS GRUB Theme - Red Boot Menu
+ RoxieOS GRUB boot menu theme with red radioactive styling
+ and "You just got Roxanne'd" branding.
+
+Package: roxieos-meta
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 13
+Depends: roxieos-base, baux, bauxwm, neovim-roxanne, roxieos-plymouth, roxieos-grub, roxieos-release
+Filename: ./roxieos-meta_1.0-1_all.deb
+Size: 3648
+MD5sum: b70b729486a5e0eea9bf381db8fa71a7
+SHA1: 349c1510dc4d9f1a9a745c877ea940744e36504d
+SHA256: 141ed457394f3d49ac39c996aa725542dc564b103441d51afdc428e6031be880
+Section: metapackages
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Meta Package
+ Meta package that depends on all RoxieOS components
+
+Package: roxieos-plymouth
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 13
+Depends: plymouth
+Filename: ./roxieos-plymouth_1.0-1_all.deb
+Size: 1784
+MD5sum: 224cbb0966e75d42da8b0e359387b3de
+SHA1: 9f93e25cd88be86c2dd85117b970229231dd479c
+SHA256: 94ae3a7c1e02f127d01c6dc89312a64684893a81a7bde2848f91a1abc6889091
+Section: misc
+Priority: optional
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Plymouth Theme - Red Radioactive Boot Splash
+ RoxieOS Plymouth boot splash theme with red radioactive design
+ and "You just got Roxanne'd" message.
+
+Package: roxieos-release
+Version: 1.0-1
+Architecture: all
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Installed-Size: 8
+Filename: ./roxieos-release_1.0-1_all.deb
+Size: 1292
+MD5sum: a9af8e6f5279911570797c12d3ea60ae
+SHA1: 3c04cfc025c3c6ac3cdf14355558005c81049a28
+SHA256: 13de636b54723dccb60e706832f1f709b747abddd7a77eab442fc5922bd3aaba
+Section: admin
+Priority: required
+Homepage: https://groksroxieos.cyberdeck
+Description: RoxieOS Release Identity
+ Identity package setting uname -r to groksroxieos-linux
+

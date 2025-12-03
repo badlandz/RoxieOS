@@ -1,0 +1,6 @@
+# The font source as distributed by the upstream developer includes
+# the built font files. Remove them before building the font.
+
+build/ttf/*.ttf
+build/web/fonts/*.woff
+build/web/fonts/*.woff2

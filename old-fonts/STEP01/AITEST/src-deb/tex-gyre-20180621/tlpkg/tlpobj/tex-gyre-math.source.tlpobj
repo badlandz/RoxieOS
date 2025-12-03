@@ -1,0 +1,7 @@
+name tex-gyre-math.source
+category Package
+revision 41264
+shortdesc source files of tex-gyre-math
+relocated 1
+srcfiles size=780
+ RELOC/source/fonts/tex-gyre-math/texgyredejavu-math.sfd

@@ -1,0 +1,15 @@
+Format: https://www.debian.org/doc/packaging-manuals/fmt-version.html
+Upstream-Name: neovim
+Upstream-Contact: https://github.com/neovim/neovim/issues
+Source: https://github.com/neovim/neovim
+Files-Excluded: .git .gitignore
+
+Copyright: 2025 Robert W. Current <robert.current@gmail.com>
+
+License: Apache-2.0 or Vim
+Neovim is licensed under either the Apache License 2.0 or Vim license.
+On Debian systems, Apache License 2.0 applies.
+On other systems, Vim license applies.
+
+Files: *
+Copyright: 2025 Neovim Contributors <neovim@googlegroups.com>

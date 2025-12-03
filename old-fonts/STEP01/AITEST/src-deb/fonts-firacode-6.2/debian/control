@@ -1,0 +1,36 @@
+Source: fonts-firacode
+Section: fonts
+Priority: optional
+Maintainer: Debian Fonts Task Force <debian-fonts@lists.debian.org>
+Uploaders:
+ Rodolphe PELLOUX-PRAYER <rodolphe@damsy.net>,
+ Fabian Greffrath <fabian@debian.org>
+Build-Depends:
+ debhelper-compat (= 13),
+ fontmake (>= 1.8.0),
+ fonttools,
+ gftools,
+ sfnt2woff-zopfli,
+ ttfautohint,
+ woff2
+Standards-Version: 4.5.0
+Homepage: https://github.com/tonsky/FiraCode
+Vcs-Git: https://salsa.debian.org/fonts-team/fonts-firacode.git
+Vcs-Browser: https://salsa.debian.org/fonts-team/fonts-firacode
+Rules-Requires-Root: no
+
+Package: fonts-firacode
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ ${misc:Depends}
+Description: Monospaced font with programming ligatures
+ Fira Code is an extension of the Fira Mono font containing a set of
+ ligatures for common programming multi-character combinations. This is
+ just a font rendering feature: underlying code remains ASCII-compatible.
+ This helps to read and understand code faster. For some frequent sequences
+ like .. or //, the ligatures allow one to correct spacing.
+ .
+ This font is expected to work in most text editors but won't work in most
+ (especially VTE-based) terminal emulators. A detailed list is available on
+ https://github.com/tonsky/FiraCode#terminal-support

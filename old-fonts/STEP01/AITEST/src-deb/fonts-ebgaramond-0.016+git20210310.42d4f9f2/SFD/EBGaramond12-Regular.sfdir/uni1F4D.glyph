@@ -1,0 +1,14 @@
+StartChar: uni1F4D
+Encoding: 8013 8013 2523
+GlifName: uni1F_4D_
+Width: 920
+VWidth: 0
+Flags: HM
+LayerCount: 3
+Fore
+Refer: 2712 -1 N 1 0 0 1 105 35 2
+Refer: 2697 -1 N 1 0 0 1 -20 35 2
+Refer: 638 927 N 1 0 0 1 157 0 2
+Validated: 1
+MultipleSubs2: "CCMP_Precomp subtable" Omicron uni0314.grk acutecomb.grkstack
+EndChar

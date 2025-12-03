@@ -1,0 +1,12 @@
+StartChar: Scaron.sc
+Encoding: 1114882 -1 1881
+GlifName: S_caron.sc
+Width: 430
+VWidth: 0
+Flags: HMW
+LayerCount: 3
+Fore
+Refer: 1882 -1 N 1 0 0 1 0 0 2
+Validated: 1
+Comment: "."
+EndChar

@@ -1,0 +1,145 @@
+fonts-firacode (6.2-2) unstable; urgency=medium
+
+  * Backport a series of commits to fix building with the latest
+    fontmake (Closes: #1017245).
+  * Adapt install and clean rules to changed font install locations.
+
+ -- Fabian Greffrath <fabian@debian.org>  Fri, 09 Sep 2022 09:43:57 +0200
+
+fonts-firacode (6.2-1) unstable; urgency=medium
+
+  * New upstream version 6.2
+
+ -- Fabian Greffrath <fabian@debian.org>  Thu, 09 Dec 2021 21:54:39 +0100
+
+fonts-firacode (6-1) unstable; urgency=medium
+
+  * New upstream version 6.
+  * Remove venv quirk required by upstream build scripts.
+  * Add "Build-Depends: gftools", remove our local copy of the
+    fix-dsig script and our patch to actually use that.
+  * Run plain upstream build and clean scripts, build (but do not
+    install) variable font.
+
+ -- Fabian Greffrath <fabian@debian.org>  Fri, 03 Dec 2021 11:46:05 +0100
+
+fonts-firacode (5.2+dfsg1-2) unstable; urgency=medium
+
+  * Follow suit with upstream and provide TTF instead of OTF font
+    files (Closes: #962478, thanks Salim B).
+    + Add fonttools and ttfautohint to Build-Depends.
+    + Install gftools-fix-dsig.py from googlefonts/gftools into
+      debian/scripts.
+    + Update debian/copyright accordingly.
+    + Use upstream build scripts to build the fonts.
+    + Patch upstream build scripts to use the embedded
+      gftools-fix-dsig.py script.
+    + Adjust packaging install and clean paths.
+
+ -- Fabian Greffrath <fabian@debian.org>  Fri, 26 Jun 2020 09:12:32 +0200
+
+fonts-firacode (5.2+dfsg1-1) unstable; urgency=medium
+
+  * New upstream version 4+dfsg1
+  * Update Debian Fonts Task Force mailing list address in the
+    Maintainer field.
+  * Bump Standards-Version to 4.5.0.
+  * Bump debhelper-compat to 13.
+  * Add "Rules-Requires-Root: no".
+  * Remove debian/gbp.conf.
+  * New upstream version 5.2+dfsg1 (Closes: #962414).
+
+ -- Fabian Greffrath <fabian@debian.org>  Sat, 20 Jun 2020 21:56:50 +0200
+
+fonts-firacode (3.1+dfsg1-1) unstable; urgency=medium
+
+  * New upstream version 3.1+dfsg1
+
+ -- Fabian Greffrath <fabian@debian.org>  Thu, 23 Apr 2020 22:02:46 +0200
+
+fonts-firacode (2+dfsg1-1) unstable; urgency=medium
+
+  * New upstream version 2+dfsg1
+
+ -- Fabian Greffrath <fabian@debian.org>  Sat, 14 Sep 2019 17:06:20 +0200
+
+fonts-firacode (1.207+dfsg1-1) unstable; urgency=medium
+
+  * New upstream version 1.207+dfsg1
+  * Remove patches, applied upstream.
+  * Remove template line from debian/watch file.
+  * Bump debhelper-compat to 12.
+  * Bump Standards-Version to 4.4.0.
+
+ -- Fabian Greffrath <fabian@debian.org>  Wed, 24 Jul 2019 21:45:21 +0200
+
+fonts-firacode (1.206+dfsg1-4) unstable; urgency=medium
+
+  * Apply commit from upstream GIT to add hhea customParameters to
+    each master, fixes vertical spacing (Closes: #919721).
+
+ -- Fabian Greffrath <fabian@debian.org>  Thu, 07 Feb 2019 21:22:10 +0100
+
+fonts-firacode (1.206+dfsg1-3) unstable; urgency=medium
+
+  * Move WOFF/WOFF2 type fonts out of fontconfig's reach.
+  * Install CSS template as an example.
+
+ -- Fabian Greffrath <fabian@debian.org>  Fri, 28 Dec 2018 12:08:55 +0100
+
+fonts-firacode (1.206+dfsg1-2) unstable; urgency=medium
+
+  * Generate and install interpolated instances.
+
+ -- Fabian Greffrath <fabian@debian.org>  Wed, 26 Dec 2018 21:04:25 +0100
+
+fonts-firacode (1.206+dfsg1-1) unstable; urgency=medium
+
+  * New upstream version 1.206+dfsg1.
+  * Repack the upstream tarball without any binary font files.
+  * Add Build-Depends on fontmake (>= 1.8.0).
+    This implies glyphslib (>= 3.1.1) and ufo2ft (>= 2.3.0), thanks to
+    Yao Wei and Jeremy Bicha for making these available in Debian!
+  * Add Build-Depends on sfnt2woff-zopfli and woff2.
+  * Build the OTF fonts from the Glyphs source and
+    build the WOFF and WOFF2 variants from the OTF font.
+  * Move package from Section contrib/fonts to Debian main. \o/
+
+ -- Fabian Greffrath <fabian@debian.org>  Sat, 22 Dec 2018 12:45:37 +0100
+
+fonts-firacode (1.206-1) unstable; urgency=medium
+
+  [ Rodolphe Pelloux-Prayer ]
+  * New upstream version 1.206 (Closes: #898219)
+  * Add gbp.conf file.
+  * Update Vcs fields
+  * Bump debhelper compat to 11
+  * Bump Standards-Version to 4.2.1
+
+  [ Fabian Greffrath ]
+  * Add myself to Uploaders.
+
+ -- Fabian Greffrath <fabian@debian.org>  Thu, 08 Nov 2018 18:07:45 +0100
+
+fonts-firacode (1.204-2) unstable; urgency=medium
+
+  * Team upload.
+  * Re-upload to Section: contrib/fonts (Closes: #851339).
+    As this font is built with the proprietary software Glyphs
+    [https://www.glyphsapp.com/], this package cannot be built from source
+    and thus has to go into the contrib section of Debian.
+
+ -- Fabian Greffrath <fabian@debian.org>  Mon, 23 Jan 2017 17:44:53 +0100
+
+fonts-firacode (1.204-1) unstable; urgency=medium
+
+  * New upstream version 1.204
+  * Fix typo in description
+
+ -- Rodolphe Pelloux-Prayer <rodolphe@damsy.net>  Mon, 14 Nov 2016 20:54:51 +0100
+
+fonts-firacode (1.203-1) unstable; urgency=medium
+
+  * Initial release (Closes: #806318)
+
+ -- Rodolphe PELLOUX-PRAYER <rodolphe@damsy.net>  Sun, 18 Sep 2016 21:41:22 +0200

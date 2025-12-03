@@ -1,0 +1,30 @@
+# FreeBSD Port: cbsd-wm
+# Converted from Debian package to FreeBSD port
+
+PORTNAME=    cbsd-wm
+DISTVERSION= 1.0
+CATEGORIES=   x11-wm
+MASTER_SITES= # Will be set dynamically
+
+MAINTAINER=   team@coseismic.org
+COMMENT=      CoseismicBSD Window Manager - DWM fork with cyberdeck optimization
+WWW=          https://coseismic.org
+
+LICENSE=      MIT
+LICENSE_FILE=  ${WRKSRC}/LICENSE
+
+RUN_DEPENDS=  alacritty>=0.12:x11/alacritty \
+                xinit>=1.4:x11/xinit \
+                xorg-server>=21.1:x11-servers/xorg-server
+
+CONFLICTS=    bauxwm
+
+USES=         xorg
+USE_XORG=     yes
+
+# FreeBSD-specific: DWM compilation with BSD make
+MAKE_ARGS+=    FREETYPE_INC="${LOCALBASE}/include/freetype2" \
+                FREETYPE_LIB="${LOCALBASE}/lib"
+
+# Note: Replaces Debian 'bauxwm' with FreeBSD-native DWM fork
+# Key changes: debhelper → ports.mk, systemd → X11, Debian paths → BSD paths

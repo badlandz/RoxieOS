@@ -1,0 +1,32 @@
+# FreeBSD Port: cbsd-terminal
+# Converted from Debian package to FreeBSD port
+
+PORTNAME=    cbsd-terminal
+DISTVERSION= 1.0
+CATEGORIES=   sysutils
+MASTER_SITES= # Will be set dynamically
+
+MAINTAINER=   team@coseismic.org
+COMMENT=      CoseismicBSD Terminal IDE - distributed tmux+Neovim environment
+WWW=          https://coseismic.org
+
+LICENSE=      BSD2CLAUSE
+LICENSE_FILE=  ${WRKSRC}/LICENSE
+
+RUN_DEPENDS=  tmux>=3.3:sysutils/tmux \
+                neovim>=0.8:editors/neovim \
+                btop>=3.0:sysutils/btop \
+                fastfetch>=2.0:sysutils/fastfetch \
+                starship>=1.0:shells/starship \
+                rsync>=3.2:net/rsync \
+                openssh-client>=9.0:security/openssh-portable \
+                curl>=8.0:ftp/curl \
+                git>=2.40:devel/git
+
+CONFLICTS=    baux
+
+# FreeBSD-specific: Use pkg-message for post-install notes
+PKGMESSAGE=   ${FILESDIR}/pkg-message
+
+# Note: This replaces the Debian 'baux' package with FreeBSD-native implementation
+# Key changes: systemd → rc.d, apt → pkg, /etc → /usr/local/etc

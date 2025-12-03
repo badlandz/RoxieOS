@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Mon, 25 Nov 2025 12:00:00 +0000
+Source: roxieos-meta
+Binary: roxieos-meta
+Architecture: all
+Version: 1.0-1
+Distribution: unstable
+Urgency: medium
+Maintainer: groksroxieos <roxie@cyberdeck.local>
+Changed-By: groksroxieos <roxie@cyberdeck.local>
+Description:
+ roxieos-meta - RoxieOS Meta Package
+Changes:
+ roxieos-meta (1.0-1) unstable; urgency=medium
+ .
+   * Initial release of groksroxieos meta package
+Checksums-Sha1:
+ 349c1510dc4d9f1a9a745c877ea940744e36504d 3648 roxieos-meta_1.0-1_all.deb
+ 3ccc13e4c6d9cde8b4f826cdc82909376b4c7233 4549 roxieos-meta_1.0-1_amd64.buildinfo
+Checksums-Sha256:
+ 141ed457394f3d49ac39c996aa725542dc564b103441d51afdc428e6031be880 3648 roxieos-meta_1.0-1_all.deb
+ c2e4d4b1cd7cba51dc94c8f0e8b8685cd4514fd0575c5c36db4df0f8b8c5a502 4549 roxieos-meta_1.0-1_amd64.buildinfo
+Files:
+ b70b729486a5e0eea9bf381db8fa71a7 3648 metapackages optional roxieos-meta_1.0-1_all.deb
+ b2a40c714ff3b3ca02d661631a6bf224 4549 metapackages optional roxieos-meta_1.0-1_amd64.buildinfo

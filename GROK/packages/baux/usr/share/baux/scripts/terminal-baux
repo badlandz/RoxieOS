@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# terminal-baux — BAUX Terminal Launcher v1.0
+# Launches terminal with BAUX integration, optimized for visibility
+# Uses alacritty with 20pt nerd-font for maximum readability
+
+set -euo pipefail
+
+# Configuration
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
+CONFIG_FILE="$CONFIG_DIR/alacritty-roxanne.toml"
+BAUX_HOME="/usr/share/baux"
+
+# Ensure config directory
+mkdir -p "$CONFIG_DIR"
+
+# Generate alacritty config with 20pt font
+generate_config() {
+    cat > "$CONFIG_FILE" <<EOF
+# Roxanne Cyberdeck Alacritty — BAUX Terminal v1.0
+# 20pt nerd-font for maximum visibility, toxic green-black theme
+
+[window]
+padding = { x = 10, y = 10 }
+decorations = "None"  # no titlebar
+startup_mode = "Windowed"
+opacity = 0.95  # slight transparency for cyberdeck glow
+
+[font]
+normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
+bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
+italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
+bold_italic = { family = "JetBrainsMono Nerd Font", style = "Bold Italic" }
+size = 20.0  # 20pt for visibility
+
+[colors.primary]
+background = "#0e281c"  # deep radioactive green-black
+foreground = "#aaacb2"  # muted cyan-gray
+
+[colors.cursor]
+text = "#0e281c"
+cursor = "#d4af37"  # toxic gold
+
+[colors.normal]
+black = "#000000"
+red = "#f38ba8"  # root/danger
+green = "#a6e3a1"  # safe/running
+yellow = "#f9e2af"
+blue = "#89b4fa"  # remote/calm
+magenta = "#f5c2e7"
+cyan = "#94e2d5"
+white = "#cdd6f4"
+
+[colors.bright]
+black = "#45475a"
+red = "#f38ba8"
+green = "#a6e3a1"
+yellow = "#f9e2af"
+blue = "#89b4fa"
+magenta = "#f5c2e7"
+cyan = "#94e2d5"
+white = "#bac2de"
+
+[bell]
+animation = "EaseOutExpo"
+duration = 0
+
+[selection]
+save_to_clipboard = true
+
+[shell]
+program = "/usr/bin/bash"
+args = ["--login"]
+
+[env]
+BAUX_HOME = "$BAUX_HOME"
+TERM = "alacritty"
+EOF
+}
+
+# Launch alacritty with BAUX integration
+launch_terminal() {
+    local args=("$@")
+    
+    # Add BAUX environment
+    export BAUX_HOME
+    export TERM=alacritty
+    
+    # If no command specified and in BAUX, start baux
+    if [ $# -eq 0 ] && [ -n "${BAUX_SESSION:-}" ]; then
+        args=("baux")
+    fi
+    
+    # Launch alacritty
+    if command -v alacritty >/dev/null 2>&1; then
+        exec alacritty --config-file "$CONFIG_FILE" "${args[@]}"
+    else
+        echo "alacritty not found, falling back to xterm"
+        exec xterm -fa "JetBrainsMono Nerd Font" -fs 20 "${args[@]}"
+    fi
+}
+
+# Main
+case "${1:-}" in
+    --config)
+        generate_config
+        echo "Config generated at $CONFIG_FILE"
+        ;;
+    --update-config)
+        generate_config
+        ;;
+    *)
+        # Ensure config exists
+        if [ ! -f "$CONFIG_FILE" ]; then
+            generate_config
+        fi
+        launch_terminal "$@"
+        ;;
+esac

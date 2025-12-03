@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+# Install bvi wrapper
+install -m 0755 /usr/share/baux/bvi/bvi /usr/bin/bvi
+
+# Create neovim config directory
+mkdir -p /usr/share/nvim/runtime/lua
+cp /usr/share/baux/nvim/init.lua /usr/share/nvim/runtime/lua/
+
+# Create symlink for system-wide neovim config
+mkdir -p /etc/xdg/nvim
+ln -sf /usr/share/baux/nvim/init.lua /etc/xdg/nvim/init.lua
+
+# Update alternatives to prefer bvi
+update-alternatives --install /usr/bin/vi vi /usr/bin/bvi 50
+update-alternatives --install /usr/bin/vim vim /usr/bin/bvi 50
+
+echo "RoxieOS Neovim with BVI integration installed"
+echo "Use 'bvi' or 'vi' to launch enhanced editor"
+echo "AI integration available when baux-bot is running"
+
+exit 0

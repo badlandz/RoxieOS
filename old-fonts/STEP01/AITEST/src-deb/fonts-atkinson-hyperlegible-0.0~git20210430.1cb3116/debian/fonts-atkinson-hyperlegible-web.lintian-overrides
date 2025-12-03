@@ -1,0 +1,2 @@
+# in accordance with https://wiki.debian.org/Fonts/PackagingPolicy
+fonts-atkinson-hyperlegible-web: font-outside-font-dir *.woff2*

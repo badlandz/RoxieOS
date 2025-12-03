@@ -1,0 +1,71 @@
+From: Hideki Yamane <henrich@debian.org>
+Date: Sun, 10 Nov 2019 18:26:40 +0900
+Subject: use python3
+
+---
+ build-subsets.sh | 6 +++---
+ build-ttf.sh     | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/build-subsets.sh b/build-subsets.sh
+index 45836b7..e25bfa3 100755
+--- a/build-subsets.sh
++++ b/build-subsets.sh
+@@ -107,7 +107,7 @@ if ! which fontmake
+ fi
+ 
+ # fontTools python library can be imported
+-if ! python -c "import fontTools"
++if ! python3 -c "import fontTools"
+ 	then
+ 	    echo "The fontTools library was not found.  Please install all build dependencies with 'make build-with-dependencies', then attempt your build again." 1>&2
+ 	    INSTALLFLAG=1
+@@ -257,7 +257,7 @@ fi
+ echo " "
+ echo "Attempting DSIG table fixes with fontbakery..."
+ echo " "
+-if ! python postbuild_processing/fixes/fix-dsig.py master_ttf/*.ttf
++if ! python3 postbuild_processing/fixes/fix-dsig.py master_ttf/*.ttf
+ 	then
+ 	    echo "Unable to complete DSIG table fixes on the release files"
+ 	    exit 1
+@@ -267,7 +267,7 @@ fi
+ echo " "
+ echo "Attempting fstype fixes with fontbakery..."
+ echo " "
+-if ! python postbuild_processing/fixes/fix-fstype.py master_ttf/*.ttf
++if ! python3 postbuild_processing/fixes/fix-fstype.py master_ttf/*.ttf
+ 	then
+ 	    echo "Unable to complete fstype fixes on the release files"
+ 	    exit 1
+diff --git a/build-ttf.sh b/build-ttf.sh
+index 1558dec..d943ab0 100755
+--- a/build-ttf.sh
++++ b/build-ttf.sh
+@@ -53,7 +53,7 @@ if ! which fontmake
+ 	    INSTALLFLAG=1
+ fi
+ # fontTools python library can be imported
+-if ! python -c "import fontTools"
++if ! python3 -c "import fontTools"
+ 	then
+ 	    echo "Unable to install fontTools with 'pip install fonttools'.  Please attempt a manual install of this build dependency and then repeat your build attempt." 1>&2
+ 	    INSTALLFLAG=1
+@@ -144,7 +144,7 @@ fi
+ echo " "
+ echo "Attempting DSIG table fixes with fontbakery..."
+ echo " "
+-if ! python postbuild_processing/fixes/fix-dsig.py master_ttf/*.ttf
++if ! python3 postbuild_processing/fixes/fix-dsig.py master_ttf/*.ttf
+ 	then
+ 	    echo "Unable to complete DSIG table fixes on the release files"
+ 	    exit 1
+@@ -154,7 +154,7 @@ fi
+ echo " "
+ echo "Attempting fstype fixes with fontbakery..."
+ echo " "
+-if ! python postbuild_processing/fixes/fix-fstype.py master_ttf/*.ttf
++if ! python3 postbuild_processing/fixes/fix-fstype.py master_ttf/*.ttf
+ 	then
+ 	    echo "Unable to complete fstype fixes on the release files"
+ 	    exit 1

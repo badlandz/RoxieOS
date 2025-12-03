@@ -1,0 +1,13 @@
+StartChar: j.dotless
+Encoding: 1115139 -1 2886
+GlifName: j.dotless
+Width: 212
+VWidth: 0
+Flags: MW
+AnchorPoint: "top_accent" 100 550 basechar 0
+LayerCount: 3
+Fore
+Refer: 344 567 N 1 0 0 1 0 0 2
+Validated: 1
+Substitution2: "Smallcaps1 subtable" j.sc
+EndChar

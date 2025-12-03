@@ -1,0 +1,13 @@
+StartChar: longs_t
+Encoding: 1115060 -1 2772
+GlifName: longs_t
+Width: 607
+VWidth: 0
+Flags: HMW
+LayerCount: 3
+Fore
+Refer: 951 64261 N 1 0 0 1 0 0 2
+Validated: 1
+Ligature2: "liga_standard subtable" longs t
+LCarets2: 1 294
+EndChar

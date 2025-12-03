@@ -1,0 +1,83 @@
+#!/bin/sh
+
+set -e
+
+# RoxieOS Live System Hook
+# Sets up BAUX auto-start and branding for live system
+
+echo "Setting up RoxieOS live system branding..."
+
+# Create BAUX auto-start script
+cat > /usr/local/bin/start-baux <<'EOF'
+#!/bin/bash
+# RoxieOS Live Auto-Start
+# Launches BAUX environment on live system
+
+# Set up environment
+export BAUX_HOME="/usr/share/baux"
+export PATH="$BAUX_HOME/scripts:$PATH"
+
+# Clear screen and show welcome
+clear
+echo "========================================"
+echo "ROXANNE CYBERDECK LIVE SYSTEM"
+echo "========================================"
+echo ""
+echo "Welcome to RoxieOS Roxanne v0.1"
+echo "You just got Roxanne'd"
+echo ""
+echo "Starting BAUX environment..."
+sleep 2
+
+# Start BAUX
+exec baux
+EOF
+
+chmod +x /usr/local/bin/start-baux
+
+# Set up auto-login for live system
+mkdir -p /etc/systemd/system/getty@tty1.service.d
+cat > /etc/systemd/system/getty@tty1.service.d/live-autologin.conf <<EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear %I \$TERM
+TTYVTDisallocate=no
+EOF
+
+# Create .bashrc for live system
+cat > /root/.bashrc <<'EOF'
+# RoxieOS Live .bashrc
+export PS1='\[\e[31m\][ROXIEOS]\[\e[0m\] \u@\h:\w\$ '
+
+# Start BAUX on login if not already running
+if [ -z "$TMUX" ] && [ -z "$BAUX_SESSION" ]; then
+    echo "Type 'start-baux' to begin your cyberdeck session"
+    echo "Or 'baux' for direct access"
+fi
+
+# BAUX environment
+export BAUX_HOME="/usr/share/baux"
+export PATH="$BAUX_HOME/scripts:$PATH"
+EOF
+
+# Set up desktop background if X is available
+if [ -d /usr/share/xsessions ]; then
+    mkdir -p /usr/share/backgrounds/roxieos
+    cp /boot/grub/roxiewallpaper.png /usr/share/backgrounds/roxieos/wallpaper.png 2>/dev/null || true
+    
+    # Create X session for BAUX
+    cat > /usr/share/xsessions/baux.desktop <<EOF
+[Desktop Entry]
+Name=RoxieOS BAUX
+Comment=Roxanne Cyberdeck Environment
+Exec=/usr/local/bin/start-baux
+TryExec=/usr/local/bin/start-baux
+Type=Application
+EOF
+fi
+
+# Set up Plymouth theme (already done by package)
+# Set up GRUB theme (already done by package)
+
+echo "RoxieOS live system setup complete!"
+echo "Reboot to experience the full cyberdeck workflow."

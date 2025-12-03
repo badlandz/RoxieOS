@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	cd dwm && $(MAKE) CC=gcc
+
+override_dh_auto_install:
+	install -D dwm/dwm debian/bauxwm/usr/bin/dwm-roxanne
+	install -D usr/share/bauxwm/bin/status.sh debian/bauxwm/usr/bin/status-roxanne
+	install -D usr/share/bauxwm/alacritty-roxanne.toml debian/bauxwm/usr/share/bauxwm/alacritty-roxanne.toml
