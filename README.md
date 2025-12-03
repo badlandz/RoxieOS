@@ -1,6 +1,7 @@
 # Roxanne Cyberdeck
 
 THIS IS NOT RELESE SOFTWARE
+It is in the middle of a complete rewrite
 
 It can go wrong, and more wrong, nesting itself to oblivion with the wrong move right now, but... hey... look at all the fun ways it can randomly make you look at the date and time.. 
 

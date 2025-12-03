@@ -1,9 +1,8 @@
 This is an IDEA, not sure I'm going to use pix yet. Pix is a fork of gthumb. This is BAUX-DEV level package for image viewer, I'm probably going to switch to something smaller and more vim keymap  friendly to start with, but this is the idea... I use this all the time, "pix" is my go to image viewer, not nessessarly the best. NEEDS WORK, later, when on the BAUX-DEV level
 
+"baux-pix" or "bp" or bthumb, or???? should be a small viewer but useable.
 
-
-
-
+Probably just going to use "feh" but "pix" is pretty decent...
 
 # Pix
 ![build](https://github.com/linuxmint/pix/actions/workflows/build.yml/badge.svg)
