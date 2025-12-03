@@ -1,4 +1,17 @@
-This is an IDEA, not sure I'm going to use pix yet. Pix is a fork of gthumb. This is BAUX-DEV level package for image viewer, I'm probably going to switch to something smaller and more vim keymap  friendly to start with, but this is the idea... I use this all the time, "pix" is my go to image viewer, not nessessarly the best. NEEDS WORK, later, when on the BAUX-DEV level
+# pixbaux - Deprecated Image Viewer
+**MOVED to bview package**
+
+This package concept has been moved to `bview` for better naming consistency.
+
+## Original Concept
+This was intended as a BAUX-DEV level package for image viewing, but the approach has been refined.
+
+## Current Status
+- **Deprecated**: Use `bview` package instead
+- **Naming**: pixbaux → bview for consistency
+- **Functionality**: Will be implemented in bview package
+
+See `packages/bview/README.md` for current image viewer implementation plans.
 
 "baux-pix" or "bp" or bthumb, or???? should be a small viewer but useable.
 

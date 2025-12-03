@@ -1,46 +1,92 @@
-# Roxanne Cyberdeck
+# BAUXBSD - Minimal Cyberdeck OS
+**Instant productivity, persistent sessions, zero friction**
 
-THIS IS NOT RELESE SOFTWARE
-It is in the middle of a complete rewrite
+THIS IS NOT RELEASE SOFTWARE
+This is a complete rewrite from Debian to FreeBSD for maximum efficiency and minimalism.
 
-It can go wrong, and more wrong, nesting itself to oblivion with the wrong move right now, but... hey... look at all the fun ways it can randomly make you look at the date and time.. 
+## Core Philosophy
 
-<img width="1920" height="1080" alt="2025-11-26_15-24" src="https://github.com/user-attachments/assets/a439272f-7396-4690-981a-8aa22512a5f4" />
+Boot USB → you are root → instant productivity in 5 seconds.
 
-But seriously... 
-You just got Roxanne’d.
-<img width="1920" height="1080" alt="roxie_2025-11-24_093029" src="https://github.com/user-attachments/assets/4f451045-992c-480a-a914-2b207b6d41ad" />
+- **No users, no sudo, no passwords**
+- **Caps Lock is dead, Escape lives there now**  
+- **Everything runs in RAM by default**
+- **Immortal sessions** that survive reboots and machine swaps
+- **Unified keybindings** across console, tmux, window manager, and editor
 
-Unstable, but mastered nesting:
-<img width="1920" height="1080" alt="roxie_2025-11-23_005900" src="https://github.com/user-attachments/assets/34dd2b35-ac9d-4ee6-830d-19c734657ef5" />
+## The Three Layers
 
-See [WHITEPAPER.md](WHITEPAPER.md) for the 8-package Rick-Roll manifesto.
+| Layer | Name | Purpose | Size | Target Hardware |
+|--------|------|-----------|-------|-----------------|
+| 1 | baux-base | System foundation + keymap | <50MB | Any machine |
+| 2 | baux | Shell/session manager | +80MB | Every machine you touch |
+| 3 | bwm | Window manager | +25MB | Development machines |
 
-Root is love. Root is life.
+## Package Architecture
 
-You just got Roxanne’d.
+### Core Packages (v0.1 Essential)
 
-This is not a normal Linux distribution.
-This is a loaded USB stick that contains your entire digital life.
+1. **baux-base** - System foundation with baux.kbd keymap
+2. **baux** - Immortal shell with tmux session management
+3. **bwm** - Minimal window manager (dwm fork)
+4. **bterm** - BAUX-themed terminal (st fork)
+5. **bvi** - Editor wrapper with intelligent fallback
+6. **bweb** - Keyboard-native browser (qutebrowser/surf)
+7. **chaos** - Anti-burn-in screensaver
 
-• You are root. There is no user.
+### Optional Packages (-dev tier)
 
-• Caps Lock is dead. Escape lives there now.
+- **bview** - Image viewer (sxiv-based)
+- **bmedia** - Media player (mpv wrapper)
+- **bbot** - AI assistant with local models
+- **bdrop** - Full SeaweedFS session persistence
 
-• Everything runs in RAM by default.
+## Key Features
 
-• Press ENTER → keep using it live (fastest, disposable)
+- **Unified Keymap**: Mod4+1-9 switches sessions everywhere
+- **Session Resurrection**: `baux revive --all` restores exact state
+- **Cross-Machine Sync**: Projects sync between BAUX instances
+- **Zero Intervention**: Dead panes auto-revive on Enter
+- **Anti-Nesting**: Smart detection for SSH environments
 
-• Press I → install to disk with persistence (still root, still tiny)
+## Quick Start
 
-Your entire session history, every tmux pane, every SSH connection, every file you ever touched is already waiting for you in the swarm.
+```bash
+# Create bootable USB
+dd if=BAUXBSD-15.0-RELEASE.iso of=/dev/da0 bs=1M
 
-To get a normal user + GUI apps later:
-    apt install baux-dev
+# Boot and install core
+pkg install baux-base baux bwm bterm bvi bweb chaos
 
-Welcome to the real desktop.
-Root forever. Roxanne forever.
+# Start BAUX environment
+baux
 
-Full technical manifesto → [WHITEPAPER.md](WHITEPAPER.md)
+# Your session appears:
+# 1:shell  2:edit  3:web  4:——  5:——  6:——  7:——  8:——  9:——          15:33
+```
+
+## Documentation
+
+- **[BAUXBSD.md](BAUXBSD.md)** - Complete technical manifesto
+- **[ROADMAP.md](ROADMAP.md)** - FreeBSD implementation roadmap
+- **[PACKAGES.md](PACKAGES.md)** - Package structure guide
+- **[INSTALL.md](INSTALL.md)** - Installation and usage
+- **[packages/keymap/KEYMAPS.md](packages/keymap/KEYMAPS.md)** - Unified keymap philosophy
+
+## Design Principles
+
+1. **Minimal footprint**: <400MB total core installation
+2. **Instant boot**: <5 seconds to productive environment
+3. **Muscle memory**: Same keybindings everywhere
+4. **State persistence**: Sessions survive anything
+5. **Zero friction**: No setup, no configuration dialogs
+
+---
+
+Root forever.
+Layers forever.  
+FreeBSD forever.
+
+– badlandz, December 2025
 
 

@@ -1,4 +1,4 @@
-# bvi – Immortal Editor Wrapper
+# bvi - Immortal Editor Wrapper
 **BAUXBSD v0.1 editor with intelligent fallback**
 
 `bvi` provides a unified editing experience from vi.tiny to full Neovim, with session persistence and intelligent feature detection.

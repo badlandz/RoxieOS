@@ -1,9 +1,10 @@
-# baux-bot.sh — README & Future Roadmap  
-Current version: v5.0 (Nov 20 2025)  
-Location: `/usr/local/bin/baux-bot.sh` (or wherever you dropped it)
+# bbot - AI Assistant
+**BAUXBSD v0.1 AI integration**
 
-This is the live, repo-aware, sarcastic AI assistant that ships with RoxieOS.  
-It is deliberately simple, deliberately loud, and deliberately good enough for v0.1 Rick-Roll Edition.
+Current version: v5.0 (Nov 20 2025)  
+Location: `/usr/local/bin/bbot.sh`
+
+Live, repo-aware AI assistant with local models and cloud fallback for BAUXBSD development workflow.
 
 Uses? 
 #1 VIM TUTOR
