@@ -1,6 +1,52 @@
-# BVI – The Immortal, Minimal-First Editor for RoxieOS / BAUX
+# bvi – Immortal Editor Wrapper
+**BAUXBSD v0.1 editor with intelligent fallback**
 
-**Note on Naming**: A quick heads-up—while "bvi" (BAUX VI) is a clever, keystroke-efficient name symbolizing the fallback to vi/vim/nvim, it conflicts with an existing Debian package called "bvi" (a binary/hex editor based on vi, available in repos like sid and bullseye). This could cause installation confusion in RoxieOS (e.g., apt conflicts or PATH issues). Consider alternatives like "bauxvi" (to avoid overlap) or packaging with a prefix (e.g., "roxie-bvi"). Proceeding with your rename for now, but flagging for awareness.
+`bvi` provides a unified editing experience from vi.tiny to full Neovim, with session persistence and intelligent feature detection.
+
+## Three Operating Modes
+
+### 1. vi.tiny Fallback
+- **When**: Minimal systems or rescue scenarios
+- **Features**: Basic immortality with SeaweedFS stubs
+- **Size**: <2MB
+
+### 2. vim Stable Mode  
+- **When**: Default BAUXBSD installation
+- **Features**: Full autocmds, undotree, basic AI pipes
+- **Size**: ~5MB
+
+### 3. Neovim Full Power
+- **When**: Development environments
+- **Features**: LSP, Lazy.nvim, AI integration, tmux harmony
+- **Size**: ~10MB + plugins
+
+## Package Structure
+
+```
+bvi/
+├── src/bvi.sh              # Main wrapper script
+├── files/
+│   └── usr/local/etc/bvi/
+│       ├── init.lua        # Neovim config
+│       └── vimrc.tiny     # vi fallback
+└── Makefile               # FreeBSD port
+```
+
+## Integration
+
+- **baux**: Session state persistence
+- **bwm**: Editor keybinding consistency
+- **bbot**: AI assistant integration
+
+## Usage
+
+```bash
+bvi file.c           # Opens with appropriate editor
+bvi --fallback file.c  # Force specific editor level
+bvi --level neovim   # Force Neovim mode
+```
+
+bvi ensures your editing environment follows you across any BAUXBSD system, from rescue USB to development workstation.
 
 ### Core Philosophy
 BVI is the editor counterpart to BAUX in the RoxieOS ecosystem: a thin, resilient wrapper that starts from the tiniest viable base (Debian's vi/vim) and scales to a feature-rich Neovim environment without ever compromising on immortality or minimalism. It resurrects your editing state—buffers, undo history, sessions—across reboots, USB boots, or machine swaps, all synced via PostgreSQL (digital twin) and SeaweedFS (file persistence). Everything is scriptable, lazy-loaded, and Pi-friendly (runs snappy on Raspberry Pi Model B). Inspired by LunarVim's isolated wrapper model, BVI lives alongside vanilla vi/nvim without conflicts, using custom paths (e.g., ~/.config/bvi) for a branded, standalone experience. Type `bvi` for the magic—one keystroke less than "nvim," symbolizing its lean vi roots.

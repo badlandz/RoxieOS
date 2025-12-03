@@ -1,12 +1,45 @@
-# bauxwm – the GUI rice that speaks BAUX
+# bwm – Minimal Window Manager
+**BAUXBSD window management layer**
 
-`bauxwm` is the optional X11 layer for **RoxieOS**  and **BAUX**.  bauxwm is a fork of dwm.
+`bwm` is a minimal, keyboard-driven window manager based on dwm, designed for perfect integration with BAUX session management.
 
-Install this single `.deb` on any Debian-based system (Raspberry Pi 4/5, laptop, VM) and `startx` instantly drops you into a perfectly themed, minimal, keyboard-driven cyberdeck desktop that feels like a natural extension of your BAUX console workflow.
+## Core Features
 
-No bloat. No mouse required. Everything flows.
+- **Session display**: Shows BAUX session names in status bar
+- **Mod4 integration**: Mod4+1-9 switches sessions (same as tmux)
+- **BAUXWM=1**: Environment variable controls tmux status visibility
+- **Minimal footprint**: ~25MB installed
+- **Keyboard-native**: No mouse required
 
-RoxieOS Tracks Debian, "roxanne" release tacks Debian's "trixie." So, you can add a user and bloat if you want. It's a "root" disto, "open and hack code" is the only purpose, no user and permissions by default, plan your backups accordingly.
+## Package Structure
+
+```
+bwm/
+├── files/
+│   ├── usr/local/bin/dwm          # Patched dwm binary
+│   └── usr/local/bin/status.sh   # Status bar script
+├── patches/
+│   └── baux.patch              # dwm patches for BAUX integration
+└── Makefile                     # FreeBSD port build
+```
+
+## Keybindings
+
+| Command | Action | Context |
+|---------|---------|---------|
+| Mod4+1-9 | Switch session | Universal |
+| Mod4+hjkl | Navigate tags | X11 only |
+| Mod4+Enter | New terminal | Universal |
+| Mod4+b | Toggle status bar | Universal |
+| Alt+1-9 | tmux windows | Universal |
+
+## Integration
+
+- **baux**: Session names via BAUXWM=1 environment variable
+- **bterm**: Terminal spawning with consistent theming
+- **chaos**: Screensaver integration
+
+bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory.
 
 ### Key Features
 

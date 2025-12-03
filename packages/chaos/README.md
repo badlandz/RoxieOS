@@ -1,19 +1,44 @@
-# This Is Chaos
+# chaos - Anti-Burn-In Screensaver
+**BAUXBSD screen protection**
 
-## chaos — The Rick-Roll Anti-Burn-In Screensaver for RoxieOS / BAUX
+`chaos` prevents screen burn-in by creating dynamic, moving visual effects when the system is idle.
 
-**File:** `/usr/share/baux/screensaver/chaos.sh`  
-**Package:** `chaos` (optional, but part of the full Rick-Roll experience)
+## Purpose
 
-### Why This Exists
+- **Burn-in prevention**: No pixel stays static for extended periods
+- **Instant recovery**: Any keypress restores exact session state
+- **Minimal footprint**: ~1MB, pure tmux scripting
 
-Old LCDs, cheap HDMI monitors, CRTs, OLEDs — they all burn in if you leave a static tmux status bar or btop grid on for hours.
+## Features
 
-RoxieOS is meant to be left running 24/7 on random hardware you found in a drawer, plugged into a TV in the corner of the room, or bolted to the wall above your soldering station.
+- **Idle activation**: Triggers after 15 minutes of inactivity
+- **Manual trigger**: Instant activation via Mod4+c
+- **Dynamic effects**: Random pane resizing, color changes, status scrambling
+- **Zero configuration**: Works out of the box
 
-So we don’t do “pretty static dashboard”.
+## Package Structure
 
-We do **controlled chaos**.
+```
+chaos/
+├── files/
+│   └── usr/local/bin/chaos   # Main script
+└── Makefile                     # FreeBSD port
+```
+
+## Effects
+
+- **Pane chaos**: Random splits, swaps, rotations
+- **Color cycling**: btop in red, cmatrix green, fastfetch flashing
+- **Status manipulation**: Bar appears/disappears with random messages
+- **Terminal effects**: git graphs, system monitors, animated text
+
+## Integration
+
+- **baux**: Session state preservation
+- **bwm**: Idle detection and trigger
+- **tmux**: Visual effect rendering
+
+chaos ensures BAUXBSD systems can run 24/7 without screen damage while maintaining instant productivity restoration.
 
 `chaos` is a 30-line bash script that turns your perfectly organized, immortal BAUX session into a constantly shifting, pane-resizing, color-flashing, status-bar-scrambling light show the moment you look away.
 
