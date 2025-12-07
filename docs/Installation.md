@@ -30,8 +30,14 @@ pkg install bash git neovim tmux
 git clone https://github.com/badlandz/RoxieOS.git
 cd RoxieOS
 
-# Run the installation script
-./scripts/install-baux-manual.sh
+# Configure doas (required for installation)
+echo "permit nopass :wheel" >> /usr/local/etc/doas.conf
+
+# Run the unified installer (creates detailed log)
+./scripts/install-baux-unified.sh
+
+# Alternative: Run debug script first if issues occur
+./scripts/debug-baux.sh
 
 # Test the installation
 ./scripts/test-baux.sh
@@ -257,6 +263,31 @@ nvim --version
 
 # Check if configs load
 bvi --headless -c "echo 'Config loaded'" 2>/dev/null
+```
+
+### Installation Debugging
+```bash
+# The unified installer creates a detailed log file automatically
+# Check the log file mentioned in the output for full diagnostics
+
+# Run the debug script for additional diagnostics
+./scripts/debug-baux.sh
+
+# Check doas configuration
+doas whoami
+
+# Test individual component installation (if unified installer fails)
+cd ports/bbase && doas ./install.sh
+cd ../baux && doas ./install.sh
+cd ../bvi && doas ./install.sh
+
+# Verify file permissions
+ls -la /usr/local/bin/baux
+ls -la /usr/local/share/tmux/baux.conf
+ls -la /usr/share/syscons/keymaps/baux.kbd
+
+# Check the installation log for detailed error information
+ls -la baux-install-*.log
 ```
 
 ## Advanced Configuration

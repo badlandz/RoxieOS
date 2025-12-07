@@ -42,8 +42,10 @@ pkg install bash git neovim tmux
 # Clone and install BAUX
 git clone https://github.com/badlandz/RoxieOS.git
 cd RoxieOS
-./scripts/install-baux-manual.sh
-./scripts/test-baux.sh
+
+# Configure doas and install
+echo "permit nopass :wheel" >> /usr/local/etc/doas.conf
+./scripts/install-baux-unified.sh
 
 # Start BAUX session
 baux

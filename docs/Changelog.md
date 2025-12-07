@@ -47,6 +47,15 @@
 - **Updated README.md** with correct quick start instructions
 - **Verified Configuration.md** Gruvbox theming documentation
 - **Status**: Documentation matches current implementation
+
+#### Milestone 6: Unified Installation & Logging ✅
+- **Created install-baux-unified.sh** with comprehensive logging
+- **Added system information logging** (FreeBSD version, user, permissions)
+- **Implemented dependency checking** (doas, packages, repository structure)
+- **Added error handling and verbose output** for all installation steps
+- **Created debug-baux.sh** for pre-installation diagnostics
+- **Enhanced test-baux.sh** with detailed troubleshooting hints
+- **Status**: Installation now creates detailed logs for remote debugging
 - **Implemented intelligent fallback** (neovim → vim → vi)
 - **Added lite configuration** with Gruvbox theming
 - **Created installation script** for manual testing
