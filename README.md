@@ -75,16 +75,24 @@ baux
 - **Gruvbox theming** in all components
 
 ### Development Status
-**✅ Core Components Installed:**
+**✅ Core Components (Repo):**
 - `bbase` - Keymap system with Caps→Esc functionality
 - `baux` - Session management with tmux integration
 - `bvi` - Neovim editor integration (✅ lua config fixed)
 - **Git/SSH** - Development workflow ready
 - **TPM + Plugins** - Tmux resurrect and continuum installed
 
-**🔄 AI Assistance (In Progress):**
+**🔄 Workstation Installation (192.168.33.101):**
+- **Setup Script**: Created and deployed
+- **Prerequisites**: bash, git, neovim, tmux installed
+- **BAUX Packages**: Partially installed (bbase permissions issue)
+- **Console Fonts**: Available (8x16), setting blocked by permissions
+- **X11**: Configured for 192 DPI accessibility
+- **Keymap**: baux.kbd exists, activation pending permissions fix
+
+**🔄 AI Assistance:**
 - **xai-chat**: XAI API integrated and working
-- **baux-bot**: Ollama-based assistant (🔄 Vulkan issues resolved, setup in progress)
+- **baux-bot**: Ollama-based assistant (setup pending workstation completion)
 - **Manual Development** - Full access to codebase for manual debugging
 
 **🧪 Comparison Testing Ready:**
