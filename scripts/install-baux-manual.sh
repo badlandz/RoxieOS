@@ -29,7 +29,7 @@ log "Log file: $LOG_FILE"
 ## Prerequisites
 log "=== Installing Prerequisites ==="
 pkg update >> "$LOG_FILE" 2>&1 || log "pkg update failed, continuing..."
-pkg install -y bash git neovim tmux x11-fonts >> "$LOG_FILE" 2>&1 || error "Package installation failed"
+pkg install -y bash git neovim tmux x11-fonts xterm >> "$LOG_FILE" 2>&1 || error "Package installation failed"
 
 # Ensure bash is available at the expected path
 if [ ! -x "/usr/local/bin/bash" ]; then

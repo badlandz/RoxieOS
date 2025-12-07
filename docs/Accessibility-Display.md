@@ -145,4 +145,15 @@ doas vidcontrol MODE_1920x1080
 ./scripts/setup-x300-display.sh
 ```
 
+### Emergency Backup Terminal
+If all font scaling fails and you can't read the screen:
+```bash
+# Launch reliable backup terminal with large fonts
+./scripts/launch-backup-terminal.sh
+
+# This uses xterm with guaranteed 20pt fonts
+# Independent of BAUX font configuration
+# Always available as fallback
+```
+
 This ensures BAUX is usable by everyone, regardless of hardware or vision requirements.

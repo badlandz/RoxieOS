@@ -248,7 +248,9 @@ fi
 
 if [ -z "${DISPLAY:-}" ]; then
     warn "Console mode detected - X11 display settings won't apply"
-    log "For console accessibility: ./scripts/setup-early-font.sh"
+    log "For console font issues, run: ./scripts/setup-early-font.sh"
+else
+    log "X11 available - backup terminal available: ./scripts/launch-backup-terminal.sh"
 fi
 
 if [[ "$CURRENT_KEYMAP" != *"baux"* ]]; then
