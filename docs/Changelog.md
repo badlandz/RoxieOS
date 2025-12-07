@@ -109,8 +109,29 @@
 - **Impact**: xai-chat and dev-assist commands unusable for AI assistance
 - **Affected**: All custom scripts in /usr/local/bin/
 - **Debugging**: Scripts execute but don't process input parameters
-- **Workaround**: Manual development without AI assistance for now
+- **Workaround**: Manual development without AI assistance
 - **Status**: Bug documented, affects AI development workflow, fix pending
+
+#### Milestone 12: bvi Neovim Configuration Bug 🔄
+- **Root Cause**: bvi init.vim tries to load lazy.nvim lua modules that don't exist
+- **Symptom**: Neovim crashes on startup with "module 'config.lazy' not found"
+- **Impact**: bvi command unusable for editing
+- **Affected**: bvi editor integration
+- **Debugging**: Lua require() calls fail for config/options.lua and config/keymaps.lua
+- **Workaround**: Use nvim directly or vim for editing
+- **Status**: Bug documented, basic vimscript config created as temporary fix
+
+#### Milestone 13: Recovered Abandoned Features 🔄
+- **AI Shepherding**: Local AI suggests which AI (local vs cloud) would best answer questions
+- **VIM/TMUX Tutors**: AI provides interactive tutorials for vim/tmux commands
+- **RTFM Bot**: AI searches and explains documentation from entire codebase
+- **Memory Across Sessions**: Chat logs added to prompts for continuity
+- **Daemon Mode**: Background AI with tmux popup notifications
+- **Fine-tuning**: Training models on codebase + chat logs
+- **Multi-modal**: Screenshot analysis for tmux layout feedback
+- **Self-improvement**: Bot learns from user corrections
+- **Grok CLI Integration**: Direct xAI API access as Ollama alternative
+- **Status**: Valuable concepts recovered from archive, ready for selective implementation
 
 ### New Features
 - **bbase**: System foundation with global Caps→Esc keymap

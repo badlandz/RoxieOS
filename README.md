@@ -65,30 +65,37 @@ baux
 ```
 
 ### What You Get
-- **Caps Lock → Escape** globally (bbase)
-- **baux command** starts tmux session with custom config
-- **bvi filename** opens files with neovim (or vim/vi fallback)
+- **Caps Lock → Escape** globally (bbase) ✅
+- **baux command** starts tmux session with custom config ✅
+- **bvi filename** opens files with neovim (⚠️ config issues)
 - **bwm** window manager with session display in status bar
 - **chaos** anti-burn-in screensaver
 - **baux-bot** AI assistant (Alt+b in tmux, or `baux-bot` command)
-- **xai-chat** AI assistant via XAI API (works without Ollama)
+- **xai-chat** AI assistant via XAI API (⚠️ argument passing bug)
 - **Gruvbox theming** in all components
 
 ### Development Status
 **✅ Core Components Installed:**
-- `bbase` - Keymap system (Caps→Esc working)
-- `baux` - Session management
-- `bvi` - Neovim editor integration
-- Git/SSH - Development workflow ready
+- `bbase` - Keymap system with Caps→Esc functionality
+- `baux` - Session management with tmux integration
+- `bvi` - Neovim editor integration (⚠️ config issues)
+- **Git/SSH** - Development workflow ready
+- **TPM + Plugins** - Tmux resurrect and continuum installed
 
-**🔄 AI Assistance (In Development):**
-- **xai-chat**: XAI API integration (script argument bug affecting usability)
+**🔄 AI Assistance (Blocked by Bugs):**
+- **xai-chat**: XAI API integrated but script argument bug prevents use
 - **baux-bot**: Ollama-based assistant (Vulkan compatibility issues)
-- **Manual Development**: Full access to codebase for manual debugging
+- **Manual Development** - Full access to codebase for manual debugging
+
+**🧪 Comparison Testing Ready:**
+- **Clean vim** (`vim ~/.vimrc`) - Baseline vim configuration
+- **Clean tmux** (`tmux -f ~/.tmux.conf`) - Baseline tmux configuration
+- **BAUX vim** (`bvi file`) - BAUX neovim integration
+- **BAUX tmux** (`baux`) - BAUX tmux session
 
 **🎯 Current Development Workflow:**
 1. **Code on workstation**: Edit files in `~/src/RoxieOS/`
-2. **Test manually**: Use installed BAUX components
+2. **Test manually**: Compare clean vs BAUX implementations
 3. **Debug with knowledge**: Reference documentation and logs
 4. **Iterate**: Push/pull changes as needed
 

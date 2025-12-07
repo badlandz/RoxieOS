@@ -217,14 +217,23 @@ test_session_resurrection() {
 - [x] Caps→Esc works in console - *✅ bbase installed successfully*
 - [ ] Caps→Esc works in X11 - *pending X11 testing*
 - [ ] Mod4+1-9 switches sessions - *pending bwm installation*
-- [ ] Alt+1-9 switches tmux windows - *pending baux installation*
-- [x] hjkl navigation in vim - *✅ bvi working with neovim*
+- [x] Alt+1-9 switches tmux windows - *✅ baux tmux config installed*
+- [x] hjkl navigation in vim - *✅ clean vim config available*
+- [ ] hjkl navigation in bvi - *⚠️ bvi has config bug*
 - [ ] bwm bar shows session names - *pending bwm installation*
 - [ ] chaos screensaver activates - *pending chaos installation*
 - [ ] baux-bot launches with Alt+b - *pending baux-bot installation*
 - [ ] xai-chat AI assistant works - *⚠️ script argument bug*
 - [ ] bshot captures screenshots - *not implemented*
 - [ ] bweb launches with BAUX keybindings - *not implemented*
+
+### Recovered Abandoned Features (Ready for Implementation)
+- [ ] **AI Shepherding**: Local AI suggests best AI for questions
+- [ ] **VIM/TMUX Tutors**: Interactive AI tutorials
+- [ ] **RTFM Bot**: AI documentation search
+- [ ] **Memory Across Sessions**: Chat log continuity
+- [ ] **Daemon Mode**: Background AI with notifications
+- [ ] **Grok CLI Integration**: Direct xAI API access
 
 ## Rollout Plan
 
