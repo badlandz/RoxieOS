@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Mesh Testing Framework
 # Comprehensive testing for distributed session management
 

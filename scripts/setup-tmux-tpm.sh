@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Tmux TPM Setup
 # Simple, effective TPM installation
 
