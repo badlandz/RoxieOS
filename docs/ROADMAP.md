@@ -214,22 +214,22 @@ test_session_resurrection() {
 ```
 
 ### Manual Testing Checklist
-- [x] Caps→Esc works in console
-- [x] Caps→Esc works in X11
-- [x] Mod4+1-9 switches sessions
-- [x] Alt+1-9 switches tmux windows
-- [x] hjkl navigation in vim/tmux/bwm
-- [x] bwm bar shows session names
-- [x] chaos screensaver activates
-- [x] baux-bot launches with Alt+b
-- [ ] bshot captures screenshots
-- [ ] bweb launches with BAUX keybindings
+- [ ] Caps→Esc works in console - *blocked by bbase install bug*
+- [ ] Caps→Esc works in X11 - *blocked by bbase install bug*
+- [x] Mod4+1-9 switches sessions - *pending bwm installation*
+- [x] Alt+1-9 switches tmux windows - *pending baux installation*
+- [x] hjkl navigation in vim/tmux/bwm - *pending component installation*
+- [ ] bwm bar shows session names - *pending bwm installation*
+- [ ] chaos screensaver activates - *pending chaos installation*
+- [ ] baux-bot launches with Alt+b - *pending baux-bot installation*
+- [ ] bshot captures screenshots - *not implemented*
+- [ ] bweb launches with BAUX keybindings - *not implemented*
 
 ## Rollout Plan
 
 ### v0.1 Release Criteria
 1. All core packages ported to FreeBSD (bbase, baux, bvi, bwm, chaos, baux-bot)
-2. Keymap integration working system-wide
+2. Keymap integration working system-wide - *blocked by privilege escalation bug*
 3. Session resurrection functional
 4. ISO boots under 5 seconds
 5. Documentation updated

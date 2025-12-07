@@ -93,6 +93,15 @@
 - **Added real-time repo monitoring** with RAG system
 - **Status**: Ready for testing on X300 ThinkPad with Ollama
 
+#### Milestone 10: Installation Script Privilege Escalation Bug 🔄
+- **Root Cause Identified**: bbase install.sh uses hardcoded `doas` commands
+- **Issue**: When running as root, `run_privileged()` correctly skips doas, but bbase install.sh ignores this
+- **Symptom**: "doas: Operation not permitted" during keymap installation
+- **Impact**: Blocks bbase installation, preventing Caps→Esc functionality
+- **Workaround**: Run `cd ports/bbase && ./install.sh` directly as root (no doas needed)
+- **Fix Required**: Update bbase install.sh to use privilege-aware commands
+- **Status**: Bug documented, fix planned for next implementation phase
+
 ### New Features
 - **bbase**: System foundation with global Caps→Esc keymap
 - **baux**: Immortal tmux sessions with resurrection

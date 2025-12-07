@@ -90,14 +90,14 @@ do-install:
 ## Installation Order
 
 ### Core Installation Sequence
-1. **bbase** - System foundation, keymap
-2. **baux** - Shell environment
-3. **bwm** - Window manager (if X11)
-4. **bterm** - Terminal (if X11)
-5. **bvi** - Editor (lite/dev variants)
-6. **bweb** - Browser
-7. **chaos** - Screensaver
-8. **baux-bot** - AI assistant (optional, requires Ollama)
+1. **bbase** - System foundation, keymap - *⚠️ blocked by privilege escalation bug*
+2. **baux** - Shell environment - *pending bbase completion*
+3. **bwm** - Window manager (if X11) - *pending baux completion*
+4. **bterm** - Terminal (if X11) - *not implemented*
+5. **bvi** - Editor (lite/dev variants) - *pending baux completion*
+6. **bweb** - Browser - *not implemented*
+7. **chaos** - Screensaver - *pending baux completion*
+8. **baux-bot** - AI assistant (optional, requires Ollama) - *pending baux completion*
 
 ### Configuration Management
 

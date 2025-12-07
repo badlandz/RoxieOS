@@ -3,13 +3,35 @@
 
 ## Current Implementation Status
 
-**✅ Available Now:**
-- `bbase` - BAUX keymap (Caps→Esc)
+**✅ Ports Available:**
+- `bbase` - BAUX keymap (Caps→Esc) - *⚠️ install script has privilege bug*
 - `baux` - Session management with tmux
 - `bvi` - Neovim wrapper with Gruvbox theme
 - `bwm` - Window manager (dwm-based) with session integration
 - `chaos` - Anti-burn-in screensaver
 - `baux-bot` - AI assistant with Ollama integration
+
+**🔄 Installation Status:**
+- Automated install script: `install-baux-manual.sh` - *working but blocked at bbase*
+- Manual installation: Possible with workarounds
+- Core functionality: Ready but requires bug fixes
+
+## Troubleshooting
+
+### bbase Installation Fails with "doas: Operation not permitted"
+
+**Symptom:** Installation stops at bbase with privilege error
+**Cause:** bbase install.sh uses hardcoded `doas` commands that conflict with root execution
+**Workaround:**
+```bash
+# From RoxieOS directory
+cd ports/bbase
+./install.sh  # Run directly as root (no doas needed)
+cd ../..
+./scripts/install-baux-manual.sh  # Continue automated install
+```
+
+**Status:** Bug documented, fix planned for next development phase
 
 **🚧 In Development:**
 - `bterm` - Terminal (st-based)

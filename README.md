@@ -93,6 +93,7 @@ baux
 **Target:** Full -dev live USB with local BAUX mesh foundation  
 **Current Focus:** X300 ThinkPad compatibility and core component testing  
 **✅ Completed:** bbase, baux, bvi, bwm, chaos, baux-bot FreeBSD ports with installation scripts
+**🔄 In Progress:** Installation script debugging - privilege escalation issue in bbase install.sh
 
 ## Package Ecosystem
 
@@ -171,6 +172,7 @@ RoxieOS eliminates friction in development workflows:
 - ✅ Unified keymap system
 - ✅ Gruvbox theming across all layers
 - ✅ AI-assisted development (baux-bot)
+- 🔄 **BLOCKED**: Privilege escalation bug in bbase install.sh
 - 🚧 Live USB persistence (unionfs-fuse)
 - 🚧 X startup integration
 - 🚧 Full package ecosystem (bterm, bweb)
@@ -219,11 +221,11 @@ baux
 ```
 
 ### What Should Work After Installation
-- **Caps Lock → Escape** globally (bbase)
+- **Caps Lock → Escape** globally (bbase) - *pending privilege fix*
 - **baux command** starts tmux session with custom config
 - **bvi filename** opens files with neovim (or vim/vi fallback)
 - **bwm** window manager with session display in status bar
-- **chaos** screensaver activates after 15 minutes idle
+- **chaos** anti-burn-in screensaver
 - **baux-bot** AI assistant (Alt+b in tmux, or `baux-bot` command)
 - **Gruvbox theming** in all components
 
