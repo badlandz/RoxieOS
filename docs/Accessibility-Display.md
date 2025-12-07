@@ -23,10 +23,12 @@ BAUX configures X11 for optimal readability:
 
 ```bash
 # ~/.Xresources (auto-generated)
-Xft.dpi: 120
+Xft.dpi: 192
 Xft.antialias: true
 Xft.hinting: true
-Xft.hintstyle: hintslight
+Xft.hintstyle: hintfull
+Xft.rgba: rgb
+Xft.lcdfilter: lcddefault
 ```
 
 ## Display Resolution Management
@@ -35,9 +37,9 @@ Xft.hintstyle: hintslight
 BAUX prevents tiny fonts on high-resolution displays:
 
 ```bash
-# Maximum resolution enforcement
+# Maximum resolution enforcement (updated for accessibility)
 MAX_WIDTH=1920
-MAX_HEIGHT=1080
+MAX_HEIGHT=1280  # Increased from 1080 for better readability
 
 # Auto-detect and limit display resolution
 ./scripts/setup-display.sh
@@ -154,6 +156,9 @@ If all font scaling fails and you can't read the screen:
 # This uses xterm with guaranteed 20pt fonts
 # Independent of BAUX font configuration
 # Always available as fallback
+
+# Or use emergency font fix (tries everything):
+./scripts/emergency-font-fix.sh
 ```
 
 This ensures BAUX is usable by everyone, regardless of hardware or vision requirements.

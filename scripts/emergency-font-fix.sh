@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Emergency Font Fix
 # Last resort font setting for when everything else fails
 

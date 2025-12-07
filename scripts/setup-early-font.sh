@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Early Boot Font Setup
 # Sets console fonts before video driver loads
 # Run this from /etc/rc.local or early in boot process

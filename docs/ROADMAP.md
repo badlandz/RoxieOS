@@ -184,12 +184,14 @@ make release
 - **amd64:** Modern laptops, desktops
 - **aarch64:** Raspberry Pi 3/4/5, Pine64
 - **Legacy:** 32-bit systems for rescue scenarios
+- **X300 ThinkPad:** Special resolution/aspect ratio handling
 
 ### Performance Targets
 - **Boot time:** <5 seconds to baux prompt
 - **Memory usage:** <200MB idle (core packages)
 - **Session restore:** <3 seconds from USB
 - **Battery life:** Minimal impact on laptops
+- **Accessibility:** Readable fonts for impaired vision
 
 ## Quality Assurance
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Backup Terminal Launcher
 # Reliable terminal with large fonts as fallback
 

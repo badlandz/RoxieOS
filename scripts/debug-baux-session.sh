@@ -249,8 +249,10 @@ fi
 if [ -z "${DISPLAY:-}" ]; then
     warn "Console mode detected - X11 display settings won't apply"
     log "For console font issues, run: ./scripts/setup-early-font.sh"
+    log "Emergency fix: ./scripts/emergency-font-fix.sh"
 else
     log "X11 available - backup terminal available: ./scripts/launch-backup-terminal.sh"
+    log "Emergency fix: ./scripts/emergency-font-fix.sh"
 fi
 
 if [[ "$CURRENT_KEYMAP" != *"baux"* ]]; then
@@ -266,8 +268,9 @@ if [[ "$CONSOLE_FONT" == *"8x16"* ]] || [[ "$CONSOLE_FONT" == "unknown" ]]; then
 fi
 
 if [ -n "${DISPLAY:-}" ] && [ "$X_DPI" -lt 192 ] 2>/dev/null; then
-    error "X11 DPI too low for accessibility"
+    error "X11 DPI too low for accessibility (need 192+ for 20pt fonts)"
     log "Fix: ./scripts/setup-display.sh"
+    log "Emergency: ./scripts/launch-backup-terminal.sh"
 fi
 
 log ""
