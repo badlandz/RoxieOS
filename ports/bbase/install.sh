@@ -13,28 +13,52 @@ if [ ! -f "baux.kbd" ]; then
     exit 1
 fi
 
-# Create keymaps directory if it doesn't exist
-echo "Creating keymaps directory..."
-if ! doas mkdir -p /usr/share/syscons/keymaps; then
-    echo "ERROR: Failed to create keymaps directory"
-    echo "Check doas permissions and filesystem"
-    exit 1
+# Check if keymaps directory exists
+echo "Checking keymaps directory..."
+if [ ! -d "/usr/share/syscons/keymaps" ]; then
+    echo "WARNING: /usr/share/syscons/keymaps directory does not exist"
+    echo "This is unusual for FreeBSD - console keymaps should be part of base system"
+    echo ""
+    echo "Trying to create the directory..."
+    if ! doas mkdir -p /usr/share/syscons/keymaps 2>/dev/null; then
+        echo "ERROR: Cannot create keymaps directory"
+        echo "This indicates a system configuration issue"
+        echo ""
+        echo "Possible solutions:"
+        echo "1. Run as root: mkdir -p /usr/share/syscons/keymaps"
+        echo "2. Check if your FreeBSD installation is complete"
+        echo "3. Verify you're using syscons (not vt) console driver"
+        echo ""
+        echo "For now, trying to install in /usr/local/share/syscons/keymaps instead..."
+        doas mkdir -p /usr/local/share/syscons/keymaps 2>/dev/null || {
+            echo "ERROR: Cannot create local keymaps directory either"
+            exit 1
+        }
+        KEYMAP_DIR="/usr/local/share/syscons/keymaps"
+        echo "Using local keymap directory: $KEYMAP_DIR"
+    else
+        KEYMAP_DIR="/usr/share/syscons/keymaps"
+        echo "Created system keymap directory: $KEYMAP_DIR"
+    fi
+else
+    KEYMAP_DIR="/usr/share/syscons/keymaps"
+    echo "Found existing keymap directory: $KEYMAP_DIR"
 fi
 
 # Install the keymap
-echo "Copying baux.kbd to /usr/share/syscons/keymaps/..."
-if ! doas cp baux.kbd /usr/share/syscons/keymaps/; then
-    echo "ERROR: Failed to copy baux.kbd"
+echo "Copying baux.kbd to $KEYMAP_DIR/..."
+if ! doas cp baux.kbd "$KEYMAP_DIR/"; then
+    echo "ERROR: Failed to copy baux.kbd to $KEYMAP_DIR"
     echo "Check doas permissions and source file"
     ls -la baux.kbd
     exit 1
 fi
 
 # Verify copy succeeded
-if [ ! -f "/usr/share/syscons/keymaps/baux.kbd" ]; then
+if [ ! -f "$KEYMAP_DIR/baux.kbd" ]; then
     echo "ERROR: Failed to copy baux.kbd - file not found after copy"
     echo "Checking target directory:"
-    ls -la /usr/share/syscons/keymaps/ 2>/dev/null || echo "Directory does not exist or not readable"
+    ls -la "$KEYMAP_DIR/" 2>/dev/null || echo "Directory does not exist or not readable"
     exit 1
 fi
 
@@ -53,7 +77,7 @@ fi
 
 # Method 3: Immediate application
 echo "Applying keymap immediately..."
-if ! doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd; then
+if ! doas kbdcontrol -l "$KEYMAP_DIR/baux.kbd"; then
     echo "ERROR: Failed to load keymap immediately"
     echo "Check if keymap file exists and is readable"
     ls -la /usr/share/syscons/keymaps/baux.kbd
@@ -130,7 +154,8 @@ if command -v xrdb >/dev/null 2>&1; then
 fi
 
 echo "bbase installed successfully!"
-echo "Keymap file: $(ls -la /usr/share/syscons/keymaps/baux.kbd)"
+echo "Keymap file: $(ls -la "$KEYMAP_DIR/baux.kbd")"
+echo "Keymap directory: $KEYMAP_DIR"
 echo "System keymap setting: $(doas sysrc -n keymap 2>/dev/null || echo 'not set')"
 echo ""
 echo "Font configuration:"
@@ -138,6 +163,9 @@ echo "  Console: 8x16 TERMINAL font (readable)"
 echo "  X11: 120 DPI with antialiasing (if available)"
 echo ""
 echo "To activate immediately:"
-echo "  Keymap: doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd"
+echo "  Keymap: doas kbdcontrol -l $KEYMAP_DIR/baux.kbd"
 echo "  Fonts: reboot or restart X11"
 echo "Caps Lock should now act as Escape globally"
+echo ""
+echo "NOTE: If keymap directory was created in /usr/local/share/syscons/keymaps,"
+echo "you may need to ensure kbdcontrol can find it, or move files to /usr/share/syscons/keymaps/"
