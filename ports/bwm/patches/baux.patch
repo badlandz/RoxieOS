@@ -1,0 +1,55 @@
+--- a/config.h
++++ b/config.h
+@@ -46,6 +46,12 @@ static const Layout layouts[] = {
+ /* key definitions — LAYERS OF CONTROL */
+ #define MODKEY Mod4Mask    /* Super/Win/Opt — dwm layer */
+ #define TAGKEYS(KEY,TAG) \
++       { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
++       { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
++       { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
++       { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
++
++#define BAUX_SESSIONS(KEY,SESSION) \
+        { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
+        { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+        { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
+@@ -54,6 +60,7 @@ static const Layout layouts[] = {
+ #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+ 
+ static char dmenumon[2] = "0";
++static const char *bauxstatuscmd[] = { "/usr/local/bin/status.sh", NULL };
+ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
+                                  "-nb", col_bg, "-nf", col_text, "-sb", col_selbg, "-sf", col_seltext, NULL };
+ static const char *termcmd[]  = { "alacritty", NULL };  /* alacritty termina — baux shell */
+@@ -61,6 +68,12 @@ static const Key keys[] = {
+        /* modifier            key        function        argument */
+        { MODKEY,              XK_p,      spawn,          {.v = dmenucmd } },
+        { MODKEY|ShiftMask,    XK_Return, spawn,          {.v = termcmd } },
++       { MODKEY,              XK_c,      spawn,          SHCMD("chaos") },
++       { MODKEY,              XK_s,      spawn,          {.v = bauxstatuscmd } },
++       BAUX_SESSIONS(         XK_1,      0)
++       BAUX_SESSIONS(         XK_2,      1)
++       BAUX_SESSIONS(         XK_3,      2)
++       BAUX_SESSIONS(         XK_4,      3)
++       BAUX_SESSIONS(         XK_5,      4)
++       BAUX_SESSIONS(         XK_6,      5)
++       BAUX_SESSIONS(         XK_7,      6)
++       BAUX_SESSIONS(         XK_8,      7)
++       BAUX_SESSIONS(         XK_9,      8)
+        { MODKEY,              XK_b,      togglebar,      {0} },
+        { MODKEY,              XK_j,      focusstack,     {.i = +1 } },
+        { MODKEY,              XK_k,      focusstack,     {.i = -1 } },
+@@ -85,12 +98,6 @@ static const Key keys[] = {
+        { MODKEY|ShiftMask,    XK_comma,  tagmon,         {.i = -1 } },
+        { MODKEY|ShiftMask,    XK_period, tagmon,         {.i = +1 } },
+        TAGKEYS(               XK_1,      0)
+-       TAGKEYS(               XK_2,      1)
+-       TAGKEYS(               XK_3,      2)
+-       TAGKEYS(               XK_4,      3)
+-       TAGKEYS(               XK_5,      4)
+-       TAGKEYS(               XK_6,      5)
+-       TAGKEYS(               XK_7,      6)
+-       TAGKEYS(               XK_8,      7)
+-       TAGKEYS(               XK_9,      8)
+        { MODKEY|ShiftMask,    XK_q,      quit,           {0} },
+ };

@@ -1,0 +1,12 @@
+BAUXBSD anti-burn-in screensaver - prevents screen burn-in with dynamic
+tmux effects when system is idle.
+
+Features:
+- Activates after 15 minutes of inactivity
+- Dynamic pane effects: splits, swaps, rotations
+- Color cycling: btop, cmatrix, fastfetch with random colors
+- Status bar manipulation with chaos messages
+- Instant recovery on any keypress
+- Pure tmux scripting, minimal footprint (~1MB)
+
+WWW: https://roxieos.org
