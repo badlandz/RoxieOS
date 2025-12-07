@@ -123,12 +123,13 @@
 
 #### Milestone 13: Workstation BAUX Setup 🔄
 - **Objective**: Complete BAUX installation on FreeBSD workstation (192.168.33.101)
-- **Progress**: Setup script created and deployed, prerequisites installed
+- **Progress**: Setup script created with X11 permissions and Ollama AI config
 - **Components**: bbase (permissions issue), baux, bvi (pending full install)
 - **Fonts**: Console fonts available (8x16), X11 configured for 192 DPI accessibility
-- **X11**: Setup ready, pending full BAUX installation
+- **X11**: Video group permissions configured
+- **AI**: Ollama service setup for baux-bot development assistance
 - **Issue**: doas permissions blocking system file operations
-- **Status**: Blocked on privilege configuration, core components partially deployed
+- **Status**: Setup script ready, blocked on privilege configuration
 - **Workaround**: Use nvim directly or vim for editing
 - **Status**: Bug documented, basic vimscript config created as temporary fix
 

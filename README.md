@@ -83,11 +83,11 @@ baux
 - **TPM + Plugins** - Tmux resurrect and continuum installed
 
 **🔄 Workstation Installation (192.168.33.101):**
-- **Setup Script**: Created and deployed
-- **Prerequisites**: bash, git, neovim, tmux installed
-- **BAUX Packages**: Partially installed (bbase permissions issue)
-- **Console Fonts**: Available (8x16), setting blocked by permissions
-- **X11**: Configured for 192 DPI accessibility
+- **Setup Script**: Created and deployed with X11/Ollama config
+- **Components**: bbase (permissions issue), baux, bvi (pending full install)
+- **Fonts**: Console fonts available (8x16), X11 configured for 192 DPI accessibility
+- **X11**: Setup ready with video group permissions
+- **AI**: Ollama service configured for baux-bot
 - **Keymap**: baux.kbd exists, activation pending permissions fix
 
 **🔄 AI Assistance:**
