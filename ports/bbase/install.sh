@@ -15,22 +15,41 @@ fi
 
 # Create keymaps directory if it doesn't exist
 echo "Creating keymaps directory..."
-doas mkdir -p /usr/share/syscons/keymaps
+if ! doas mkdir -p /usr/share/syscons/keymaps; then
+    echo "ERROR: Failed to create keymaps directory"
+    echo "Check doas permissions and filesystem"
+    exit 1
+fi
 
 # Install the keymap
 echo "Copying baux.kbd to /usr/share/syscons/keymaps/..."
-doas cp baux.kbd /usr/share/syscons/keymaps/
+if ! doas cp baux.kbd /usr/share/syscons/keymaps/; then
+    echo "ERROR: Failed to copy baux.kbd"
+    echo "Check doas permissions and source file"
+    ls -la baux.kbd
+    exit 1
+fi
 
 # Verify copy succeeded
 if [ ! -f "/usr/share/syscons/keymaps/baux.kbd" ]; then
-    echo "ERROR: Failed to copy baux.kbd"
+    echo "ERROR: Failed to copy baux.kbd - file not found after copy"
+    echo "Checking target directory:"
+    ls -la /usr/share/syscons/keymaps/ 2>/dev/null || echo "Directory does not exist or not readable"
     exit 1
 fi
 
 # Set as default keymap
 echo "Setting keymap to baux..."
-doas sysrc keymap="baux"
+if ! doas sysrc keymap="baux"; then
+    echo "ERROR: Failed to set keymap with sysrc"
+    echo "Check doas permissions for sysrc"
+    exit 1
+fi
 
 echo "bbase installed successfully!"
-echo "Reboot or run 'kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd' to activate"
+echo "Keymap file: $(ls -la /usr/share/syscons/keymaps/baux.kbd)"
+echo "System keymap setting: $(doas sysrc -n keymap 2>/dev/null || echo 'not set')"
+echo ""
+echo "To activate immediately: doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd"
+echo "To activate on boot: reboot required"
 echo "Caps Lock should now act as Escape globally"
