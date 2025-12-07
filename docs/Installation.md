@@ -14,14 +14,51 @@
 - Live USB persistence
 - Full ecosystem packages
 
-## Manual Installation (Current Method)
+## Fresh FreeBSD Installation (Recommended)
 
-### Prerequisites
+### Step 1: Install FreeBSD 15.0
+1. Download FreeBSD 15.0 installation media from https://www.freebsd.org/where/
+2. Boot from installation media (USB or CD/DVD)
+3. Select "Install" from the boot menu
+4. Choose keyboard layout and hostname
+5. Select disk and partitioning (use auto ZFS for simplicity)
+6. Create user account with wheel group membership
+7. Complete installation and reboot
+
+### Step 2: Post-Installation Setup
 ```bash
-# Install FreeBSD 15.0 on your X300 ThinkPad
-# Boot into system and install dependencies
-pkg update
-pkg install bash git neovim tmux
+# Login as your user account (not root)
+
+# Update system packages
+doas pkg update && doas pkg upgrade -y
+
+# Install required packages for BAUX
+doas pkg install -y bash git neovim tmux x11-fonts xterm
+
+# Configure doas for your user (replace 'username' with your actual username)
+echo "permit nopass username" | doas tee -a /usr/local/etc/doas.conf
+
+# Clone BAUX repository
+git clone https://github.com/badlandz/RoxieOS.git
+cd RoxieOS
+
+# Run BAUX installation
+./scripts/install-baux-manual.sh
+```
+
+### Alternative: Automated Installation
+```bash
+# For automated setup (includes all dependencies)
+./scripts/install-baux-unified.sh
+```
+
+### Quick Setup Script (Recommended for New Users)
+```bash
+# Automated system preparation and repository setup
+./scripts/setup-baux-system.sh
+
+# Then run installation
+./scripts/install-baux-manual.sh
 ```
 
 ### Install BAUX Components
@@ -168,13 +205,31 @@ Ctrl+Space + "          # Split horizontally
 Alt+h/j/k/l             # Navigate panes
 ```
 
+### Accessibility Features
+BAUX includes comprehensive accessibility support:
+
+**Font Configuration:**
+- Console fonts automatically set to large, readable sizes
+- X11 fonts configured with 192 DPI for 20pt effective text
+- Resolution limited to 1920x1280 to prevent tiny fonts
+
+**Backup Terminal:**
+- xterm with guaranteed 20pt fonts always available
+- Independent of main BAUX configuration
+- Use: `./scripts/launch-backup-terminal.sh`
+
+**Emergency Fixes:**
+- `./scripts/emergency-font-fix.sh` - Try everything to fix fonts
+- `./scripts/quick-accessibility-fix.sh` - Immediate font fixes
+
 ### Editor Integration
 ```bash
 # Edit files with bvi
-bvi main.c              # Opens in neovim with Gruvbox
+bvi main.c              # Opens in neovim with BAUX configuration
 bvi README.md           # Same editor, consistent theme
 
 # Tmux integration
+baux                    # Start BAUX environment (Ctrl+Space prefix)
 Ctrl+Space + :          # Tmux command mode
 :neww bvi file.c        # Open editor in new window
 ```

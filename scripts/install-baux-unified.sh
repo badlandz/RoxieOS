@@ -55,7 +55,8 @@ check_dependencies() {
             log "✅ doas configured and working"
         else
             error "❌ doas not configured properly"
-            log "   Run: echo 'permit nopass :wheel' >> /usr/local/etc/doas.conf"
+            log "   Run: echo 'permit nopass username' >> /usr/local/etc/doas.conf"
+            log "   Replace 'username' with your actual username"
             return 1
         fi
     elif command -v sudo >/dev/null 2>&1; then
