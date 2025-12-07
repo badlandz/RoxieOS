@@ -7,10 +7,13 @@
 - `bbase` - BAUX keymap (Caps→Esc)
 - `baux` - Session management with tmux
 - `bvi` - Neovim wrapper with Gruvbox theme
+- `bwm` - Window manager (dwm-based) with session integration
+- `chaos` - Anti-burn-in screensaver
+- `baux-bot` - AI assistant with Ollama integration
 
 **🚧 In Development:**
-- `bwm` - Window manager (dwm-based)
-- `chaos` - Screensaver
+- `bterm` - Terminal (st-based)
+- `bweb` - Browser (keyboard-native)
 - Live USB persistence
 - Full ecosystem packages
 

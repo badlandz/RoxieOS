@@ -20,7 +20,8 @@ bauxbsd/ports/
 ├── bterm/           # Terminal
 ├── bvi/             # Editor
 ├── bweb/            # Browser
-└── chaos/           # Screensaver
+├── chaos/           # Screensaver
+└── baux-bot/        # AI assistant
 ```
 
 ### Optional Packages (-dev tier)
@@ -80,6 +81,7 @@ do-install:
 | bvi | neovim (lite/dev variants) | 15MB/50MB |
 | bweb | qutebrowser | 40MB |
 | chaos | tmux | 1MB |
+| baux-bot | ollama | 4GB |
 | bview | sxiv | 2MB |
 | bmedia | mpv | 15MB |
 | bbot | ollama | 4GB |
@@ -95,6 +97,7 @@ do-install:
 5. **bvi** - Editor (lite/dev variants)
 6. **bweb** - Browser
 7. **chaos** - Screensaver
+8. **baux-bot** - AI assistant (optional, requires Ollama)
 
 ### Configuration Management
 

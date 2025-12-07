@@ -47,6 +47,11 @@ cd RoxieOS
 echo "permit nopass :wheel" >> /usr/local/etc/doas.conf
 ./scripts/install-baux-unified.sh
 
+# Optional: Install AI assistant for development
+pkg install ollama
+cd ports/baux-bot && make install clean
+baux-bot-setup
+
 # Start BAUX session
 baux
 ```
@@ -55,6 +60,9 @@ baux
 - **Caps Lock → Escape** globally
 - **baux** session manager with tmux
 - **bvi** neovim wrapper with Gruvbox theme
+- **bwm** window manager with session integration
+- **chaos** anti-burn-in screensaver
+- **baux-bot** AI assistant for development
 - Immortal sessions with TPM resurrection
 - Unified Gruvbox theming across all components
 
@@ -84,7 +92,7 @@ baux
 **Release:** Alpha  
 **Target:** Full -dev live USB with local BAUX mesh foundation  
 **Current Focus:** X300 ThinkPad compatibility and core component testing  
-**✅ Completed:** bbase, baux, bvi FreeBSD ports with installation scripts
+**✅ Completed:** bbase, baux, bvi, bwm, chaos, baux-bot FreeBSD ports with installation scripts
 
 ## Package Ecosystem
 
@@ -97,6 +105,7 @@ baux
 | bvi | Editor (neovim wrapper) | +90MB | ✅ Core |
 | bweb | Browser (keyboard-native) | +40MB | 🚧 Planned |
 | chaos | Anti-burn-in screensaver | +1MB | ✅ Core |
+| baux-bot | AI assistant (Ollama) | +4GB | ✅ Core |
 
 ### Development Packages
 - bview: Image viewer
@@ -155,15 +164,16 @@ RoxieOS eliminates friction in development workflows:
 ## Roadmap
 
 ### Phase 1: Full -Dev Live USB (Current - 2-3 weeks)
-**Goal:** Bootable USB with complete BAUX environment on X200**
-- ✅ FreeBSD ports migration
+**Goal:** Bootable USB with complete BAUX environment on X300**
+- ✅ FreeBSD ports migration (bbase, baux, bvi, bwm, chaos, baux-bot)
 - ✅ Workstation cloning foundation
 - ✅ BAUX session management (local)
 - ✅ Unified keymap system
 - ✅ Gruvbox theming across all layers
+- ✅ AI-assisted development (baux-bot)
 - 🚧 Live USB persistence (unionfs-fuse)
 - 🚧 X startup integration
-- 🚧 Full package ecosystem
+- 🚧 Full package ecosystem (bterm, bweb)
 
 ### Phase 2: Server-Only Derivation (1-2 weeks)
 **Goal:** Extract BAUX server from full system**
@@ -212,6 +222,9 @@ baux
 - **Caps Lock → Escape** globally (bbase)
 - **baux command** starts tmux session with custom config
 - **bvi filename** opens files with neovim (or vim/vi fallback)
+- **bwm** window manager with session display in status bar
+- **chaos** screensaver activates after 15 minutes idle
+- **baux-bot** AI assistant (Alt+b in tmux, or `baux-bot` command)
 - **Gruvbox theming** in all components
 
 ### Current Test Platforms

@@ -11,7 +11,7 @@
 # Create BAUXBSD ISO with cloning tools
 # Download FreeBSD 15.0 + BAUX packages
 pkg update
-pkg install bbase baux bwm bterm bvi bweb chaos
+pkg install bbase baux bwm bterm bvi bweb chaos baux-bot
 ```
 
 #### 1.2 Keymap Integration for Cloning
@@ -169,6 +169,7 @@ make release
 | bvi | neovim | 90MB |
 | bweb | qutebrowser | 40MB |
 | chaos | tmux | 1MB |
+| baux-bot | ollama | 4GB |
 
 ### Optional Package Matrix
 | Package | Dependencies | Size |
@@ -213,24 +214,26 @@ test_session_resurrection() {
 ```
 
 ### Manual Testing Checklist
-- [ ] Caps→Esc works in console
-- [ ] Caps→Esc works in X11
-- [ ] Mod4+1-9 switches sessions
-- [ ] Alt+1-9 switches tmux windows
-- [ ] hjkl navigation in vim/tmux/bwm
-- [ ] bwm bar shows session names
-- [ ] chaos screensaver activates
+- [x] Caps→Esc works in console
+- [x] Caps→Esc works in X11
+- [x] Mod4+1-9 switches sessions
+- [x] Alt+1-9 switches tmux windows
+- [x] hjkl navigation in vim/tmux/bwm
+- [x] bwm bar shows session names
+- [x] chaos screensaver activates
+- [x] baux-bot launches with Alt+b
 - [ ] bshot captures screenshots
 - [ ] bweb launches with BAUX keybindings
 
 ## Rollout Plan
 
 ### v0.1 Release Criteria
-1. All 7 core packages ported to FreeBSD
+1. All core packages ported to FreeBSD (bbase, baux, bvi, bwm, chaos, baux-bot)
 2. Keymap integration working system-wide
 3. Session resurrection functional
 4. ISO boots under 5 seconds
 5. Documentation updated
+6. AI-assisted development working
 
 ### v0.2 Release Criteria
 1. bdrop full implementation

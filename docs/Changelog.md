@@ -62,15 +62,45 @@
 - **Fixed configuration paths** for FreeBSD
 - **Status**: Ready for testing on X300 ThinkPad
 - **System Probe Tool**: `scripts/baux-probe.sh` for compatibility testing
-- **X200 Focus**: Primary development on ThinkPad X200 hardware
+- **X300 Focus**: Primary development on ThinkPad X300 hardware
 - **LAN-First Mesh**: Local network session sharing before cloud deployment
+
+#### Milestone 7: bwm Window Manager Implementation ✅
+- **Created FreeBSD port structure** for bwm package (dwm fork)
+- **Implemented BAUX session integration** with status bar display
+- **Added Mod4+1-9 session switching** matching tmux behavior
+- **Integrated Gruvbox theming** with toxic green color scheme
+- **Created proper dwm patches** for BAUX functionality
+- **Added TMUX integration** with Alt+b keybinding for baux-bot
+- **Status**: Ready for testing on X300 ThinkPad with X11
+
+#### Milestone 8: chaos Anti-Burn-In Screensaver ✅
+- **Created FreeBSD port structure** for chaos package
+- **Implemented idle detection** with 15-minute timeout
+- **Added dynamic tmux effects** (pane splitting, swapping, rotation)
+- **Created status bar chaos** with random messages and colors
+- **Implemented instant recovery** on any keypress
+- **Added dependencies** for btop, cmatrix, fastfetch
+- **Status**: Ready for testing on X300 ThinkPad
+
+#### Milestone 9: baux-bot AI Assistant Implementation ✅
+- **Created FreeBSD port structure** for baux-bot package
+- **Adapted existing AI framework** for FreeBSD workstation use
+- **Implemented auto-detection** of RoxieOS repo location
+- **Added TMUX integration** with Alt+b keybinding
+- **Created setup automation** with baux-bot-setup script
+- **Optimized model selection** for workstation performance
+- **Added real-time repo monitoring** with RAG system
+- **Status**: Ready for testing on X300 ThinkPad with Ollama
 
 ### New Features
 - **bbase**: System foundation with global Caps→Esc keymap
 - **baux**: Immortal tmux sessions with resurrection
-- **bwm**: dwm fork with BAUX session integration
+- **bwm**: dwm fork with BAUX session integration and status bar
 - **bterm**: st fork with BAUX theming (placeholder)
-- **chaos**: Anti-burn-in screensaver
+- **bvi**: Enhanced neovim wrapper with Gruvbox theming
+- **chaos**: Anti-burn-in screensaver with idle detection
+- **baux-bot**: AI assistant with Ollama integration and repo monitoring
 - **Workstation Cloning**: Backup/restore workflow
 
 ### Infrastructure
