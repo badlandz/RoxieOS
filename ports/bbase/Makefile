@@ -23,5 +23,15 @@ NO_BUILD=	yes
 
 do-install:
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/syscons/keymaps
-	${INSTALL_DATA} ${FILESDIR}/usr/local/share/syscons/keymaps/baux.kbd ${STAGEDIR}${PREFIX}/share/syscons/keymaps/baux.kbd
+	${INSTALL_DATA} ${FILESDIR}/baux.kbd ${STAGEDIR}${PREFIX}/share/syscons/keymaps/baux.kbd
+
+post-install:
+	@${ECHO_MSG} ""
+	@${ECHO_MSG} "BAUX keymap installed to ${PREFIX}/share/syscons/keymaps/baux.kbd"
+	@${ECHO_MSG} "To activate system-wide, add to /etc/rc.conf:"
+	@${ECHO_MSG} "  keymap=\"baux\""
+	@${ECHO_MSG} "To test immediately:"
+	@${ECHO_MSG} "  sudo kbdcontrol -l ${PREFIX}/share/syscons/keymaps/baux.kbd"
+	@${ECHO_MSG} ""
+
 .include <bsd.port.mk>

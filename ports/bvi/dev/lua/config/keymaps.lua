@@ -1,5 +1,6 @@
 -- Unified BAUXBSD Keymap Framework for Neovim
 -- Aligns with console, bwm, tmux layers for "One Finger Movement = One Meaning"
+-- Simple, effective, follows Unix philosophy
 
 local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
@@ -7,11 +8,26 @@ local opts = { noremap = true, silent = true }
 -- Leader remains Space for consistency
 vim.g.mapleader = " "
 
--- Window Navigation (matches tmux <C-hjkl>)
-map('n', '<C-h>', '<C-w>h', opts)
-map('n', '<C-j>', '<C-w>j', opts)
-map('n', '<C-k>', '<C-w>k', opts)
-map('n', '<C-l>', '<C-w>l', opts)  -- Keep for redraw; no override
+-- Smart Window Navigation: tmux-aware <C-hjkl>
+-- Uses tmux navigator when in tmux, direct vim navigation otherwise
+local function is_tmux()
+  return vim.env.TMUX ~= nil
+end
+
+if is_tmux() then
+  -- In tmux: use tmux navigator for seamless pane/window switching
+  vim.g.tmux_navigator_no_mappings = 1
+  map('n', '<C-h>', ':TmuxNavigateLeft<CR>', opts)
+  map('n', '<C-j>', ':TmuxNavigateDown<CR>', opts)
+  map('n', '<C-k>', ':TmuxNavigateUp<CR>', opts)
+  map('n', '<C-l>', ':TmuxNavigateRight<CR>', opts)
+else
+  -- Direct vim navigation when not in tmux
+  map('n', '<C-h>', '<C-w>h', opts)
+  map('n', '<C-j>', '<C-w>j', opts)
+  map('n', '<C-k>', '<C-w>k', opts)
+  map('n', '<C-l>', '<C-w>l', opts)
+end
 
 -- Resize Splits (arrows for accessibility)
 map('n', '<C-Up>', ':resize +2<CR>', opts)

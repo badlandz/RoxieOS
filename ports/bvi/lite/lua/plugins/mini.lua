@@ -1,15 +1,20 @@
 return {
   {
-    "nvim-mini/mini.files",
-    opts = {
-      windows = {
-        preview = true,
-        width_focus = 30,
-        width_preview = 30,
-      },
-    },
-    keys = {
-      { "<leader>pv", function() require("mini.files").open() end, desc = "Open Mini Files" },
-    },
+    "echasnovski/mini.files",
+    version = false,
+    config = function()
+      require("mini.files").setup({
+        windows = {
+          preview = true,
+          width_preview = 80,
+        },
+      })
+    end,
+  },
+
+  -- tmux integration for seamless navigation (simple, effective)
+  {
+    "christoomey/vim-tmux-navigator",
+    lazy = false,  -- Load immediately for keybindings to work
   },
 }
