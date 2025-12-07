@@ -103,6 +103,15 @@
 - **Fallback**: Uses local keymap directory if system directory unavailable
 - **Status**: Bug resolved, installation now works for both root and regular users
 
+#### Milestone 11: Script Argument Passing Bug 🔄
+- **Root Cause**: Scripts not receiving command-line arguments correctly
+- **Symptom**: `$#` always shows 0, even with arguments passed
+- **Impact**: xai-chat and dev-assist commands unusable for AI assistance
+- **Affected**: All custom scripts in /usr/local/bin/
+- **Debugging**: Scripts execute but don't process input parameters
+- **Workaround**: Manual development without AI assistance for now
+- **Status**: Bug documented, affects AI development workflow, fix pending
+
 ### New Features
 - **bbase**: System foundation with global Caps→Esc keymap
 - **baux**: Immortal tmux sessions with resurrection

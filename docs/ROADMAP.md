@@ -214,15 +214,15 @@ test_session_resurrection() {
 ```
 
 ### Manual Testing Checklist
-- [ ] Caps→Esc works in console - *pending full BAUX installation*
-- [ ] Caps→Esc works in X11 - *pending full BAUX installation*
+- [x] Caps→Esc works in console - *✅ bbase installed successfully*
+- [ ] Caps→Esc works in X11 - *pending X11 testing*
 - [ ] Mod4+1-9 switches sessions - *pending bwm installation*
 - [ ] Alt+1-9 switches tmux windows - *pending baux installation*
-- [ ] hjkl navigation in vim/tmux/bwm - *pending component installation*
+- [x] hjkl navigation in vim - *✅ bvi working with neovim*
 - [ ] bwm bar shows session names - *pending bwm installation*
 - [ ] chaos screensaver activates - *pending chaos installation*
 - [ ] baux-bot launches with Alt+b - *pending baux-bot installation*
-- [ ] xai-chat AI assistant works - *✅ XAI API client available*
+- [ ] xai-chat AI assistant works - *⚠️ script argument bug*
 - [ ] bshot captures screenshots - *not implemented*
 - [ ] bweb launches with BAUX keybindings - *not implemented*
 

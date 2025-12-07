@@ -74,12 +74,23 @@ baux
 - **xai-chat** AI assistant via XAI API (works without Ollama)
 - **Gruvbox theming** in all components
 
-### AI-Assisted Development
-BAUXBSD includes AI integration for accelerated development:
-- **xai-chat**: Direct XAI API access for FreeBSD/Bash questions
-- **baux-bot**: Local Ollama-based assistant (when Vulkan issues resolved)
-- **Real-time debugging**: AI can analyze logs and suggest fixes
-- **Code review**: AI assistance for FreeBSD-specific development
+### Development Status
+**✅ Core Components Installed:**
+- `bbase` - Keymap system (Caps→Esc working)
+- `baux` - Session management
+- `bvi` - Neovim editor integration
+- Git/SSH - Development workflow ready
+
+**🔄 AI Assistance (In Development):**
+- **xai-chat**: XAI API integration (script argument bug affecting usability)
+- **baux-bot**: Ollama-based assistant (Vulkan compatibility issues)
+- **Manual Development**: Full access to codebase for manual debugging
+
+**🎯 Current Development Workflow:**
+1. **Code on workstation**: Edit files in `~/src/RoxieOS/`
+2. **Test manually**: Use installed BAUX components
+3. **Debug with knowledge**: Reference documentation and logs
+4. **Iterate**: Push/pull changes as needed
 
 ### Current Test Platforms
 - **Primary:** ThinkPad X300 (FreeBSD 15.0) - Your test system
