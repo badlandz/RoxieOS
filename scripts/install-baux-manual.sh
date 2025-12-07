@@ -41,31 +41,36 @@ fi
 
 # Check for console fonts (TERMINAL_*.fnt files)
 log "=== Checking Console Font Availability ==="
+log "Console fonts are provided by base FreeBSD system (/usr/share/syscons/fonts/)"
 CONSOLE_FONTS_AVAILABLE=false
+
+# Check for specific accessibility fonts we need
 if [ -f "/usr/share/syscons/fonts/TERMINAL_8x16.fnt" ] || \
    [ -f "/usr/share/syscons/fonts/TERMINAL_12x24.fnt" ] || \
    [ -f "/usr/share/syscons/fonts/TERMINAL_16x32.fnt" ]; then
-    log "✓ Console fonts found in /usr/share/syscons/fonts/"
+    log "✓ Required console fonts found in /usr/share/syscons/fonts/"
     CONSOLE_FONTS_AVAILABLE=true
 else
-    log "⚠ Console fonts not found - they may be in base system or need different package"
+    log "⚠ Specific TERMINAL fonts not found - checking for any console fonts"
     # Check if any .fnt files exist
     if ls /usr/share/syscons/fonts/*.fnt >/dev/null 2>&1; then
         log "Available console fonts:"
         ls /usr/share/syscons/fonts/*.fnt | head -5 >> "$LOG_FILE" 2>&1
         CONSOLE_FONTS_AVAILABLE=true
+        log "✓ Console fonts available (may not include all sizes needed for accessibility)"
     else
         log "No .fnt files found in /usr/share/syscons/fonts/"
-        log "Console fonts may be provided by base FreeBSD system"
-        CONSOLE_FONTS_AVAILABLE=true  # Assume base system provides them
+        log "Console fonts may be missing from base FreeBSD installation"
+        log "This is unusual - console fonts should be part of base system"
+        CONSOLE_FONTS_AVAILABLE=false
     fi
 fi
 
 if [ "$CONSOLE_FONTS_AVAILABLE" = false ]; then
     log "WARNING: Console fonts may not be available"
-    log "BAUX will still work but console fonts may be limited"
+    log "BAUX will still work but console font accessibility may be limited"
+    log "Consider installing additional fonts: pkg install misc/console-fonts"
 fi
-done
 
 # Ensure bash is available at the expected path
 if [ ! -x "/usr/local/bin/bash" ]; then
@@ -76,14 +81,16 @@ fi
 
 log "✓ All prerequisites verified"
 
-# Ensure fonts are available for accessibility
-log "=== Ensuring Font Availability ==="
-if ! pkg info | grep -q "x11-fonts"; then
-    error "x11-fonts package not installed - required for console fonts"
-    exit 1
+# Verify console font management tools are available
+log "=== Verifying Console Font Management ==="
+if command -v vidcontrol >/dev/null 2>&1; then
+    log "✓ vidcontrol available for console font management"
+else
+    log "⚠ vidcontrol not found - console font switching may not work"
+    log "vidcontrol should be part of base FreeBSD system"
 fi
 
-# Check for required console fonts
+# Check for required console fonts for accessibility
 MISSING_FONTS=""
 for font in "TERMINAL_16x32.fnt" "TERMINAL_12x24.fnt" "TERMINAL_8x16.fnt"; do
     if [ ! -f "/usr/share/syscons/fonts/$font" ]; then
@@ -92,9 +99,10 @@ for font in "TERMINAL_16x32.fnt" "TERMINAL_12x24.fnt" "TERMINAL_8x16.fnt"; do
 done
 
 if [ -n "$MISSING_FONTS" ]; then
-    error "Missing required console fonts:$MISSING_FONTS"
-    log "This will cause font accessibility issues"
-    log "Try: pkg delete x11-fonts && pkg install x11-fonts"
+    log "Missing some console fonts:$MISSING_FONTS"
+    log "This may limit font accessibility options"
+    log "Consider installing additional fonts: pkg install misc/console-fonts"
+    log "BAUX will still work with available fonts"
 else
     success "All required console fonts are available"
 fi
