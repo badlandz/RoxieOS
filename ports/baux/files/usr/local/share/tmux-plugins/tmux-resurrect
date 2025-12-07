@@ -1,0 +1,4 @@
+#!/bin/bash
+# tmux-resurrect setup for BAUX
+# This would be expanded with the full resurrect plugin
+echo "TMUX resurrect plugin placeholder"
