@@ -46,6 +46,32 @@ if ! $PKG_CMD info x11/xorg >/dev/null 2>&1; then
     $PKG_CMD install -y x11/xorg x11/xinit x11/xrdb x11/xdpyinfo x11/xrandr x11/xset
 fi
 
+# Configure X11 permissions
+echo "Configuring X11 permissions..."
+if ! groups $USER | grep -q video; then
+    echo "Adding user to video group for X11 access..."
+    $CP_CMD /usr/sbin/pw $CP_CMD pw 2>/dev/null || true  # Ensure pw is available
+    $PKG_CMD usermod -a -G video $USER 2>/dev/null || echo "Note: May need to logout/login for group changes"
+fi
+
+# Create basic X11 config
+if [ ! -f /etc/X11/xorg.conf ]; then
+    echo "Creating basic X11 config..."
+    cat > /tmp/xorg.conf << 'EOF'
+Section "Device"
+    Identifier "Card0"
+    Driver "modesetting"
+EndSection
+
+Section "Screen"
+    Identifier "Screen0"
+    Device "Card0"
+    DefaultDepth 24
+EndSection
+EOF
+    $CP_CMD /tmp/xorg.conf /etc/X11/xorg.conf 2>/dev/null || echo "X11 config creation failed"
+fi
+
 # Set console font
 echo "Setting console font..."
 # Try different font names, fallback to default if fails
@@ -58,6 +84,19 @@ elif vidcontrol -f 8x16 2>/dev/null; then
 else
     echo "⚠ Could not set console font, using default"
 fi
+
+# Install Ollama for AI
+echo "Installing Ollama for AI assistance..."
+$PKG_CMD install -y ollama || echo "Ollama install failed"
+
+# Enable Ollama service
+echo "Enabling Ollama service..."
+$CP_CMD /usr/sbin/service $CP_CMD service 2>/dev/null || true
+$PKG_CMD service ollama enable 2>/dev/null || echo "Service enable failed - may need manual setup"
+
+# Pull default model
+echo "Pulling default AI model..."
+ollama pull llama3.2:3b 2>/dev/null || echo "Model pull failed - will happen on first use"
 
 # Install BAUX packages
 echo "Installing BAUX packages..."
@@ -85,13 +124,20 @@ echo "=== SETUP COMPLETE ==="
 echo "Run 'startx' to start X11 with BAUX"
 echo "Console font set to best available"
 echo "X11 DPI set to 192 for accessibility"
+echo "Ollama AI service enabled"
 echo ""
 echo "Test commands:"
 echo "  doas vidcontrol -i active    # Check console font"
 echo "  xrdb -query | grep dpi       # Check X DPI"
 echo "  baux --help                  # Test BAUX"
 echo "  bvi --version                # Test editor"
+echo "  baux-bot                     # Test AI assistant"
 echo ""
 echo "If BAUX install failed due to permissions:"
 echo "  su root -c '/usr/local/bin/bash ~/src/RoxieOS/scripts/setup-workstation.sh'"
 echo "Or configure doas: su root -c 'echo \"permit nopass :wheel\" >> /etc/doas.conf'"
+echo ""
+echo "If X11 fails to start:"
+echo "  Check if user is in video group: groups $USER"
+echo "  Logout and login again for group changes"
+echo "  Or run: doas usermod -a -G video $USER"
