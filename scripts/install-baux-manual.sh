@@ -10,15 +10,15 @@ LOG_FILE="${1:-baux-manual-install-$(date +%Y%m%d-%H%M%S).log}"
 
 # Logging functions
 log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $*" | tee -a "$LOG_FILE"
+    echo "[INFO] $*" | tee -a "$LOG_FILE"
 }
 
 error() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] $*" | tee -a "$LOG_FILE" >&2
+    echo "[ERROR] $*" | tee -a "$LOG_FILE" >&2
 }
 
 success() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [SUCCESS] $*" | tee -a "$LOG_FILE"
+    echo "[SUCCESS] $*" | tee -a "$LOG_FILE"
 }
 
 # Privilege escalation helper
@@ -166,7 +166,9 @@ fi
 
 ## Install bbase (Foundation)
 log "=== Installing bbase (Foundation) ==="
+echo "DEBUG: About to check pwd" >> "$LOG_FILE"
 log "Current working directory before cd: $(pwd)"
+echo "DEBUG: pwd worked, about to check directory" >> "$LOG_FILE"
 log "Checking if ports/bbase exists..."
 if [ -d "ports/bbase" ]; then
     log "✓ ports/bbase directory exists"
@@ -176,7 +178,10 @@ else
     exit 1
 fi
 log "Changing to ports/bbase..."
+log "About to execute: cd ports/bbase"
 cd ports/bbase || { error "Cannot cd to ports/bbase from $(pwd)"; exit 1; }
+log "cd command completed successfully"
+log "Current pwd result: $(pwd)"
 log "Successfully changed to: $(pwd)"
 
 # Verify install.sh exists and is executable
