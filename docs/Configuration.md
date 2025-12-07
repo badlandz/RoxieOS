@@ -4,6 +4,33 @@
 
 Every key combination produces identical results across all BAUXBSD layers.
 
+## Accessibility & Display Configuration
+
+### Font Sizing (Critical for Impaired Vision)
+BAUX automatically configures readable fonts for console and X11:
+
+**Console Fonts:**
+- Default: 8x16 TERMINAL font (readable on most displays)
+- X300 Special: Larger font for impaired vision compatibility
+
+**X11 Fonts:**
+- DPI: 120 (higher than default 96 for better readability)
+- Antialiasing: Enabled for smooth text rendering
+
+### Display Resolution Management
+BAUX probes display capabilities and enforces limits:
+
+**Resolution Limits:**
+- Maximum: 1920x1080 (prevents tiny fonts on high-res displays)
+- X300: Custom aspect ratio handling
+- Auto-detection: Adapts to connected display capabilities
+
+**Configuration:**
+```bash
+# Automatic display setup (added to bbase installation)
+./scripts/setup-display.sh  # Probes and configures display
+```
+
 ## The BAUX Keymap System
 
 ### Foundation: baux.kbd
