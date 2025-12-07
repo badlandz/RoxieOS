@@ -1,0 +1,11 @@
+BAUXBSD AI assistant - intelligent development companion with Ollama integration.
+
+Features:
+- Real-time monitoring of RoxieOS repository changes
+- RAG (Retrieval-Augmented Generation) with full codebase context
+- Local Ollama models for privacy and offline operation
+- Auto-detects repository location (~/src/RoxieOS, /src/roxieos, etc.)
+- Interactive chat interface for debugging and development assistance
+- Optimized model selection for FreeBSD workstation performance
+
+WWW: https://roxieos.org

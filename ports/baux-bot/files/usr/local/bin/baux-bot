@@ -1,0 +1,147 @@
+#!/usr/local/bin/bash
+# baux-bot.sh v6.3 — FreeBSD workstation edition
+# Adapted for ~/src/RoxieOS/ development workflow
+# Dec 07 2025
+
+set -euo pipefail
+
+# Auto-detect RoxieOS repo location
+detect_roxie_root() {
+    # Check common locations
+    for candidate in "$HOME/src/RoxieOS" "/src/roxieos" "$HOME/RoxieOS"; do
+        if [[ -d "$candidate" && -d "$candidate/.git" ]]; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+
+    # Check ROXIE_ROOT environment variable
+    if [[ -n "${ROXIE_ROOT:-}" && -d "$ROXIE_ROOT" ]]; then
+        echo "$ROXIE_ROOT"
+        return 0
+    fi
+
+    echo "ERROR: Cannot find RoxieOS repository. Please set ROXIE_ROOT or ensure ~/src/RoxieOS exists."
+    exit 1
+}
+
+SRC_ROOT=$(detect_roxie_root)
+LOG_DIR="$HOME/.baux-bot/chatlogs"
+RAG_DIR="$HOME/.baux-bot/rag"
+mkdir -p "$LOG_DIR" "$RAG_DIR"
+
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_DIR/current.log"; }
+
+# Model selection optimized for FreeBSD workstation (prioritize efficiency)
+MODEL_PREF=(llama3.2:3b deepseek-coder:6.7b qwen2.5:7b gemma2:2b phi3:3.8b smollm2:135m)
+select_model() {
+    for m in "${MODEL_PREF[@]}"; do
+        if ollama list 2>/dev/null | grep -q "^${m%%:*}"; then
+            echo "$m"
+            return
+        fi
+    done
+    log "No preferred models found, pulling smollm2:135m"
+    ollama pull smollm2:135m 2>/dev/null || true
+    echo "smollm2:135m"
+}
+MODEL=$(select_model)
+
+log "BAUX BOT v6.3 online — $MODEL — monitoring $SRC_ROOT"
+
+build_rag() {
+    local rag_file="$RAG_DIR/current.txt"
+    >"$rag_file"
+
+    echo "=== ROXIEOS SCAN $(date) ===" >>"$rag_file"
+    echo "Root: $SRC_ROOT" >>"$rag_file"
+
+    # Git repos
+    find "$SRC_ROOT" -type d -name .git -exec dirname {} \; 2>/dev/null | while read -r repo; do
+        echo -e "\n=== GIT: $(basename "$repo") ===" >>"$rag_file"
+        (cd "$repo" && git status -sb && git log --oneline -8) >>"$rag_file" 2>/dev/null || true
+    done
+
+    # Latest files — FreeBSD compatible
+    echo -e "\n=== LATEST SOURCE FILES ===" >>"$rag_file"
+    find "$SRC_ROOT" -type f \
+        \( -name "*.sh" -o -name "*.c" -o -name "*.lua" -o -name "*.conf" -o -name "*.md" -o -name "*.vim" -o -name "*.mk" \) \
+        -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -50 | while read -r f; do
+        echo -e "\n--- $f ---" >>"$rag_file"
+        tail -n 200 "$f" >>"$rag_file" 2>/dev/null || true
+    done || true
+}
+
+ask_ollama() {
+    local prompt="$1"
+    printf "BAUX BOT thinking... "
+    {
+        cat <<EOF
+You are BAUX BOT — sarcastic god of RoxieOS development on FreeBSD.
+You help debug BAUXBSD installations, fix configuration issues, and accelerate development.
+Live state of RoxieOS repo at $SRC_ROOT:
+$(cat "$RAG_DIR/current.txt")
+
+User is working on a FreeBSD workstation testing BAUXBSD components.
+Provide practical, actionable advice for FreeBSD/BAUXBSD development.
+
+User: $prompt
+Answer directly and practically.
+EOF
+    } | ollama run "$MODEL" --nowordwrap 2>/dev/null || echo "(ollama hiccup - check if service is running)"
+    echo
+}
+
+# Startup
+build_rag
+log "RAG ready — $(wc -l <"$RAG_DIR/current.txt") lines"
+
+echo -e "\nBAUX BOT v6.3 alive — model: $MODEL — $SRC_ROOT is law"
+echo "Commands: 'exit' to quit, 'read FILE' to force file into RAG, 'status' for repo status"
+echo "Type anything. Only the word 'exit' kills me.\n"
+
+while true; do
+    # Check for repo changes
+    find "$SRC_ROOT" -newer "$RAG_DIR/current.txt" -print -quit >/dev/null 2>&1 && {
+        log "$SRC_ROOT changed — rebuilding RAG"
+        build_rag
+        summary=$(ask_ollama "Summarize what just changed in the RoxieOS repo")
+        echo -e "\nBAUX BOT (auto): $summary\n"
+    }
+
+    printf "you > "
+    read -r input || {
+        echo
+        break
+    }
+    [[ -z "$input" ]] && continue
+
+    case "$input" in
+        exit)
+            echo "BAUX BOT offline — see you space cowboy"
+            exit 0
+            ;;
+        status)
+            echo "=== REPO STATUS ==="
+            (cd "$SRC_ROOT" && git status -sb)
+            echo
+            continue
+            ;;
+        read*)
+            # Force a specific file into RAG
+            file_path="${input#read }"
+            if [[ -f "$file_path" ]]; then
+                echo "=== FORCING $file_path INTO RAG ===" >>"$RAG_DIR/current.txt"
+                echo "--- $file_path ---" >>"$RAG_DIR/current.txt"
+                tail -n 200 "$file_path" >>"$RAG_DIR/current.txt" 2>/dev/null || true
+                echo "File added to RAG context."
+            else
+                echo "File not found: $file_path"
+            fi
+            continue
+            ;;
+    esac
+
+    response=$(ask_ollama "$input")
+    echo -e "BAUX BOT: $response\n"
+done
