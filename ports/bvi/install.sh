@@ -7,7 +7,7 @@ set -e
 echo "Installing BVI Editor Wrapper..."
 
 # Install the wrapper script
-doas cp bvi.sh /usr/local/bin/bvi
+doas cp src/bvi.sh /usr/local/bin/bvi
 doas chmod +x /usr/local/bin/bvi
 
 # Install configurations

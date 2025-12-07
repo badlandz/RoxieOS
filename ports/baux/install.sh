@@ -7,12 +7,12 @@ set -e
 echo "Installing BAUX Session Manager..."
 
 # Install the main script
-doas cp baux /usr/local/bin/
+doas cp core/baux /usr/local/bin/
 doas chmod +x /usr/local/bin/baux
 
 # Install tmux configuration
 doas mkdir -p /usr/local/share/tmux
-doas cp baux.conf /usr/local/share/tmux/
+doas cp core/tmux/baux.conf /usr/local/share/tmux/
 
 # Create BAUX directories
 doas mkdir -p /usr/local/share/baux/tmux

@@ -9,7 +9,7 @@ pkg install bash git neovim tmux
 
 ## Install bbase (Foundation)
 echo "Installing bbase..."
-cd /path/to/RoxieOS/ports/bbase
+cd ports/bbase
 doas ./install.sh
 
 # Test keymap
@@ -18,7 +18,7 @@ echo "Caps Lock should now be Escape. Test it!"
 
 ## Install baux (Session Manager)
 echo "Installing baux..."
-cd /path/to/RoxieOS/ports/baux
+cd ../baux
 doas ./install.sh
 
 # Test session manager
@@ -27,7 +27,7 @@ echo "baux should show help. Try 'baux' to start session"
 
 ## Install bvi (Editor)
 echo "Installing bvi..."
-cd /path/to/RoxieOS/ports/bvi
+cd ../bvi
 doas ./install.sh
 
 # Test editor
@@ -36,7 +36,7 @@ echo "Try 'bvi test.txt' to edit a file"
 
 ## Run System Test
 echo "Running system test..."
-cd /path/to/RoxieOS/scripts
+cd ../scripts
 ./test-baux.sh
 
 ## Next Steps
