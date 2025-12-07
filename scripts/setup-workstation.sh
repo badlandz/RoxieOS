@@ -29,7 +29,16 @@ fi
 
 # Set console font
 echo "Setting console font..."
-doas vidcontrol -f iso-8x16
+# Try different font names, fallback to default if fails
+if doas vidcontrol -f iso-8x16 2>/dev/null; then
+    echo "✓ Set console font to iso-8x16"
+elif doas vidcontrol -f cp437-8x16 2>/dev/null; then
+    echo "✓ Set console font to cp437-8x16"
+elif doas vidcontrol -f 8x16 2>/dev/null; then
+    echo "✓ Set console font to 8x16"
+else
+    echo "⚠ Could not set console font, using default"
+fi
 
 # Install BAUX packages
 echo "Installing BAUX packages..."
