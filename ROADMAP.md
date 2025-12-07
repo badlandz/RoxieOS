@@ -1,34 +1,34 @@
 # BAUXBSD Technical Roadmap
-**FreeBSD 15.0 Implementation Guide**
+**BAUXBSD Workstation Cloning Roadmap**
 
-## Migration Strategy: Debian → FreeBSD
+## Cloning-Centric Development Strategy
 
-### Phase 1: Foundation (Week 1-2)
-**Goal:** Basic FreeBSD system with BAUX keymap and core packages
+### Phase 1: Core Cloning Foundation (Week 1-2)
+**Goal:** Bootable USB with instant workstation restoration
 
-#### 1.1 System Setup
+#### 1.1 System Setup for Cloning
 ```bash
-# FreeBSD 15.0-RELEASE installation
-# Download: https://download.freebsd.org/releases/amd64/amd64/ISO-IMAGES/15.0/
+# Create BAUXBSD ISO with cloning tools
+# Download FreeBSD 15.0 + BAUX packages
 pkg update
-pkg install neovim tmux dwm st qutebrowser maim fbgrab seaweedfs
+pkg install bbase baux bwm bterm bvi bweb chaos
 ```
 
-#### 1.2 Keymap Integration
+#### 1.2 Keymap Integration for Cloning
 ```bash
-# Install baux.kbd to system locations
+# Install baux.kbd globally for cloned systems
 cp baux.kbd /usr/share/syscons/keymaps/baux.kbd
 cp baux.kbd /usr/local/share/X11/xkb/symbols/baux
 
-# Enable in system
+# Enable in cloned system
 echo 'keymap="baux"' >> /etc/rc.conf
 echo 'setxkbmap -symbols baux' >> /usr/local/etc/X11/xinitrc
 ```
 
-#### 1.3 Core Package Testing
-- Test bbase (system configs)
-- Test baux (tmux session management)
-- Verify Caps→Esc works everywhere
+#### 1.3 Cloning Package Testing
+- Test bbase (foundation for clones)
+- Test baux (session backup/restore)
+- Verify Caps→Esc and Mod4+1-9 work in cloned env
 - Confirm Mod4 keybindings in console + X
 
 ### Phase 2: Package Migration (Week 3-4)

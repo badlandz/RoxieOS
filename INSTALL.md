@@ -1,40 +1,50 @@
 # BAUXBSD Installation Guide
-**From USB to productive in 5 seconds**
+**Clone your workstation in 5 seconds**
 
-## Quick Start
+## Workstation Cloning Workflow
 
-### 1. Create Bootable USB
+### Phase 1: Backup Current Workstation
 ```bash
-# Download FreeBSD 15.0-RELEASE
-fetch https://download.freebsd.org/releases/amd64/amd64/ISO-IMAGES/15.0/FreeBSD-15.0-RELEASE-amd64-disc1.iso
+# On your current machine: Backup sessions, projects, configs to USB
+baux-backup /mnt/usb/workstation-backup
 
-# Write to USB
-dd if=FreeBSD-15.0-RELEASE-amd64-disc1.iso of=/dev/da0 bs=1M conv=sync
+# This saves:
+# - Tmux sessions (immortal state)
+# - Neovim sessions (open files, undo history)
+# - Projects in ~/src/
+# - All BAUX configs
 ```
 
-### 2. Boot and Install Core
+### Phase 2: Create Clone-Ready USB
 ```bash
-# On first boot:
+# Download BAUXBSD ISO
+fetch https://bauxbsd.org/releases/BAUXBSD-15.0-RELEASE.iso
+
+# Write to USB (creates bootable live environment)
+dd if=BAUXBSD-15.0-RELEASE.iso of=/dev/da0 bs=1M conv=sync
+```
+
+### Phase 3: Boot New Machine and Clone
+```bash
+# Boot new laptop with BAUXBSD USB
+# System boots live in <5 seconds
+
+# Install core packages (fast, <400MB)
 pkg install bbase baux bwm bterm bvi bweb chaos
 
-# Enable BAUX keymap
+# Enable BAUX keymap globally
 echo 'keymap="baux"' >> /etc/rc.conf
 
-# Enable services
+# Enable cloning services
 echo 'baux_enable="YES"' >> /etc/rc.conf
 echo 'bwm_enable="YES"' >> /etc/rc.conf
-```
 
-### 3. First Run Configuration
-```bash
-# Start BAUX environment
-baux
+# Clone your workstation
+baux-clone /mnt/usb/workstation-backup
 
-# Your session appears:
-# 1:shell  2:edit  3:web  4:——  5:——  6:——  7:——  8:——  9:——          15:33
-
-# Press Mod4+2 to start editing
-# Press Mod4+3 to open browser
+# You're productive instantly:
+# Sessions revive, projects sync, keymaps active
+# 1:shell  2:edit  3:web  4:project1  5:project2  6:——  7:——  8:——  9:——  15:33
 ```
 
 ## Package Details
