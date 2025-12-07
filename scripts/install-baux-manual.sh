@@ -8,9 +8,6 @@ set -e  # Exit on any error
 # Configuration
 LOG_FILE="${1:-baux-manual-install-$(date +%Y%m%d-%H%M%S).log}"
 
-# Trap to log unexpected exits
-trap 'echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] Script failed at line $LINENO" >> "$LOG_FILE"; echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] Last command: $BASH_COMMAND" >> "$LOG_FILE"' ERR
-
 # Logging functions
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $*" | tee -a "$LOG_FILE"
@@ -24,28 +21,52 @@ success() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') [SUCCESS] $*" | tee -a "$LOG_FILE"
 }
 
+# Privilege escalation helper
+run_privileged() {
+    if [ "$USE_DOAS" = true ]; then
+        doas "$@"
+    else
+        "$@"
+    fi
+}
+
+# Trap to log unexpected exits (now that LOG_FILE and functions are available)
+trap 'error "Script failed at line $LINENO"; log "Last command: $BASH_COMMAND"' ERR
+
 log "=== BAUX Manual Installation Started ==="
 log "Current directory: $(pwd)"
 log "User: $(whoami)"
 log "Log file: $LOG_FILE"
 
-## Verify doas is configured
-log "=== Verifying doas Configuration ==="
-if ! doas -C /etc/doas.conf >/dev/null 2>&1; then
-    log "⚠ doas configuration check failed"
-    if [ ! -f "/etc/doas.conf" ]; then
-        log "doas.conf not found - creating basic configuration"
-        echo "permit nopass :wheel" | doas tee /etc/doas.conf >/dev/null 2>&1 || {
-            error "Failed to create doas.conf - run as root or configure doas manually"
-            log "Try: su root -c 'echo \"permit nopass :wheel\" >> /etc/doas.conf'"
-            exit 1
-        }
-    else
-        log "doas.conf exists but may not be configured correctly"
-        log "Ensure your user is in the wheel group or has doas permissions"
-    fi
+## Check if running as root or need doas
+log "=== Checking Privilege Requirements ==="
+if [ "$(id -u)" -eq 0 ]; then
+    log "✓ Running as root - no privilege escalation needed"
+    USE_DOAS=false
 else
-    log "✓ doas configuration verified"
+    log "Running as regular user - checking doas availability"
+    if command -v doas >/dev/null 2>&1; then
+        # Try a simple doas command to see if it works
+        if doas true >/dev/null 2>&1; then
+            log "✓ doas is working correctly"
+            USE_DOAS=true
+        else
+            log "⚠ doas command failed - checking configuration"
+            if [ ! -f "/etc/doas.conf" ]; then
+                log "doas.conf not found - you may need to configure doas"
+                log "Try: su root -c 'echo \"permit nopass :wheel\" >> /etc/doas.conf'"
+            else
+                log "doas.conf exists but may not grant permissions to your user"
+                log "Ensure your user is in the wheel group: su root -c 'pw groupmod wheel -m $(whoami)'"
+            fi
+            log "Continuing anyway - some operations may require manual intervention"
+            USE_DOAS=true  # Try anyway, commands will show errors if they fail
+        fi
+    else
+        log "⚠ doas not found - some operations may require manual intervention"
+        log "Install doas: pkg install doas"
+        USE_DOAS=false
+    fi
 fi
 
 ## Prerequisites
@@ -157,7 +178,7 @@ if [ ! -x "install.sh" ]; then
 fi
 
 log "Running install.sh..."
-if doas ./install.sh >> "$LOG_FILE" 2>&1; then
+if run_privileged ./install.sh >> "$LOG_FILE" 2>&1; then
     success "bbase installed successfully"
     log "bbase installation completed successfully"
 else
@@ -170,7 +191,7 @@ fi
 log "bbase installation section completed"
 # Test keymap
 log "Testing keymap..."
-if doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd >> "$LOG_FILE" 2>&1; then
+if run_privileged kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd >> "$LOG_FILE" 2>&1; then
     success "Keymap loaded successfully"
     log "✓ Caps Lock should now be Escape globally"
 else
@@ -191,7 +212,7 @@ if [ ! -x "install.sh" ]; then
 fi
 
 log "Running install.sh..."
-if doas ./install.sh >> "$LOG_FILE" 2>&1; then
+if run_privileged ./install.sh >> "$LOG_FILE" 2>&1; then
     success "baux install.sh completed"
 else
     error "baux install.sh failed"
@@ -222,7 +243,7 @@ if [ ! -x "install.sh" ]; then
 fi
 
 log "Running install.sh..."
-if doas ./install.sh >> "$LOG_FILE" 2>&1; then
+if run_privileged ./install.sh >> "$LOG_FILE" 2>&1; then
     success "bvi install.sh completed"
 else
     error "bvi install.sh failed"
