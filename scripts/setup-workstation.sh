@@ -15,7 +15,11 @@ doas pkg upgrade -y
 
 # Install prerequisites
 echo "Installing prerequisites..."
-doas pkg install -y bash git neovim tmux xterm rsync misc/console-fonts
+doas pkg install -y bash git neovim tmux xterm rsync || echo "Some packages may already be installed"
+
+# Try additional console fonts (may not be available)
+echo "Attempting to install additional console fonts..."
+doas pkg install -y misc/console-fonts 2>/dev/null || echo "misc/console-fonts not available - using base fonts"
 
 # Install X11 if not present
 if ! pkg info x11/xorg >/dev/null 2>&1; then
