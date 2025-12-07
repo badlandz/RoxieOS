@@ -31,7 +31,7 @@ BAUX Mesh transforms workstation cloning from local USB-based recovery into a di
 ├─────────────────┤
 │  WireGuard      │ ← Encrypted device connectivity
 ├─────────────────┤
-│ Session Storage │ ← Distributed state persistence
+│ Session Registry│ ← Location tracking & coordination
 └─────────────────┘
 ```
 
@@ -39,7 +39,7 @@ BAUX Mesh transforms workstation cloning from local USB-based recovery into a di
 
 ### Control Plane Setup
 **Domain:** `hs.coseismic.org` (configurable)
-**Server Location:** Cloud VPS (RackNerd $10.60/year) or LAN server
+**Server Location:** Cloud VPS (Vultr $6-12/month) or LAN server
 **Authentication:** Device pre-authorization with ACL policies
 
 ### Device Enrollment
@@ -58,14 +58,14 @@ baux mesh enroll
 
 ### Distributed Sessions
 **Creation:** Sessions can be created on any device and become mesh resources
-**Migration:** Move active sessions between devices seamlessly
+**Migration:** Move active sessions between devices seamlessly via peer-to-peer sync
 **Multi-Access:** View same session from multiple devices simultaneously
-**Persistence:** Sessions survive device failures via distributed storage
+**Persistence:** Sessions survive device failures via peer-to-peer replication
 
 ### Session States
-- **Active:** Running on specific device with real-time sync
-- **Suspended:** Paused state, resumable on any device
-- **Archived:** Historical snapshots for recovery
+- **Active:** Running on specific device with peer-to-peer sync
+- **Suspended:** Paused state, resumable on any device via registry lookup
+- **Archived:** Historical snapshots stored locally on devices
 - **Shared:** Collaborative sessions with access controls
 
 ## Implementation Phases
@@ -79,10 +79,10 @@ baux mesh enroll
 
 ### Phase 2: Session Distribution
 **Goal:** Basic session sharing across devices
-- Implement session serialization/deserialization
-- Add cross-device session migration
-- Create session discovery mechanisms
-- Test basic session handoff
+- Implement peer-to-peer session synchronization
+- Add session location registry on server
+- Create session discovery via registry lookup
+- Test basic session handoff between devices
 
 ### Phase 3: Advanced Features
 **Goal:** Full distributed session ecosystem
@@ -94,17 +94,17 @@ baux mesh enroll
 ## Server Requirements
 
 ### Minimum Cloud VPS
-- **Provider:** RackNerd KVM VPS ($10.60/year)
-- **CPU:** 1 vCPU (sufficient for Headscale + session management)
-- **RAM:** 1GB (Headscale ~50MB + session processing)
-- **Storage:** 25GB SSD (session data + logs)
-- **Bandwidth:** 2000GB/month (mesh traffic)
-- **OS:** FreeBSD 15.0 (custom ISO support)
+- **Provider:** Vultr Cloud Compute ($6-12/month)
+- **CPU:** 1 vCPU (sufficient for Headscale + registry coordination)
+- **RAM:** 1GB (Headscale ~50MB + minimal registry processing)
+- **Storage:** 25GB SSD (registry data + logs, no session storage)
+- **Bandwidth:** 1TB/month (minimal coordination traffic)
+- **OS:** FreeBSD 15.0 (excellent support)
 
 ### Scaling Considerations
-- **Growth Path:** Upgrade to 2.5GB plan ($18.66/year) for increased capacity
-- **Multi-Server:** Additional VPS for geographic distribution
-- **Load Balancing:** Distribute session load across multiple servers
+- **Growth Path:** Upgrade to 2GB RAM plan ($12/month) for increased registry capacity
+- **Multi-Server:** Additional VPS for geographic distribution of registry
+- **Load Balancing:** Distribute registry lookups across multiple servers
 
 ## Security Model
 
@@ -126,10 +126,10 @@ baux mesh enroll
 ## Network Architecture
 
 ### Connectivity Models
-- **Direct Peer:** Devices communicate directly when possible
+- **Direct Peer:** Devices communicate directly for session sync when possible
 - **NAT Traversal:** Automatic relay for firewall traversal
 - **DERP Servers:** Cloud relays for complex network scenarios
-- **Subnet Routing:** Access to traditional network resources
+- **Registry Queries:** Lightweight server lookups for session locations
 
 ### Performance Optimization
 - **Connection Pooling:** Reuse established connections
@@ -154,12 +154,12 @@ baux mesh enroll
 
 ### Common Issues
 - **Connection Failures:** Check Headscale server status and ACLs
-- **Session Sync Issues:** Verify device enrollment and permissions
-- **Performance Problems:** Monitor bandwidth usage and connection quality
+- **Session Discovery Issues:** Verify registry connectivity and location updates
+- **Performance Problems:** Monitor peer-to-peer bandwidth and registry response times
 
 ### Diagnostic Tools
 - `baux mesh status` - Check mesh connectivity
-- `baux mesh sessions` - List available distributed sessions
+- `baux mesh registry` - Query session locations
 - `headscale nodes list` - View enrolled devices
 
 ## Future Extensions
@@ -185,4 +185,4 @@ BAUX Mesh transforms personal computing from device-centric to session-centric. 
 **References:**
 - [Headscale Documentation](https://headscale.net/)
 - [Tailscale Concepts](https://tailscale.com/blog/how-tailscale-works)
-- [RackNerd VPS Plans](https://www.racknerd.com/kvm-vps)
+- [Vultr Cloud Compute](https://www.vultr.com/pricing/#cloud-compute)

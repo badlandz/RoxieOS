@@ -9,20 +9,20 @@ BAUX Server provides the central hub for distributed session management, running
 
 ### Minimum Specifications
 - **CPU:** 1 vCPU (Headscale is lightweight)
-- **RAM:** 1GB (50MB for Headscale + session processing)
-- **Storage:** 25GB SSD (session data, logs, packages)
-- **Bandwidth:** 2000GB/month (mesh traffic)
+- **RAM:** 1GB (50MB for Headscale + registry coordination)
+- **Storage:** 25GB SSD (registry data, logs, packages)
+- **Bandwidth:** 1000GB/month (minimal coordination traffic)
 - **OS:** FreeBSD 15.0-RELEASE
 - **Network:** Static IP with domain (hs.coseismic.org)
 
 ### Recommended Hosting
-**RackNerd KVM VPS ($10.60/year):**
-- 1 vCPU, 1GB RAM, 25GB SSD, 2000GB bandwidth
-- FreeBSD custom ISO support
-- Multiple US/EU datacenters
+**Vultr Cloud Compute ($6-12/month):**
+- 1 vCPU, 1GB RAM, 25GB SSD, 1TB bandwidth
+- Excellent FreeBSD support
+- Multiple global datacenters
 - 24/7 support
 
-**Alternative:** DigitalOcean, Vultr, or Linode with FreeBSD images
+**Alternatives:** DigitalOcean or Linode with FreeBSD images
 
 ## FreeBSD Installation
 
@@ -142,14 +142,14 @@ pkg install nginx
 
 ## BAUX Server Components
 
-### Session Storage Setup
+### Session Registry Setup
 ```bash
-# Create session storage directory
-mkdir -p /var/db/baux/sessions
+# Create registry storage directory
+mkdir -p /var/db/baux/registry
 chmod 700 /var/db/baux
 
 # Install required packages
-pkg install sqlite3 postgresql15-server
+pkg install sqlite3
 ```
 
 ### BAUX Server Package
@@ -167,9 +167,9 @@ vi /usr/local/etc/baux/server.conf
 HEADSCALE_URL=https://hs.coseismic.org
 HEADSCALE_API_KEY=your-api-key
 
-# Session storage
-SESSION_DB=/var/db/baux/sessions.db
-SESSION_BACKUP_DIR=/var/db/baux/backups
+# Session registry (location tracking only)
+REGISTRY_DB=/var/db/baux/registry.db
+MAINTENANCE_SESSIONS_DIR=/var/db/baux/maintenance
 
 # Network settings
 LISTEN_ADDR=0.0.0.0:8443
@@ -274,12 +274,15 @@ BACKUP_DIR="/var/backups/baux"
 # Backup Headscale database
 sqlite3 /var/db/headscale.db ".backup ${BACKUP_DIR}/headscale-${DATE}.db"
 
-# Backup session data
-rsync -a /var/db/baux/ ${BACKUP_DIR}/sessions-${DATE}/
+# Backup registry data
+sqlite3 /var/db/baux/registry.db ".backup ${BACKUP_DIR}/registry-${DATE}.db"
+
+# Backup local maintenance sessions
+rsync -a /var/db/baux/maintenance/ ${BACKUP_DIR}/maintenance-${DATE}/
 
 # Cleanup old backups (keep 7 days)
 find $BACKUP_DIR -name "*.db" -mtime +7 -delete
-find $BACKUP_DIR -name "sessions-*" -mtime +7 -delete
+find $BACKUP_DIR -name "maintenance-*" -mtime +7 -delete
 EOF
 
 chmod +x /usr/local/bin/baux-backup
@@ -328,14 +331,14 @@ service baux-server restart
 ## Scaling Considerations
 
 ### Vertical Scaling
-- **CPU:** Upgrade to 2+ vCPU for heavy session loads
-- **RAM:** 2-4GB for multiple concurrent sessions
-- **Storage:** 50-100GB for extensive session history
+- **CPU:** Upgrade to 2 vCPU for increased registry throughput
+- **RAM:** 2GB for larger device registries
+- **Storage:** 50GB for extended registry history
 
 ### Horizontal Scaling
-- **Multiple Servers:** Geographic distribution
-- **Load Balancing:** Distribute session requests
-- **Database Replication:** PostgreSQL for multi-server setups
+- **Multiple Servers:** Geographic distribution of registries
+- **Load Balancing:** Distribute registry queries
+- **Database Replication:** Registry synchronization across servers
 
 ## Maintenance
 
@@ -356,7 +359,7 @@ service headscale restart
 - **System Resources:** htop, systat
 - **Network Traffic:** iftop, nload
 - **Service Health:** Check Headscale web interface
-- **Session Activity:** Monitor BAUX server logs
+- **Registry Activity:** Monitor BAUX server logs and registry queries
 
 ## Conclusion
 
@@ -365,10 +368,11 @@ A properly configured BAUX server provides the foundation for distributed sessio
 **Next Steps:**
 1. Complete Headscale setup and testing
 2. Enroll your first client device
-3. Test basic session distribution
-4. Implement backup automation
+3. Test session location registry
+4. Implement peer-to-peer session sync
+5. Implement backup automation
 
 **References:**
 - [Headscale Installation](https://headscale.net/stable/setup/install/)
 - [FreeBSD Server Setup](https://www.youtube.com/watch?v=r-qn6DrJ6IA)
-- [RackNerd VPS](https://www.racknerd.com/kvm-vps)
+- [Vultr Cloud Compute](https://www.vultr.com/pricing/#cloud-compute)

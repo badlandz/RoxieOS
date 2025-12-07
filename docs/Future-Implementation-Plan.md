@@ -174,26 +174,27 @@ do-build:
 - LAN testing with X200, then cloud deployment
 
 ### Server Hosting Options
-**RackNerd KVM VPS (Recommended):**
-- **1GB Plan:** $10.60/year (1 vCPU, 25GB SSD, 2000GB transfer)
+**Vultr Cloud Compute (Recommended):**
+- **1GB Plan:** ~$6/month (1 vCPU, 25GB SSD, 2TB transfer)
   - Sufficient for basic BAUX server + Headscale
-  - FreeBSD support via custom ISO
-- **2.5GB Plan:** $18.66/year (2 vCPU, 45GB SSD, 3000GB transfer)
+  - Excellent FreeBSD support
+- **2GB Plan:** ~$12/month (1 vCPU, 50GB SSD, 3TB transfer)
   - Better for concurrent sessions and growth
-- **Locations:** Multiple US/EU datacenters available
+- **Locations:** Multiple global datacenters available
 
 **Reference:** FreeBSD Server Setup Guide - https://www.youtube.com/watch?v=r-qn6DrJ6IA
 
 ### Server Software Stack
 - **Headscale:** Lightweight Go application (~50MB RAM)
-- **Session Storage:** SQLite (minimal) or PostgreSQL (scalable)
+- **Session Registry:** SQLite database for location tracking
+- **Local Maintenance:** Storage for server's own admin sessions
 - **Web Interface:** Optional administration interface
 - **Monitoring:** Basic resource and connectivity monitoring
 
 ### Network Architecture
 - **Control Plane:** hs.coseismic.org for Headscale coordination
 - **Mesh Traffic:** Encrypted device-to-device communication
-- **Client Registration:** Secure onboarding of BAUX devices
-- **ACL Management:** Session access controls between users/devices
+- **Registry Queries:** Lightweight location lookups for session discovery
+- **Peer-to-Peer Sync:** Direct session synchronization between devices
 
 This plan provides the roadmap for implementing all planned features while maintaining the clean FreeBSD ports structure.
