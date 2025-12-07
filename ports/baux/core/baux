@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/local/bin/bash
 # core/baux — BAUX entrypoint v0.3.0-pre (cluster-ready)
 # This is the single most important file in the entire OS.
 

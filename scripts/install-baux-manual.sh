@@ -1,3 +1,4 @@
+#!/usr/local/bin/bash
 # BAUX Manual Installation Guide for X300 ThinkPad
 # Run these commands on your FreeBSD X300 system
 
@@ -9,16 +10,16 @@ pkg install bash git neovim tmux
 ## Install bbase (Foundation)
 echo "Installing bbase..."
 cd /path/to/RoxieOS/ports/bbase
-sudo ./install.sh
+doas ./install.sh
 
 # Test keymap
-sudo kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd
+doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd
 echo "Caps Lock should now be Escape. Test it!"
 
 ## Install baux (Session Manager)
 echo "Installing baux..."
 cd /path/to/RoxieOS/ports/baux
-sudo ./install.sh
+doas ./install.sh
 
 # Test session manager
 baux --help
@@ -27,7 +28,7 @@ echo "baux should show help. Try 'baux' to start session"
 ## Install bvi (Editor)
 echo "Installing bvi..."
 cd /path/to/RoxieOS/ports/bvi
-sudo ./install.sh
+doas ./install.sh
 
 # Test editor
 bvi --version 2>/dev/null || echo "bvi wrapper ready"

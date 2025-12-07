@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 PAYLOAD="$1"
 QUESTION=$(echo "$PAYLOAD" | jq -r '.question')
 CONTEXT=$(echo "$PAYLOAD" | jq -r '.context')

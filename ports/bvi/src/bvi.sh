@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/local/bin/bash
 # BVI Wrapper - v0.1: Isolated, fallback-safe launch
 
 . /etc/baux/profile 2>/dev/null || true # BAUX env stubs

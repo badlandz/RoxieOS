@@ -1,7 +1,7 @@
 # config/hooks/live/9999-roxanne-welcome.chroot
-#!/bin/sh
+#!/usr/local/bin/bash
 cat >/usr/local/bin/baux-welcome <<'EOF'
-#!/bin/sh
+#!/usr/local/bin/bash
 clear
 dialog --colors --title " Roxanne Cyberdeck v0.1 " --yesno "\Z1You are already running in RAM.\nThis live image \Zbis the full OS.\n\n\
 • Press \ZbENTER\ZB → keep using it live (fastest)\n\

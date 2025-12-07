@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX System Test Script
 # Tests BAUX components after installation
 
@@ -10,8 +10,8 @@ echo ""
 echo "Testing bbase (keymaps)..."
 if [ -f /usr/share/syscons/keymaps/baux.kbd ]; then
     echo "✅ bbase keymap installed"
-    echo "   Run: sudo kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd"
-    echo "   Run: sudo sysrc keymap=baux && reboot"
+    echo "   Run: doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd"
+    echo "   Run: doas sysrc keymap=baux && reboot"
 else
     echo "❌ bbase keymap NOT found"
 fi

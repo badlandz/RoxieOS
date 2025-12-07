@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX System Probe Script
 # Gathers hardware and software information for BAUX compatibility testing
 # Usage: ./baux-probe.sh [output_file]

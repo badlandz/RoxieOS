@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/local/bin/bash
 # BAUX Session Manager Installation Script
 # Installs baux components on FreeBSD
 
@@ -7,16 +7,16 @@ set -e
 echo "Installing BAUX Session Manager..."
 
 # Install the main script
-sudo cp baux /usr/local/bin/
-sudo chmod +x /usr/local/bin/baux
+doas cp baux /usr/local/bin/
+doas chmod +x /usr/local/bin/baux
 
 # Install tmux configuration
-sudo mkdir -p /usr/local/share/tmux
-sudo cp baux.conf /usr/local/share/tmux/
+doas mkdir -p /usr/local/share/tmux
+doas cp baux.conf /usr/local/share/tmux/
 
 # Create BAUX directories
-sudo mkdir -p /usr/local/share/baux/tmux
-sudo mkdir -p /usr/local/etc/baux
+doas mkdir -p /usr/local/share/baux/tmux
+doas mkdir -p /usr/local/etc/baux
 
 echo "baux installed successfully!"
 echo "Run 'baux' to start your BAUX session"
