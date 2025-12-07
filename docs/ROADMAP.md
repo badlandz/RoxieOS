@@ -214,14 +214,15 @@ test_session_resurrection() {
 ```
 
 ### Manual Testing Checklist
-- [ ] Caps→Esc works in console - *blocked by bbase install bug*
-- [ ] Caps→Esc works in X11 - *blocked by bbase install bug*
-- [x] Mod4+1-9 switches sessions - *pending bwm installation*
-- [x] Alt+1-9 switches tmux windows - *pending baux installation*
-- [x] hjkl navigation in vim/tmux/bwm - *pending component installation*
+- [ ] Caps→Esc works in console - *pending full BAUX installation*
+- [ ] Caps→Esc works in X11 - *pending full BAUX installation*
+- [ ] Mod4+1-9 switches sessions - *pending bwm installation*
+- [ ] Alt+1-9 switches tmux windows - *pending baux installation*
+- [ ] hjkl navigation in vim/tmux/bwm - *pending component installation*
 - [ ] bwm bar shows session names - *pending bwm installation*
 - [ ] chaos screensaver activates - *pending chaos installation*
 - [ ] baux-bot launches with Alt+b - *pending baux-bot installation*
+- [ ] xai-chat AI assistant works - *✅ XAI API client available*
 - [ ] bshot captures screenshots - *not implemented*
 - [ ] bweb launches with BAUX keybindings - *not implemented*
 
@@ -229,11 +230,11 @@ test_session_resurrection() {
 
 ### v0.1 Release Criteria
 1. All core packages ported to FreeBSD (bbase, baux, bvi, bwm, chaos, baux-bot)
-2. Keymap integration working system-wide - *blocked by privilege escalation bug*
+2. Keymap integration working system-wide - *✅ privilege escalation bug resolved*
 3. Session resurrection functional
 4. ISO boots under 5 seconds
 5. Documentation updated
-6. AI-assisted development working
+6. AI-assisted development working - *✅ XAI API integration available*
 
 ### v0.2 Release Criteria
 1. bdrop full implementation

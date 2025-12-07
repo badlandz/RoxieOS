@@ -37,197 +37,49 @@ RoxieOS is a minimal FreeBSD-based operating system designed for instant worksta
 ```bash
 # Install FreeBSD 15.0 and basic dependencies
 pkg update
-pkg install bash git neovim tmux
+pkg install bash git neovim tmux xterm rsync curl
+
+# Setup SSH keys for GitHub access
+ssh-keygen -t ed25519 -C 'your-email@example.com'
+# Add the public key (~/.ssh/id_ed25519.pub) to GitHub
+
+# Configure git
+git config --global user.name "your-username"
+git config --global user.email "your-email@example.com"
 
 # Clone and install BAUX
-git clone https://github.com/badlandz/RoxieOS.git
+git clone git@github.com:badlandz/RoxieOS.git
 cd RoxieOS
 
 # Configure doas and install
-echo "permit nopass :wheel" >> /usr/local/etc/doas.conf
-./scripts/install-baux-unified.sh
+echo "permit nopass :wheel" >> /etc/doas.conf
+./scripts/install-baux-manual.sh
 
-# Optional: Install AI assistant for development
-pkg install ollama
-cd ports/baux-bot && make install clean
-baux-bot-setup
+# Setup AI assistant for development
+echo 'export GROK_API_KEY="your-xai-api-key"' >> ~/.bashrc
+source ~/.bashrc
+# xai-chat is now available for AI assistance
 
 # Start BAUX session
 baux
 ```
 
 ### What You Get
-- **Caps Lock → Escape** globally
-- **baux** session manager with tmux
-- **bvi** neovim wrapper with Gruvbox theme
-- **bwm** window manager with session integration
-- **chaos** anti-burn-in screensaver
-- **baux-bot** AI assistant for development
-- Immortal sessions with TPM resurrection
-- Unified Gruvbox theming across all components
-
-### 3. Boot and Install Packages
-```bash
-# Boot from USB, then install core packages
-pkg update
-pkg install bbase baux bwm bvi chaos
-```
-
-### 4. Clone and Configure
-```bash
-# Clone your workstation
-baux-clone /mnt/usb/backup
-
-# Enable services
-echo 'baux_enable="YES"' >> /etc/rc.conf
-echo 'bwm_enable="YES"' >> /etc/rc.conf
-
-# Start working - sessions restore instantly!
-baux
-```
-
-## Status
-
-**Version:** GruvBAUX Prototype (Pre-v0.1)  
-**Release:** Alpha  
-**Target:** Full -dev live USB with local BAUX mesh foundation  
-**Current Focus:** X300 ThinkPad compatibility and core component testing  
-**✅ Completed:** bbase, baux, bvi, bwm, chaos, baux-bot FreeBSD ports with installation scripts
-**🔄 In Progress:** Installation script debugging - privilege escalation issue in bbase install.sh
-
-## Package Ecosystem
-
-| Package | Purpose | Size | Status |
-|---------|---------|------|--------|
-| bbase | System foundation + keymap | <50MB | ✅ Core |
-| baux | Session management | +80MB | ✅ Core |
-| bwm | Window manager (dwm fork) | +25MB | ✅ Core |
-| bterm | Terminal (st fork) | +5MB | 🚧 Planned |
-| bvi | Editor (neovim wrapper) | +90MB | ✅ Core |
-| bweb | Browser (keyboard-native) | +40MB | 🚧 Planned |
-| chaos | Anti-burn-in screensaver | +1MB | ✅ Core |
-| baux-bot | AI assistant (Ollama) | +4GB | ✅ Core |
-
-### Development Packages
-- bview: Image viewer
-- bmedia: Media player
-- bbot: AI assistant
-- bdrop: SeaweedFS persistence
-
-## Architecture
-
-```
-RoxieOS/
-├── src/          # FreeBSD kernel/userland patches
-├── ports/        # BAUX package ports
-├── patches/      # Upstream patches (dwm, st, etc.)
-├── scripts/      # Build and install automation
-├── docs/         # Handbook-style documentation
-└── neovim/       # Standalone neovim config
-```
-
-## Documentation
-
-- **[Handbook](docs/Handbook.md)**: Complete user guide
-- **[Installation](docs/Installation.md)**: Setup and cloning
-- **[Configuration](docs/Configuration.md)**: Keymaps and setup
-- **[BAUX Session Management](docs/BAUX-Session-Management.md)**: Immortal sessions explained
-- **[BAUX Mesh Architecture](docs/BAUX-Mesh-Architecture.md)**: Distributed networking
-- **[BAUX Server Deployment](docs/BAUX-Server-Deployment.md)**: Headscale setup guide
-- **[NomadBSD Integration](docs/NomadBSD-Integration.md)**: Live USB implementation
-- **[Development](docs/Development.md)**: Roadmap and contributing
-
-## Philosophy
-
-**One Finger Movement = One Meaning**
-
-RoxieOS eliminates friction in development workflows:
-- Caps Lock → Escape globally
-- Mod4+1-9 switches sessions everywhere
-- hjkl navigation in all contexts
-- Sessions persist across any interruption
-- **Gruvbox theming**: Unified colors across console, WM, editor, and terminal
-
-## Requirements
-
-**Client (Workstation):**
-- FreeBSD 15.0+
-- ZFS filesystem
-- USB boot capability
-- 512MB RAM minimum (Pi Zero compatible)
-
-**Server (Cloud/LAN):**
-- FreeBSD 15.0+ VPS (RackNerd $10.60/year recommended)
-- 1GB RAM, 1 vCPU, 25GB SSD minimum
-- Domain for Headscale (hs.coseismic.org)
-- Reference: [FreeBSD Server Setup](https://www.youtube.com/watch?v=r-qn6DrJ6IA)
-
-## Roadmap
-
-### Phase 1: Full -Dev Live USB (Current - 2-3 weeks)
-**Goal:** Bootable USB with complete BAUX environment on X300**
-- ✅ FreeBSD ports migration (bbase, baux, bvi, bwm, chaos, baux-bot)
-- ✅ Workstation cloning foundation
-- ✅ BAUX session management (local)
-- ✅ Unified keymap system
-- ✅ Gruvbox theming across all layers
-- ✅ AI-assisted development (baux-bot)
-- 🔄 **BLOCKED**: Privilege escalation bug in bbase install.sh
-- 🚧 Live USB persistence (unionfs-fuse)
-- 🚧 X startup integration
-- 🚧 Full package ecosystem (bterm, bweb)
-
-### Phase 2: Server-Only Derivation (1-2 weeks)
-**Goal:** Extract BAUX server from full system**
-- Server-only package creation
-- Proxmox VM deployment
-- Local LAN mesh foundation
-- Headscale preparation
-
-### Phase 3: BAUX Mesh (1-2 weeks)
-**Goal:** Distributed session management**
-- Headscale server deployment ($10.60/year RackNerd VPS)
-- Device enrollment and mesh networking
-- Cross-device session sync and migration
-- Full mesh authentication and ACLs
-
-### Future: v0.1 Production (Q1 2026)
-- Qt-based installer
-- Hardware auto-detection
-- Production ISO release
-- Multi-platform support
-
-See [Development Guide](docs/Development.md) for detailed roadmap.
-
-## Testing BAUX on Your X300
-
-### Quick Start for X300 Testing
-```bash
-# On your X300 FreeBSD system
-git clone https://github.com/badlandz/RoxieOS.git
-cd RoxieOS
-
-# Check system compatibility
-./scripts/baux-probe.sh
-
-# Install core BAUX components
-./scripts/install-baux-manual.sh
-
-# Test everything works
-./scripts/test-baux.sh
-
-# Try BAUX!
-baux
-```
-
-### What Should Work After Installation
-- **Caps Lock → Escape** globally (bbase) - *pending privilege fix*
+- **Caps Lock → Escape** globally (bbase)
 - **baux command** starts tmux session with custom config
 - **bvi filename** opens files with neovim (or vim/vi fallback)
 - **bwm** window manager with session display in status bar
 - **chaos** anti-burn-in screensaver
 - **baux-bot** AI assistant (Alt+b in tmux, or `baux-bot` command)
+- **xai-chat** AI assistant via XAI API (works without Ollama)
 - **Gruvbox theming** in all components
+
+### AI-Assisted Development
+BAUXBSD includes AI integration for accelerated development:
+- **xai-chat**: Direct XAI API access for FreeBSD/Bash questions
+- **baux-bot**: Local Ollama-based assistant (when Vulkan issues resolved)
+- **Real-time debugging**: AI can analyze logs and suggest fixes
+- **Code review**: AI assistance for FreeBSD-specific development
 
 ### Current Test Platforms
 - **Primary:** ThinkPad X300 (FreeBSD 15.0) - Your test system
