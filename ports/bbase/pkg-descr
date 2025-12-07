@@ -1,0 +1,7 @@
+BAUX base system foundation with unified keymaps.
+
+This package provides the fundamental BAUX system components:
+- Unified keymap (Caps Lock -> Escape globally)
+- System foundation for BAUX ecosystem
+
+WWW: https://github.com/badlandz/RoxieOS

@@ -280,12 +280,12 @@ cp *.txz /mnt/usb/baux-packages/
 ## Rollout Plan
 
 ### Phase 1: Full -Dev Live USB (2-3 weeks)
-**Goal:** Complete BAUX environment booting to X on ThinkPad X200
+**Goal:** Complete BAUX environment booting to X on ThinkPad X300**
 
-#### Week 1: Core Packages
-- [ ] bbase: Keymaps working everywhere
-- [ ] bvi: Neovim with full config
-- [ ] baux: Local session management
+#### Week 1: Core Packages ✅
+- [x] bbase: Keymaps working everywhere (FreeBSD port + install script)
+- [x] bvi: Neovim with full config (FreeBSD port + lite/dev variants)
+- [x] baux: Local session management (FreeBSD port + tmux config)
 - [ ] bwm: Window manager with session display
 - [ ] chaos: Screensaver
 
@@ -337,6 +337,49 @@ cp *.txz /mnt/usb/baux-packages/
 - [ ] Cross-device session sync
 - [ ] Remote session access
 - [ ] Backup/restore over mesh
+
+## Testing & Validation
+
+### Manual Testing on X300
+**Scripts ready for testing:**
+- `scripts/install-baux-manual.sh` - Complete installation guide
+- `scripts/test-baux.sh` - Component verification
+- `scripts/baux-probe.sh` - System compatibility check
+
+**Test Sequence:**
+1. Run `baux-probe.sh` to verify system compatibility
+2. Execute `install-baux-manual.sh` for core components
+3. Use `test-baux.sh` to validate installations
+4. Test individual components: `baux`, `bvi filename`, keymaps
+
+### Expected Test Results
+- **bbase**: Caps Lock acts as Escape globally
+- **baux**: tmux session starts with custom config
+- **bvi**: Opens files with neovim (or vim/vi fallback)
+
+### Debug Information
+**If tests fail:**
+- Check FreeBSD version: `freebsd-version` (should be 15.x)
+- Verify packages: `pkg info tmux neovim`
+- Check paths: `ls /usr/local/bin/baux`
+- View logs: Check system messages for errors
+
+## Next Development Steps
+
+### Immediate (This Week)
+1. **Test on X300**: Run manual installation and verify components
+2. **Fix Issues**: Address any path or dependency problems found
+3. **Refine Scripts**: Improve installation scripts based on testing
+
+### Short-term (Next Week)
+1. **bwm Package**: Create FreeBSD port for dwm window manager
+2. **chaos Package**: Implement tmux screensaver effects
+3. **Integration Testing**: Test combined X11 + tmux + neovim workflow
+
+### Medium-term (2-3 Weeks)
+1. **Live USB**: Implement unionfs-fuse persistence
+2. **Build System**: Create automated package building
+3. **Headscale Prep**: Prepare for mesh networking
 
 ---
 

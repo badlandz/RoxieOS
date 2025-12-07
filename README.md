@@ -74,7 +74,8 @@ baux
 **Version:** GruvBAUX Prototype (Pre-v0.1)  
 **Release:** Alpha  
 **Target:** Full -dev live USB with local BAUX mesh foundation  
-**Current Focus:** X200 ThinkPad compatibility and local session management
+**Current Focus:** X300 ThinkPad compatibility and core component testing  
+**✅ Completed:** bbase, baux, bvi FreeBSD ports with installation scripts
 
 ## Package Ecosystem
 
@@ -177,24 +178,44 @@ RoxieOS eliminates friction in development workflows:
 
 See [Development Guide](docs/Development.md) for detailed roadmap.
 
-## Testing & Compatibility
+## Testing BAUX on Your X300
 
-### System Probe Script
-Before testing BAUX, run the probe script to check compatibility:
-
+### Quick Start for X300 Testing
 ```bash
-# On your FreeBSD system
+# On your X300 FreeBSD system
 git clone https://github.com/badlandz/RoxieOS.git
 cd RoxieOS
+
+# Check system compatibility
 ./scripts/baux-probe.sh
+
+# Install core BAUX components
+./scripts/install-baux-manual.sh
+
+# Test everything works
+./scripts/test-baux.sh
+
+# Try BAUX!
+baux
 ```
 
-This generates a detailed report of your system's BAUX compatibility.
+### What Should Work After Installation
+- **Caps Lock → Escape** globally (bbase)
+- **baux command** starts tmux session with custom config
+- **bvi filename** opens files with neovim (or vim/vi fallback)
+- **Gruvbox theming** in all components
 
 ### Current Test Platforms
-- **Primary:** ThinkPad X200 (FreeBSD 14.x)
+- **Primary:** ThinkPad X300 (FreeBSD 15.0) - Your test system
 - **Secondary:** Proxmox VM (FreeBSD 15.x) for server testing
 - **Future:** Raspberry Pi, generic laptops
+
+### Troubleshooting
+If components don't work:
+1. Check `./scripts/test-baux.sh` output for specific failures
+2. Verify FreeBSD version: `freebsd-version` (needs 15.x)
+3. Check dependencies: `pkg info tmux neovim`
+4. Review installation logs for errors
 
 ### Reporting Issues
 When reporting bugs, include the probe report and specify your platform.

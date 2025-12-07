@@ -1,0 +1,16 @@
+BAUX neovim wrapper with intelligent fallback support.
+
+BVI provides a unified editing experience that automatically detects and
+configures the best available editor:
+
+- Neovim (preferred) with LazyVim and BAUX keymaps
+- Vim with basic BAUX configuration
+- Vi as final fallback
+
+Features:
+- Automatic editor detection
+- BAUX keymap integration
+- Session persistence
+- Gruvbox theming
+
+WWW: https://github.com/badlandz/RoxieOS

@@ -1,0 +1,14 @@
+BAUX session management and immortal terminal environment.
+
+BAUX (Badlandz Auxiliary UniX) provides a persistent, distributed terminal
+environment with immortal tmux sessions, intelligent pane resurrection,
+and cross-device session synchronization.
+
+Features:
+- Immortal tmux sessions that survive disconnects
+- Automatic pane respawning on exit
+- Cross-device session synchronization
+- Anti-nesting detection for SSH sessions
+- Integrated with BAUX mesh networking
+
+WWW: https://github.com/badlandz/RoxieOS
