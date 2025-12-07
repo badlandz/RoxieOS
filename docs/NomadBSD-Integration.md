@@ -3,7 +3,7 @@
 
 ## Overview
 
-RoxieOS adopts key technologies and approaches from NomadBSD, the leading FreeBSD-based live USB system. This document outlines the integrated features and implementation details.
+RoxieOS adopts key technologies and approaches from NomadBSD, the leading FreeBSD-based live USB system. This document outlines the integrated features and current implementation status, with focus on local development before mesh expansion.
 
 ## Core Technologies Adopted
 
@@ -13,17 +13,18 @@ RoxieOS adopts key technologies and approaches from NomadBSD, the leading FreeBS
 - Prevents corruption of base image
 - Allows unlimited persistence on any USB drive
 
-**RoxieOS Implementation:**
+**RoxieOS Status:** Planned for Phase 1 completion
+**Current Implementation:**
 ```bash
-# Base system: Read-only ISO
-# Overlay: Writable partition for user data
-# Union: FUSE-based merge for seamless operation
+# Phase 1: Basic persistence framework
+# Phase 2: Full unionfs-fuse integration
+# Phase 3: Mesh synchronization
 ```
 
 **Benefits:**
 - No base image corruption from system updates
 - Works on any USB drive size
-- Automatic filesystem expansion on first boot
+- Foundation for BAUX mesh persistence
 
 ### 2. Bootloader & UEFI Support
 **NomadBSD Features:**
@@ -32,13 +33,11 @@ RoxieOS adopts key technologies and approaches from NomadBSD, the leading FreeBS
 - Boot menu options for troubleshooting
 - Graphics driver detection at boot
 
-**RoxieOS Integration:**
-- Custom bootloader with EFI support
-- Boot menu options:
-  - Disable graphics detection
-  - Disable syscons
-  - Set GOP mode for EFI
-- Automatic graphics driver setup
+**RoxieOS Status:** In development for Phase 1
+**Current Implementation:**
+- Basic EFI support planned
+- X200-specific bootloader configuration
+- Graphics detection framework
 
 ### 3. Automatic Hardware Setup
 **NomadBSD Hardware Detection:**
@@ -47,11 +46,11 @@ RoxieOS adopts key technologies and approaches from NomadBSD, the leading FreeBS
 - Network: Wireless setup with NetworkMgr
 - Input: Touchpad configuration
 
-**RoxieOS Adoption:**
-- Graphics driver auto-detection scripts
-- DSBMixer for sound control
-- NetworkMgr for wireless management
-- Touchpad configuration tools
+**RoxieOS Status:** Framework in development
+**Current Implementation:**
+- System probe script for hardware detection
+- X200-specific configuration
+- Foundation for auto-setup scripts
 
 ### 4. Qt-Based Installer
 **NomadBSD Installer:**
@@ -129,6 +128,53 @@ initgfx_enable="YES"
 - [Configuration](https://github.com/nomadbsd/NomadBSD/tree/master/config)
 - [Patches](https://github.com/nomadbsd/NomadBSD/tree/master/patch)
 
+## Current Implementation Status
+
+### Phase 1: Full -Dev Live USB (In Progress)
+- **Foundation:** Basic BAUX packages for X200
+- **Persistence:** unionfs-fuse framework
+- **Integration:** X startup with session detection
+- **Testing:** ThinkPad X200 compatibility
+
+### Phase 2: Server-Only Derivation (Planned)
+- **Extraction:** Server components from full system
+- **Deployment:** Proxmox VM on LAN
+- **Foundation:** LAN-based mesh preparation
+
+### Phase 3: BAUX Mesh (Future)
+- **Headscale:** Distributed authentication
+- **Sync:** Cross-device session management
+- **Cloud:** Remote server deployment
+
+## BAUX Server Requirements
+
+### Minimum Cloud VPS Specifications
+Based on RackNerd Black Friday deals and BAUX server needs:
+
+**Recommended: 1GB KVM VPS ($10.60/year)**
+- **CPU:** 1 vCPU (sufficient for Headscale + session storage)
+- **RAM:** 1GB (Headscale uses ~100MB, session DB minimal)
+- **Storage:** 25GB SSD (session data, configs, logs)
+- **Bandwidth:** 2000GB/month (adequate for mesh traffic)
+- **OS:** FreeBSD 15.0 (custom ISO support available)
+
+**Growth Option: 2.5GB KVM VPS ($18.66/year)**
+- **CPU:** 2 vCPU (better for concurrent sessions)
+- **RAM:** 2.5GB (headroom for monitoring/tools)
+- **Storage:** 45GB SSD (more session history)
+- **Bandwidth:** 3000GB/month (higher mesh activity)
+
+### Server Software Stack
+- **Headscale:** ~50MB RAM, lightweight Go application
+- **Session Storage:** SQLite (minimal) or PostgreSQL (scalable)
+- **Web Interface:** Optional for administration
+- **Monitoring:** Basic resource monitoring
+
+### Network Requirements
+- **Inbound:** Headscale control plane (UDP/TCP ports)
+- **Outbound:** Mesh connectivity to clients
+- **DNS:** hs.coseismic.org domain for control plane
+
 ## Future Enhancements
 
 ### Planned Adoptions
@@ -141,6 +187,13 @@ initgfx_enable="YES"
 - **BAUX Integration:** Session persistence with unionfs
 - **Workstation Cloning:** Enhanced backup/restore over USB
 - **Unified Keymaps:** BAUX system integration
+- **Mesh Networking:** Headscale-based distributed sessions
+
+## References
+
+- **FreeBSD Server Setup:** https://www.youtube.com/watch?v=r-qn6DrJ6IA
+- **RackNerd VPS Plans:** https://www.racknerd.com/kvm-vps
+- **Headscale Documentation:** https://headscale.net/
 
 ## Building with NomadBSD Tools
 
@@ -156,6 +209,8 @@ cd NomadBSD
 
 ## Conclusion
 
-NomadBSD provides a proven foundation for FreeBSD live systems. RoxieOS builds upon this foundation with BAUX workstation cloning capabilities, creating a powerful combination of live persistence and session resurrection.
+NomadBSD provides a proven foundation for FreeBSD live systems. RoxieOS builds upon this foundation with BAUX workstation cloning and mesh networking capabilities, creating a powerful combination of live persistence, session resurrection, and distributed computing.
+
+**Current Focus:** Getting the full -dev environment working on ThinkPad X200 before expanding to mesh capabilities.
 
 For detailed implementation, see the [NomadBSD Handbook](https://nomadbsd.org/handbook/handbook.html) and [GitHub repository](https://github.com/nomadbsd/NomadBSD).

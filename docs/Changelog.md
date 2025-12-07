@@ -9,6 +9,9 @@
 - **Unified Gruvbox Theming**: Gruvbox colors across console, dwm/bwm, neovim, tmux, and all components
 - **Documentation Overhaul**: FreeBSD handbook-style structure with cross-references
 - **NomadBSD Integration**: Adopted unionfs-fuse persistence, bootloader/UEFI handling, automatic hardware setup
+- **System Probe Tool**: `scripts/baux-probe.sh` for compatibility testing
+- **X200 Focus**: Primary development on ThinkPad X200 hardware
+- **LAN-First Mesh**: Local network session sharing before cloud deployment
 
 ### New Features
 - **bbase**: System foundation with global Caps→Esc keymap

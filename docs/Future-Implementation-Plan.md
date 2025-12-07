@@ -1,24 +1,19 @@
 # BAUXBSD Implementation Status
 **Completed Upgrades and Future Plans**
 
-## ✅ Completed: Neovim Config Upgrade
+## ✅ Completed: Foundation Setup
 
-### Standalone Config
-- **Location**: `neovim/` directory
-- **Framework**: Full LazyVim with performance optimizations
-- **Plugins**: Complete development ecosystem
-- **Keymaps**: BAUXBSD unified system
+### Neovim Configuration
+- **Standalone Config**: `neovim/` directory with LazyVim
+- **bvi Variants**: Lite (15MB) and dev (50MB) configs ready
+- **Gruvbox Theming**: Unified colors across all variants
+- **Keymap Integration**: BAUXBSD system implemented
 
-### bvi Package Variants
-- **Lite Mode**: Pi Zero compatible (15MB)
-  - Plugins: persistence, mini.files, undotree, gruvbox
-  - Location: `ports/bvi/lite/`
-- **Dev Mode**: Full workstation (50MB)
-  - Plugins: All from standalone + vimwiki, dadbod, lazygit
-  - Location: `ports/bvi/dev/`
-
-### Keymap Integration
-- **System-wide**: Consistent across console, bwm, tmux, neovim
+### Development Infrastructure
+- **System Probe**: `scripts/baux-probe.sh` for compatibility testing
+- **Build Scripts**: Basic package building framework
+- **Documentation**: Complete handbook with cross-references
+- **Testing Focus**: ThinkPad X200 as primary platform
 - **Neovim**: `<C-hjkl>` navigation, `<leader>1-9` buffers, tmux integration
 - **BAUX Bot**: `<leader>b/l` for AI assistance
 
@@ -166,5 +161,39 @@ do-build:
 - Session state preservation during effects
 - Instant restoration on any keypress
 - Non-disruptive idle operation
+
+## BAUX Mesh Infrastructure
+
+### Headscale Integration
+**Status:** Planned for Phase 3
+**Requirements:**
+- Headscale FreeBSD package creation
+- Domain setup (hs.coseismic.org) on cloud VPS
+- Client/server configuration for secure mesh
+- Authentication and ACL setup
+- LAN testing with X200, then cloud deployment
+
+### Server Hosting Options
+**RackNerd KVM VPS (Recommended):**
+- **1GB Plan:** $10.60/year (1 vCPU, 25GB SSD, 2000GB transfer)
+  - Sufficient for basic BAUX server + Headscale
+  - FreeBSD support via custom ISO
+- **2.5GB Plan:** $18.66/year (2 vCPU, 45GB SSD, 3000GB transfer)
+  - Better for concurrent sessions and growth
+- **Locations:** Multiple US/EU datacenters available
+
+**Reference:** FreeBSD Server Setup Guide - https://www.youtube.com/watch?v=r-qn6DrJ6IA
+
+### Server Software Stack
+- **Headscale:** Lightweight Go application (~50MB RAM)
+- **Session Storage:** SQLite (minimal) or PostgreSQL (scalable)
+- **Web Interface:** Optional administration interface
+- **Monitoring:** Basic resource and connectivity monitoring
+
+### Network Architecture
+- **Control Plane:** hs.coseismic.org for Headscale coordination
+- **Mesh Traffic:** Encrypted device-to-device communication
+- **Client Registration:** Secure onboarding of BAUX devices
+- **ACL Management:** Session access controls between users/devices
 
 This plan provides the roadmap for implementing all planned features while maintaining the clean FreeBSD ports structure.

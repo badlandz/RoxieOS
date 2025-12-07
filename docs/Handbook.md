@@ -11,9 +11,12 @@ Last Updated: December 2025
 3. [Packages](PACKAGES.md) - Package architecture
 4. [Configuration](Configuration.md) - Keymaps and setup
 5. [Usage](Usage.md) - Workflows and examples
-6. [Development](Development.md) - Roadmap and contributing
-7. [FAQ](FAQ.md) - Common questions and troubleshooting
-8. [NomadBSD Integration](NomadBSD-Integration.md) - Live USB implementation details
+6. [BAUX Session Management](BAUX-Session-Management.md) - Immortal sessions & resurrection
+7. [BAUX Mesh Architecture](BAUX-Mesh-Architecture.md) - Distributed session networking
+8. [BAUX Server Deployment](BAUX-Server-Deployment.md) - Headscale & cloud setup
+9. [NomadBSD Integration](NomadBSD-Integration.md) - Live USB implementation
+10. [Development](Development.md) - Roadmap and contributing
+11. [FAQ](FAQ.md) - Common questions and troubleshooting
 
 ## Credits & Acknowledgments
 
@@ -42,26 +45,40 @@ Special thanks to the NomadBSD team for pioneering FreeBSD live systems. Their [
 - **Immortal sessions** - Survive everything
 - **Unified keybindings** - Same keys across all layers
 - **Gruvbox theming** - Consistent colors everywhere
+- **Local-first mesh** - LAN-based session sharing
 - **Zero friction** - Instant productivity
 
 ## Package Layers
 
-| Layer | Package | Purpose | Size |
-|--------|---------|-----------|-------|
-| 1 | bbase | System foundation + keymap | <50MB |
-| 2 | baux | Session cloning + tmux immortality | +80MB |
-| 3 | bwm | Window manager for development | +25MB |
+| Layer | Package | Purpose | Size | Status |
+|--------|---------|-----------|-------|--------|
+| 1 | bbase | System foundation + keymap | <50MB | 🚧 In Development |
+| 2 | baux | Local session management + tmux | +80MB | 🚧 In Development |
+| 3 | bwm | Window manager for development | +25MB | 🚧 In Development |
+| 4 | bvi | Neovim with BAUX integration | +90MB | ✅ Config Ready |
+| 5 | bterm | Terminal with theming | +5MB | 🚧 Planned |
+| 6 | chaos | Anti-burn-in screensaver | +1MB | 🚧 Planned |
 
 ## Key Features
 
-- **Unified Keymap**: Mod4+1-9 switches sessions everywhere
-- **Session Resurrection**: Exact state restoration
-- **Cross-Machine Sync**: Projects auto-sync
-- **Anti-Nesting**: Smart SSH detection
+- **Unified Keymap**: Mod4+1-9 switches sessions everywhere (planned)
+- **Local Session Management**: tmux session persistence (in development)
+- **Gruvbox Theming**: Consistent colors across all components
+- **Live USB Ready**: unionfs-fuse persistence (planned)
+- **X200 Optimized**: Primary test platform compatibility
 - **FreeBSD Native**: Ports system, ZFS, rc.d services
 
 ## Directory Structure
 
+```
+RoxieOS/
+├── src/          # FreeBSD kernel/userland patches (planned)
+├── ports/        # BAUX package ports (in development)
+├── patches/      # Upstream patches (dwm, st sources)
+├── scripts/      # Build/install scripts + probe tool
+├── docs/         # This handbook
+├── neovim/       # Standalone neovim config (ready)
+└── archive/      # Legacy Debian packages
 ```
 RoxieOS/
 ├── src/          # FreeBSD src tree patches

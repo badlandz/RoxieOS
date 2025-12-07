@@ -256,27 +256,88 @@ test_session_resurrection() {
 - [ ] bshot captures screenshots
 - [ ] bweb launches with BAUX keybindings
 
+## Development Workflow
+
+### Testing Infrastructure
+- **Primary Testbed:** ThinkPad X200 (FreeBSD 14.x)
+- **Server Testing:** Proxmox VM (FreeBSD 15.x) on LAN
+- **Probe Script:** `scripts/baux-probe.sh` for compatibility checking
+- **Build Environment:** Debian development machine for package creation
+
+### Local Development Setup
+```bash
+# On Debian development machine
+git clone https://github.com/badlandz/RoxieOS.git
+cd RoxieOS
+
+# Build packages for testing
+./scripts/build-ports.sh
+
+# Copy to USB for ThinkPad testing
+cp *.txz /mnt/usb/baux-packages/
+```
+
 ## Rollout Plan
 
-### GruvBAUX Prototype Release Criteria
-1. Core packages ported to FreeBSD with Gruvbox theming
-2. Keymap integration working system-wide
-3. Session resurrection functional
-4. Unified Gruvbox theming across console, WM, editor, terminal
-5. Documentation updated
+### Phase 1: Full -Dev Live USB (2-3 weeks)
+**Goal:** Complete BAUX environment booting to X on ThinkPad X200
 
-### v0.1 Release Criteria
-1. Live USB persistence (unionfs-fuse)
-2. All 7 core packages fully functional
-3. ISO boots under 5 seconds
-4. Hardware auto-detection working
+#### Week 1: Core Packages
+- [ ] bbase: Keymaps working everywhere
+- [ ] bvi: Neovim with full config
+- [ ] baux: Local session management
+- [ ] bwm: Window manager with session display
+- [ ] chaos: Screensaver
 
-### v0.2 Release Criteria
-1. bdrop full implementation
-2. Cross-machine synchronization
-3. bbot AI integration
-4. Performance optimizations
+#### Week 2: Live USB Integration
+- [ ] Bootloader: EFI + BIOS support
+- [ ] Persistence: unionfs-fuse implementation
+- [ ] Package installation from USB
+- [ ] X startup with session detection
+
+#### Week 3: Full Environment
+- [ ] bterm: Terminal with theming
+- [ ] Build scripts: Working package creation
+- [ ] Testing: Complete workflow on X200
+- [ ] Documentation: Updated for working system
+
+### Phase 2: Server-Only Derivation (1-2 weeks)
+**Goal:** Extract BAUX server components for cloud/LAN deployment
+
+#### Server Package Creation
+- [ ] Identify server-only components (no X11, minimal GUI)
+- [ ] Create baux-server package with Headscale integration
+- [ ] Test on RackNerd VPS ($10.60/year 1GB plan recommended)
+- [ ] LAN connectivity verification
+
+#### Cloud Deployment Options
+**RackNerd KVM VPS (Recommended for BAUX Server):**
+- **1GB Plan:** $10.60/year (1 vCPU, 25GB SSD, 2000GB transfer) - Sufficient for basic BAUX server
+- **2.5GB Plan:** $18.66/year (2 vCPU, 45GB SSD, 3000GB transfer) - Better for growth
+- **FreeBSD Support:** Available via custom ISO
+- **Locations:** Multiple US/EU datacenters
+
+**Reference:** FreeBSD Server Setup Guide - https://www.youtube.com/watch?v=r-qn6DrJ6IA
+
+#### Headscale Integration
+- [ ] Domain setup (hs.coseismic.org)
+- [ ] Server deployment scripts
+- [ ] Security hardening for mesh authentication
+
+### Phase 3: BAUX Mesh Enablement (1-2 weeks)
+**Goal:** Add Headscale for distributed session management
+
+#### Headscale Integration
+- [ ] Headscale FreeBSD package
+- [ ] Client/server configuration
+- [ ] Authentication setup
+- [ ] Mesh testing on LAN
+
+#### Session Synchronization
+- [ ] Cross-device session sync
+- [ ] Remote session access
+- [ ] Backup/restore over mesh
 
 ---
 
-The GruvBAUX prototype prioritizes unified theming and core functionality, ensuring a cohesive development experience before full v0.1 release.
+This plan prioritizes getting a working BAUX system on your ThinkPad first, then expanding to mesh capabilities. The probe script ensures compatibility, and the phased approach prevents the Headscale dependency from blocking initial development.

@@ -13,15 +13,17 @@
 
 RoxieOS is a minimal FreeBSD-based operating system designed for instant workstation cloning and persistent development environments. Inspired by NomadBSD's live USB persistence approach, RoxieOS uses unionfs-fuse for read-only base systems with writable overlays. Boot from USB, clone your exact setup in seconds, and continue working seamlessly across any hardware.
 
-**GruvBAUX Prototype**: This pre-v0.1 release features unified Gruvbox theming across console, dwm/bwm, neovim, tmux, and all BAUX components for a cohesive development experience.
+**GruvBAUX Prototype**: This pre-v0.1 release features unified Gruvbox theming across console, dwm/bwm, neovim, tmux, and all BAUX components. Sessions become distributed network resources via Headscale mesh networking, accessible from any enrolled device.
 
 ![RoxieOS Screenshot](https://via.placeholder.com/800x400/000000/00FF00?text=RoxieOS+Screenshot+Coming+Soon)
 
 ## Key Features
 
+- **Distributed Sessions**: Sessions as network resources via Headscale mesh
 - **Workstation Cloning**: Backup and restore complete environments instantly
 - **Immortal Sessions**: Sessions survive reboots, crashes, and hardware changes
 - **Unified Keymaps**: Consistent controls across console, WM, editor, and terminal
+- **Gruvbox Theming**: Cohesive visual experience across all components
 - **FreeBSD Native**: Ports system, ZFS snapshots, rc.d services
 - **Minimal Footprint**: Core packages <400MB, boot in <5 seconds
 
@@ -71,7 +73,8 @@ baux
 
 **Version:** GruvBAUX Prototype (Pre-v0.1)  
 **Release:** Alpha  
-**Target:** Unified theming + workstation cloning MVP
+**Target:** Full -dev live USB with local BAUX mesh foundation  
+**Current Focus:** X200 ThinkPad compatibility and local session management
 
 ## Package Ecosystem
 
@@ -107,9 +110,12 @@ RoxieOS/
 
 - **[Handbook](docs/Handbook.md)**: Complete user guide
 - **[Installation](docs/Installation.md)**: Setup and cloning
-- **[Configuration](docs/Configuration.md)**: Keymaps and customization
+- **[Configuration](docs/Configuration.md)**: Keymaps and setup
+- **[BAUX Session Management](docs/BAUX-Session-Management.md)**: Immortal sessions explained
+- **[BAUX Mesh Architecture](docs/BAUX-Mesh-Architecture.md)**: Distributed networking
+- **[BAUX Server Deployment](docs/BAUX-Server-Deployment.md)**: Headscale setup guide
+- **[NomadBSD Integration](docs/NomadBSD-Integration.md)**: Live USB implementation
 - **[Development](docs/Development.md)**: Roadmap and contributing
-- **[NomadBSD Integration](docs/NomadBSD-Integration.md)**: Live USB implementation details
 
 ## Philosophy
 
@@ -124,33 +130,74 @@ RoxieOS eliminates friction in development workflows:
 
 ## Requirements
 
+**Client (Workstation):**
 - FreeBSD 15.0+
 - ZFS filesystem
 - USB boot capability
 - 512MB RAM minimum (Pi Zero compatible)
 
+**Server (Cloud/LAN):**
+- FreeBSD 15.0+ VPS (RackNerd $10.60/year recommended)
+- 1GB RAM, 1 vCPU, 25GB SSD minimum
+- Domain for Headscale (hs.coseismic.org)
+- Reference: [FreeBSD Server Setup](https://www.youtube.com/watch?v=r-qn6DrJ6IA)
+
 ## Roadmap
 
-### GruvBAUX Prototype (Current)
+### Phase 1: Full -Dev Live USB (Current - 2-3 weeks)
+**Goal:** Bootable USB with complete BAUX environment on X200**
 - ✅ FreeBSD ports migration
 - ✅ Workstation cloning foundation
-- ✅ BAUX session management
+- ✅ BAUX session management (local)
 - ✅ Unified keymap system
 - ✅ Gruvbox theming across all layers
 - 🚧 Live USB persistence (unionfs-fuse)
+- 🚧 X startup integration
+- 🚧 Full package ecosystem
 
-### v0.1 (Q1 2026)
-- Full unionfs-fuse persistence
+### Phase 2: Server-Only Derivation (1-2 weeks)
+**Goal:** Extract BAUX server from full system**
+- Server-only package creation
+- Proxmox VM deployment
+- Local LAN mesh foundation
+- Headscale preparation
+
+### Phase 3: BAUX Mesh (1-2 weeks)
+**Goal:** Distributed session management**
+- Headscale server deployment ($10.60/year RackNerd VPS)
+- Device enrollment and mesh networking
+- Cross-device session sync and migration
+- Full mesh authentication and ACLs
+
+### Future: v0.1 Production (Q1 2026)
 - Qt-based installer
 - Hardware auto-detection
 - Production ISO release
-
-### v0.2 (2026)
-- SeaweedFS cross-machine sync
-- AI-powered development
-- Complete digital twin
+- Multi-platform support
 
 See [Development Guide](docs/Development.md) for detailed roadmap.
+
+## Testing & Compatibility
+
+### System Probe Script
+Before testing BAUX, run the probe script to check compatibility:
+
+```bash
+# On your FreeBSD system
+git clone https://github.com/badlandz/RoxieOS.git
+cd RoxieOS
+./scripts/baux-probe.sh
+```
+
+This generates a detailed report of your system's BAUX compatibility.
+
+### Current Test Platforms
+- **Primary:** ThinkPad X200 (FreeBSD 14.x)
+- **Secondary:** Proxmox VM (FreeBSD 15.x) for server testing
+- **Future:** Raspberry Pi, generic laptops
+
+### Reporting Issues
+When reporting bugs, include the probe report and specify your platform.
 
 ## Contributing
 
@@ -176,6 +223,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 - **NomadBSD**: Live USB persistence, bootloader/UEFI handling, automatic hardware setup, Qt installer
 - **FreeBSD Handbook**: Documentation structure and best practices
 - **Suckless Tools**: dwm, st, dmenu inspiration for bwm, bterm
+- **FreeBSD Server Setup**: https://www.youtube.com/watch?v=r-qn6DrJ6IA (cloud deployment reference)
 
 See [NomadBSD Handbook](https://nomadbsd.org/handbook/handbook.html) for detailed implementation of live systems.
 
