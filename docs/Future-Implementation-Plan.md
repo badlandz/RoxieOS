@@ -1,63 +1,64 @@
-# BAUXBSD Future Implementation Plan
-**Code Planning Without Editing**
+# BAUXBSD Implementation Status
+**Completed Upgrades and Future Plans**
+
+## ✅ Completed: Neovim Config Upgrade
+
+### Standalone Config
+- **Location**: `neovim/` directory
+- **Framework**: Full LazyVim with performance optimizations
+- **Plugins**: Complete development ecosystem
+- **Keymaps**: BAUXBSD unified system
+
+### bvi Package Variants
+- **Lite Mode**: Pi Zero compatible (15MB)
+  - Plugins: persistence, mini.files, undotree, gruvbox
+  - Location: `ports/bvi/lite/`
+- **Dev Mode**: Full workstation (50MB)
+  - Plugins: All from standalone + vimwiki, dadbod, lazygit
+  - Location: `ports/bvi/dev/`
+
+### Keymap Integration
+- **System-wide**: Consistent across console, bwm, tmux, neovim
+- **Neovim**: `<C-hjkl>` navigation, `<leader>1-9` buffers, tmux integration
+- **BAUX Bot**: `<leader>b/l` for AI assistance
 
 ## Chaos Screensaver Implementation
 
-### Location
-- **Code**: `ports/chaos/`
-- **Patches**: `patches/chaos/`
-- **Config**: `ports/chaos/files/usr/local/etc/chaos.conf`
+### Current Status
+- **Location**: `ports/chaos/` (placeholder)
+- **Features**: Idle detection, manual Mod4+c, tmux effects
+- **Integration**: Session preservation with baux
 
-### Features to Implement
-- **Idle Detection**: Monitor user activity, trigger after 15 minutes
-- **Manual Activation**: Mod4+c hotkey
-- **Effects**: Random tmux pane manipulations, color cycling, status bar chaos
-- **Integration**: Work with bwm and baux for seamless restoration
-
-### Code Structure
-```
-ports/chaos/
-├── Makefile              # FreeBSD port
-├── pkg-descr            # Description
-├── files/
-│   └── usr/local/bin/chaos  # Main script
-└── README.md            # Implementation notes
-```
-
-### Dependencies
-- tmux for pane manipulation
-- Integration with baux session management
+### Next Steps
+1. Implement tmux pane manipulation scripts
+2. Add idle detection logic
+3. Test with bwm integration
+4. Ensure instant restoration on keypress
 
 ## Session Resurrection (baux revive)
 
-### Location
-- **Code**: `ports/baux/src/`
-- **Scripts**: `scripts/`
-- **Buffers**: SeaweedFS integration in `ports/baux/files/`
-
-### Features
-- **ZFS Snapshots**: Cold storage with zfs-periodic
-- **SeaweedFS Buffering**: Hot storage for network drops
-- **Cross-Machine Sync**: rsync/git integration
-- **Anti-Nesting**: SSH detection
+### Current Status
+- **ZFS Integration**: Planned with zfs-periodic snapshots
+- **SeaweedFS**: Buffering for hot storage
+- **Neovim**: folke/persistence plugin integrated
 
 ### Implementation Plan
-1. Extend baux script with revive command
-2. Add SeaweedFS volume management
-3. Integrate ZFS snapshot automation
-4. Test resurrection across hardware
+1. Extend baux with revive commands
+2. Add SeaweedFS API integration
+3. Implement ZFS snapshot automation
+4. Test cross-machine resurrection
 
 ## DWM Patches for bwm
 
-### Current Location
-- **Source**: `patches/upstream/dwm/`
-- **Patches**: `patches/roxanne.patch` (from PLAN.md)
+### Current Status
+- **Source**: `patches/upstream/dwm/` (dwm source moved)
+- **Patches**: `patches/roxanne.patch` (placeholder)
 
 ### Patches Needed
-- **Session Bar**: Display tmux session names when BAUXWM=1
-- **Keybindings**: Mod4+1-9 for session switching
-- **Integration**: Environment variable detection
-- **Status Updates**: Real-time session name updates
+- **Session Display**: Show BAUX session names in bar
+- **Keybindings**: Mod4+1-9 session switching
+- **BAUXWM Integration**: Environment variable handling
+- **Status Updates**: Real-time session info
 
 ### Build Process
 ```bash
@@ -69,22 +70,21 @@ do-build:
 
 ## ST Patches for bterm
 
-### Location
-- **Source**: `patches/upstream/st/` (create)
-- **Patches**: `patches/bterm-baux.patch` (create)
-- **Port**: `ports/bterm/`
+### Current Status
+- **Port**: `ports/bterm/` (placeholder created)
+- **Source**: Need to add to `patches/upstream/st/`
 
 ### Patches Needed
-- **Theming**: BAUX color scheme
-- **Font Rendering**: Custom font stack
-- **Integration**: Work with bwm and baux
-- **Keybindings**: Consistent with BAUX system
+- **BAUX Theming**: Color scheme matching bwm
+- **Font Stack**: Optimized rendering
+- **Integration**: Seamless with bwm/baux
+- **Keymaps**: Consistent BAUX bindings
 
 ### Implementation
-1. Fork suckless/st
-2. Apply BAUX patches
-3. Create FreeBSD port
-4. Test integration with bwm
+1. Obtain suckless/st source
+2. Create BAUX patches
+3. Build FreeBSD port
+4. Integrate with bwm theming
 
 ## Config Files Organization
 
@@ -95,59 +95,57 @@ do-build:
 
 ### User Configs
 - **tmux**: `ports/baux/files/usr/local/etc/baux/tmux.conf`
-- **neovim**: `ports/bvi/files/usr/local/etc/bvi/init.lua`
+- **neovim**: `neovim/` (standalone), `ports/bvi/lite/dev/` (variants)
 - **bwm**: `ports/bwm/files/usr/local/etc/bwm/config.h`
 
 ## Build Scripts Enhancement
 
-### build-ports.sh
-```bash
-#!/bin/bash
-# Build all BAUX ports
-for port in bbase baux bwm bterm bvi bweb chaos; do
-    cd ports/$port
-    make install
-done
-```
+### Current Status
+- **build-ports.sh**: Basic port building script
+- **build-src.sh**: FreeBSD src patching
+- **install-live.sh**: Upstream patching workflow
+- **clone-workstation.sh**: Backup/restore automation
 
-### install-live.sh
-```bash
-#!/bin/bash
-# Pull upstream, patch, install
-# dwm, st, tmux, neovim sources
-# Apply BAUX patches
-# Install to system
-```
+### Enhancements Needed
+- Add bvi variant detection (lite/dev)
+- Integrate neovim config selection
+- Automate patch application
+- Add dependency checking
 
 ## Testing Strategy
 
-### Automated Tests
-- Keymap verification
-- Session resurrection
-- Package dependencies
-- Cross-architecture builds
+### Current Testing
+- Keymap verification scripts
+- Session resurrection testing
+- Package installation validation
 
-### Manual Testing
-- Workstation cloning workflow
-- Session persistence across reboots
-- Keybinding consistency
-- Performance benchmarks
+### Enhanced Testing
+- Neovim config loading (lite/dev variants)
+- Plugin compatibility on Pi Zero
+- BAUX keymap consistency across layers
+- Performance benchmarks (<5s boot, <200MB idle)
+- Cross-architecture testing (amd64, aarch64)
 
 ## Integration Points
 
+### ✅ Completed: bvi + baux
+- folke/persistence for neovim session management
+- Complements baux tmux resurrection
+- Auto-restore buffers and cursor positions
+
 ### bwm + baux
 - BAUXWM=1 environment variable
-- Session name display in bar
-- Consistent keybindings
+- Session name display in status bar
+- Mod4+1-9 session switching
 
 ### bterm + bwm
-- Matching color schemes
-- Font consistency
+- Matching BAUX color schemes
+- Font rendering consistency
 - Seamless terminal spawning
 
 ### chaos + baux
-- Session state preservation during screensaver
-- Instant restoration on keypress
-- Non-disruptive operation
+- Session state preservation during effects
+- Instant restoration on any keypress
+- Non-disruptive idle operation
 
 This plan provides the roadmap for implementing all planned features while maintaining the clean FreeBSD ports structure.

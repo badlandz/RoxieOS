@@ -77,7 +77,7 @@ do-install:
 | baux | tmux, seaweedfs, rsync, git | 80MB |
 | bwm | dwm, picom | 25MB |
 | bterm | st, libXft | 5MB |
-| bvi | neovim | 90MB |
+| bvi | neovim (lite/dev variants) | 15MB/50MB |
 | bweb | qutebrowser | 40MB |
 | chaos | tmux | 1MB |
 | bview | sxiv | 2MB |
@@ -92,7 +92,7 @@ do-install:
 2. **baux** - Shell environment
 3. **bwm** - Window manager (if X11)
 4. **bterm** - Terminal (if X11)
-5. **bvi** - Editor
+5. **bvi** - Editor (lite/dev variants)
 6. **bweb** - Browser
 7. **chaos** - Screensaver
 

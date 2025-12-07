@@ -1,35 +1,38 @@
 # bvi - Immortal Editor Wrapper
-**BAUXBSD v0.1 editor with intelligent fallback**
+**BAUXBSD editor with lite/dev variants**
 
-`bvi` provides a unified editing experience from vi.tiny to full Neovim, with session persistence and intelligent feature detection.
+`bvi` provides a unified editing experience with LazyVim, optimized for embedded development. Features lite mode for Pi Zero compatibility and dev mode for full workstations.
 
-## Three Operating Modes
+## Two Operating Modes
 
-### 1. vi.tiny Fallback
-- **When**: Minimal systems or rescue scenarios
-- **Features**: Basic immortality with SeaweedFS stubs
-- **Size**: <2MB
+### 1. Lite Mode (Default)
+- **Target**: Pi Zero, minimal systems
+- **Features**: LazyVim core, persistence, mini.files, undotree, gruvbox theme
+- **Size**: ~15MB + LazyVim
+- **Plugins**: Essential for embedded workflow
 
-### 2. vim Stable Mode
-- **When**: Default BAUXBSD installation
-- **Features**: Full autocmds, undotree, basic AI pipes
-- **Size**: ~5MB
-
-### 3. Neovim Full Power
-- **When**: Development environments
-- **Features**: LSP, Lazy.nvim, AI integration, tmux harmony
-- **Size**: ~10MB + plugins
+### 2. Dev Mode (-dev package)
+- **Target**: Development workstations
+- **Features**: Full LazyVim ecosystem, vimwiki, dadbod, lazygit, taskwiki
+- **Size**: ~50MB + plugins
+- **Plugins**: Complete development environment
 
 ## Package Structure
 
 ```
 bvi/
+├── lite/                   # Pi Zero compatible config
+│   ├── init.lua
+│   └── lua/
+│       ├── config/
+│       └── plugins/
+├── dev/                    # Full workstation config
+│   ├── init.lua
+│   └── lua/
+│       ├── config/
+│       └── plugins/
 ├── src/bvi.sh              # Main wrapper script
-├── files/
-│   └── usr/local/etc/bvi/
-│       ├── init.lua        # Neovim config
-│       └── vimrc.tiny     # vi fallback
-└── Makefile               # FreeBSD port
+└── Makefile                # FreeBSD port
 ```
 
 ## Integration
@@ -41,20 +44,27 @@ bvi/
 ## Usage
 
 ```bash
-bvi file.c           # Opens with appropriate editor
-bvi --fallback file.c  # Force specific editor level
-bvi --level neovim   # Force Neovim mode
+bvi file.c           # Opens with lite/dev config based on system
+pkg install bvi-dev  # Install dev variant on workstations
 ```
 
-## Conflict Resolution
+## Configuration
 
-**Intentionally replaces editors/bvi** - the basic binary editor. Our enhanced version provides:
+- **Lite**: Optimized for low memory, fast startup
+- **Dev**: Full development environment with all plugins
+- **Keymaps**: Unified BAUXBSD system across all modes
+- **Themes**: Gruvbox (lite), Biohazard (dev)
 
-- Neovim integration with Lazy.nvim
-- Intelligent fallback chain
-- Binary editing via original bvi
-- Session persistence and BAUX integration
+## Integration
 
-**Installation Note:** Will replace existing `editors/bvi` if installed.
+- **baux**: Session persistence via folke/persistence
+- **bwm**: Consistent keybindings and theming
+- **bbot**: AI assistance integration
+- **FreeBSD**: Native ports with nightly neovim
 
-bvi ensures your editing environment follows you across any BAUXBSD system, from rescue USB to development workstation.
+## Variants
+
+- **bvi**: Lite mode for embedded systems
+- **bvi-dev**: Full development mode for workstations
+
+bvi provides a consistent editing experience across all BAUXBSD deployments, from Pi Zero to development workstations.

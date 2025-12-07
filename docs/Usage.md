@@ -29,6 +29,9 @@ baux
 # Switch sessions: Mod4+1-9
 # Navigate: hjkl everywhere
 # Edit: bvi file.c
+# File browser: <leader>pv
+# Git: <leader>lg (lazygit)
+# Tasks: <leader>tw (taskwiki)
 ```
 
 ### Session Resurrection

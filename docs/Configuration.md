@@ -102,4 +102,17 @@ BAUX_SESSION=1   # Current session number
 BAUX_LEADER=" "  # Space key in neovim
 ```
 
+## Neovim Integration
+
+The bvi package includes comprehensive neovim keymaps aligned with BAUXBSD:
+
+- **Leader**: Space (consistent with LazyVim)
+- **Window Navigation**: `<C-hjkl>` (matches tmux)
+- **Buffer Switching**: `<leader>1-9` (matches tmux Alt+1-9)
+- **File Operations**: `<leader>pv` (mini.files), `<leader>ff/fg/fb` (telescope)
+- **Tmux Integration**: `<C-b>` commands for pane/window management
+- **BAUX Bot**: `<leader>b/l` in visual mode
+
+See `neovim/lua/config/keymaps.lua` for complete implementation.
+
 This unified keymap system ensures maximum productivity while maintaining consistency across all BAUXBSD components.
