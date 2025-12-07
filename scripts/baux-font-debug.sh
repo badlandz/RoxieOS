@@ -45,13 +45,12 @@ if command -v vidcontrol >/dev/null 2>&1; then
     doas vidcontrol -f 8x16 2>&1 || echo "ERROR: Failed to set 8x16"
     doas vidcontrol -i active 2>&1 || echo "ERROR: Failed to read after 8x16"
 
-    echo "Setting to 12x24..."
-    doas vidcontrol -f 12x24 2>&1 || echo "ERROR: Failed to set 12x24"
-    doas vidcontrol -i active 2>&1 || echo "ERROR: Failed to read after 12x24"
+    echo "Setting to iso-8x16..."
+    doas vidcontrol -f iso-8x16 2>&1 || echo "ERROR: Failed to set iso-8x16"
+    doas vidcontrol -i active 2>&1 || echo "ERROR: Failed to read after iso-8x16"
 
-    echo "Setting to 16x32..."
-    doas vidcontrol -f 16x32 2>&1 || echo "ERROR: Failed to set 16x32"
-    doas vidcontrol -i active 2>&1 || echo "ERROR: Failed to read after 16x32"
+    echo "Note: 12x24 and 16x32 fonts not available on FreeBSD console"
+    echo "For accessibility, use X11 with Xft.dpi: 192"
 else
     echo "vidcontrol available: NO"
     echo "ERROR: vidcontrol not found - not FreeBSD console?"

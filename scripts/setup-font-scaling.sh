@@ -45,9 +45,10 @@ if command -v vidcontrol >/dev/null 2>&1; then
     doas vidcontrol -i active 2>/dev/null || echo "Unable to detect"
 
     echo "To change console font:"
-    echo "  doas vidcontrol -f 8x16"
-    echo "  doas vidcontrol -f 12x24"
-    echo "  doas vidcontrol -f 16x32  # Recommended for accessibility"
+    echo "  doas vidcontrol -f 8x16      # Standard readable"
+    echo "  doas vidcontrol -f iso-8x16  # Alternative readable"
+    echo "  Note: 16x32 not available on FreeBSD console"
+    echo "  Use X11 with high DPI for true accessibility"
 fi
 
 echo
