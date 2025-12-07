@@ -71,20 +71,20 @@ baux
 - **bwm** window manager with session display in status bar
 - **chaos** anti-burn-in screensaver
 - **baux-bot** AI assistant (Alt+b in tmux, or `baux-bot` command)
-- **xai-chat** AI assistant via XAI API (⚠️ argument passing bug)
+- **xai-chat** AI assistant via XAI API (✅ argument passing fixed)
 - **Gruvbox theming** in all components
 
 ### Development Status
 **✅ Core Components Installed:**
 - `bbase` - Keymap system with Caps→Esc functionality
 - `baux` - Session management with tmux integration
-- `bvi` - Neovim editor integration (⚠️ config issues)
+- `bvi` - Neovim editor integration (✅ lua config fixed)
 - **Git/SSH** - Development workflow ready
 - **TPM + Plugins** - Tmux resurrect and continuum installed
 
-**🔄 AI Assistance (Blocked by Bugs):**
-- **xai-chat**: XAI API integrated but script argument bug prevents use
-- **baux-bot**: Ollama-based assistant (Vulkan compatibility issues)
+**🔄 AI Assistance (In Progress):**
+- **xai-chat**: XAI API integrated and working
+- **baux-bot**: Ollama-based assistant (🔄 Vulkan issues resolved, setup in progress)
 - **Manual Development** - Full access to codebase for manual debugging
 
 **🧪 Comparison Testing Ready:**

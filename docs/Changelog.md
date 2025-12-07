@@ -103,21 +103,31 @@
 - **Fallback**: Uses local keymap directory if system directory unavailable
 - **Status**: Bug resolved, installation now works for both root and regular users
 
-#### Milestone 11: Script Argument Passing Bug 🔄
+#### Milestone 11: Script Argument Passing Bug ✅
 - **Root Cause**: Scripts not receiving command-line arguments correctly
 - **Symptom**: `$#` always shows 0, even with arguments passed
 - **Impact**: xai-chat and dev-assist commands unusable for AI assistance
 - **Affected**: All custom scripts in /usr/local/bin/
 - **Debugging**: Scripts execute but don't process input parameters
-- **Workaround**: Manual development without AI assistance
-- **Status**: Bug documented, affects AI development workflow, fix pending
+- **Solution**: Updated scripts to use `"$*"` for proper argument handling
+- **Status**: Bug resolved, AI assistance now functional
 
-#### Milestone 12: bvi Neovim Configuration Bug 🔄
+#### Milestone 12: bvi Neovim Configuration Bug ✅
 - **Root Cause**: bvi init.vim tries to load lazy.nvim lua modules that don't exist
 - **Symptom**: Neovim crashes on startup with "module 'config.lazy' not found"
 - **Impact**: bvi command unusable for editing
 - **Affected**: bvi editor integration
 - **Debugging**: Lua require() calls fail for config/options.lua and config/keymaps.lua
+- **Solution**: Added missing config/lazy.lua files with LazyVim bootstrap
+- **Status**: Bug resolved, bvi editor fully functional with gruvbox theming
+
+#### Milestone 13: Workstation BAUX Setup 🔄
+- **Objective**: Complete BAUX installation on FreeBSD workstation (192.168.33.101)
+- **Progress**: Setup script created and running, installing dependencies
+- **Components**: bbase, baux, bvi packages installing
+- **Fonts**: Console set to iso-8x16, X11 configured for 192 DPI accessibility
+- **X11**: Setup in progress for full graphical environment
+- **Status**: Installation in progress, core components deploying
 - **Workaround**: Use nvim directly or vim for editing
 - **Status**: Bug documented, basic vimscript config created as temporary fix
 
