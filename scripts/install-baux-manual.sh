@@ -6,7 +6,7 @@
 set -e  # Exit on any error
 
 # Configuration
-LOG_FILE="${1:-baux-manual-install-$(date +%Y%m%d-%H%M%S).log}"
+LOG_FILE="${1:-$(pwd)/baux-manual-install-$(date +%Y%m%d-%H%M%S).log}"
 
 # Logging functions
 log() {
