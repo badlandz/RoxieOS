@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# $FreeBSD$
+#
+# MAINTAINER: baux@roxieos.org
+
+set -e
+
+case "$2" in
+POST-INSTALL)
+	;;
+DEINSTALL)
+	;;
+*)
+	exit 64
+	;;
+esac

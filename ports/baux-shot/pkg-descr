@@ -1,0 +1,14 @@
+bshot: BAUXBSD screenshot utility
+
+This package provides a unified screenshot tool that works in both X11
+and console framebuffer environments. It automatically detects the
+display environment and uses appropriate tools (maim for X11, fbgrab
+for console).
+
+Features:
+- Universal: Works in X11 and console framebuffer
+- Consistent: Same interface across all BAUX layers
+- Simple: No dialogs, no clipboard prompts
+- Organized: Timestamped files in ~/shots/
+
+WWW: https://github.com/RoxieOS/baux-shot
