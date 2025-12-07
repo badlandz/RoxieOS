@@ -46,9 +46,13 @@ if ! doas sysrc keymap="baux"; then
     exit 1
 fi
 
-# Configure console font for readability
-echo "Setting console font for readability..."
-doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null || echo "Console font setting failed (expected on some systems)"
+# Configure console font for maximum readability (accessibility requirement)
+echo "Setting console font for impaired vision accessibility..."
+# Try largest fonts first for maximum readability
+doas vidcontrol -f 12x24 /usr/share/syscons/fonts/TERMINAL_12x24.fnt 2>/dev/null || \
+doas vidcontrol -f 16x32 /usr/share/syscons/fonts/TERMINAL_16x32.fnt 2>/dev/null || \
+doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null || \
+echo "Console font setting failed - no suitable fonts found"
 
 # Configure X11 fonts if X11 is available
 if command -v xrdb >/dev/null 2>&1; then
@@ -56,12 +60,19 @@ if command -v xrdb >/dev/null 2>&1; then
     XRESOURCES="$HOME/.Xresources"
     touch "$XRESOURCES"
 
-    # Add BAUX font settings if not already present
+    # Add BAUX font settings for accessibility if not already present
     if ! grep -q "Xft.dpi" "$XRESOURCES"; then
-        echo "Xft.dpi: 120" >> "$XRESOURCES"
+        echo "! BAUX Accessibility Font Settings" >> "$XRESOURCES"
+        echo "Xft.dpi: 192" >> "$XRESOURCES"  # High DPI for 20pt effective size
         echo "Xft.antialias: true" >> "$XRESOURCES"
         echo "Xft.hinting: true" >> "$XRESOURCES"
-        echo "Xft.hintstyle: hintslight" >> "$XRESOURCES"
+        echo "Xft.hintstyle: hintfull" >> "$XRESOURCES"  # Better hinting
+        echo "Xft.rgba: rgb" >> "$XRESOURCES"
+        echo "Xft.lcdfilter: lcddefault" >> "$XRESOURCES"
+        echo "! Large default fonts for accessibility" >> "$XRESOURCES"
+        echo "*.font: -*-fixed-medium-r-normal--20-*-*-*-*-*-*-*" >> "$XRESOURCES"
+        echo "URxvt.font: xft:Monospace:size=20" >> "$XRESOURCES"
+        echo "XTerm*faceName: Monospace:size=20" >> "$XRESOURCES"
     fi
 
     xrdb -merge "$XRESOURCES" 2>/dev/null || echo "X11 font config failed (expected if no X11)"
