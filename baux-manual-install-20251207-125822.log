@@ -1,0 +1,62 @@
+[INFO] === BAUX Manual Installation Started ===
+[INFO] Current directory: /home/badlandz/src/RoxieOS
+[INFO] User: root
+[INFO] Log file: /home/badlandz/src/RoxieOS/baux-manual-install-20251207-125822.log
+[INFO] === Checking Privilege Requirements ===
+[INFO] ✓ Running as root - no privilege escalation needed
+[INFO] === Installing Prerequisites ===
+[INFO] Updating package database...
+Updating FreeBSD-ports repository catalogue...
+FreeBSD-ports repository is up to date.
+Updating FreeBSD-ports-kmods repository catalogue...
+FreeBSD-ports-kmods repository is up to date.
+Updating FreeBSD-base repository catalogue...
+FreeBSD-base repository is up to date.
+All repositories are up to date.
+[INFO] Installing required packages...
+Updating FreeBSD-ports repository catalogue...
+FreeBSD-ports repository is up to date.
+Updating FreeBSD-ports-kmods repository catalogue...
+FreeBSD-ports-kmods repository is up to date.
+Updating FreeBSD-base repository catalogue...
+FreeBSD-base repository is up to date.
+All repositories are up to date.
+Checking integrity... done (0 conflicting)
+The most recent versions of packages are already installed
+[INFO] === Checking Console Font Availability ===
+[INFO] Console fonts are provided by base FreeBSD system (/usr/share/syscons/fonts/)
+[INFO] ⚠ Specific TERMINAL fonts not found - checking for any console fonts
+[INFO] Available console fonts:
+/usr/share/syscons/fonts/armscii8-8x14.fnt
+/usr/share/syscons/fonts/armscii8-8x16.fnt
+/usr/share/syscons/fonts/armscii8-8x8.fnt
+/usr/share/syscons/fonts/cp1251-8x14.fnt
+/usr/share/syscons/fonts/cp1251-8x16.fnt
+[INFO] ✓ Console fonts available (may not include all sizes needed for accessibility)
+[INFO] ✓ All prerequisites verified
+[INFO] === Verifying Console Font Management ===
+[INFO] ✓ vidcontrol available for console font management
+[INFO] Missing some console fonts: TERMINAL_16x32.fnt TERMINAL_12x24.fnt TERMINAL_8x16.fnt
+[INFO] Installing additional console fonts for better accessibility...
+Updating FreeBSD-ports repository catalogue...
+FreeBSD-ports repository is up to date.
+Updating FreeBSD-ports-kmods repository catalogue...
+FreeBSD-ports-kmods repository is up to date.
+Updating FreeBSD-base repository catalogue...
+FreeBSD-base repository is up to date.
+All repositories are up to date.
+pkg: No packages available to install matching 'misc/console-fonts' have been found in the repositories
+[INFO] Failed to install console-fonts, continuing with available fonts
+[INFO] Some fonts still missing after installation: TERMINAL_16x32.fnt TERMINAL_12x24.fnt TERMINAL_8x16.fnt
+[INFO] BAUX will work with available fonts
+[INFO] === Installing bbase (Foundation) ===
+DEBUG: About to check pwd
+[INFO] Current working directory before cd: /home/badlandz/src/RoxieOS
+DEBUG: pwd worked, about to check directory
+[INFO] Checking if ports/bbase exists...
+[INFO] ✓ ports/bbase directory exists
+[INFO] Changing to ports/bbase...
+[INFO] About to execute: cd ports/bbase
+[INFO] cd command completed successfully
+[INFO] Current pwd result: /home/badlandz/src/RoxieOS/ports/bbase
+[INFO] Successfully changed to: /home/badlandz/src/RoxieOS/ports/bbase

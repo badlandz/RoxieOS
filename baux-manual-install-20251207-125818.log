@@ -1,0 +1,28 @@
+[INFO] === BAUX Manual Installation Started ===
+[INFO] Current directory: /home/badlandz/src/RoxieOS
+[INFO] User: badlandz
+[INFO] Log file: /home/badlandz/src/RoxieOS/baux-manual-install-20251207-125818.log
+[INFO] === Checking Privilege Requirements ===
+[INFO] Running as regular user - checking doas availability
+[INFO] ✓ doas is working correctly
+[INFO] === Installing Prerequisites ===
+[INFO] Updating package database...
+pkg: Insufficient privileges to update the repository catalogue.
+[INFO] pkg update failed, continuing...
+[INFO] Installing required packages...
+pkg: Insufficient privileges to install packages
+[ERROR] Package installation failed
+[INFO] === Checking Console Font Availability ===
+[INFO] Console fonts are provided by base FreeBSD system (/usr/share/syscons/fonts/)
+[INFO] ⚠ Specific TERMINAL fonts not found - checking for any console fonts
+[INFO] Available console fonts:
+/usr/share/syscons/fonts/armscii8-8x14.fnt
+/usr/share/syscons/fonts/armscii8-8x16.fnt
+/usr/share/syscons/fonts/armscii8-8x8.fnt
+/usr/share/syscons/fonts/cp1251-8x14.fnt
+/usr/share/syscons/fonts/cp1251-8x16.fnt
+[INFO] ✓ Console fonts available (may not include all sizes needed for accessibility)
+[INFO] ✓ All prerequisites verified
+[INFO] === Verifying Console Font Management ===
+[INFO] ✓ vidcontrol available for console font management
+[INFO] Missing some console fonts: TERMINAL_16x32.fnt TERMINAL_12x24.fnt TERMINAL_8x16.fnt
