@@ -20,10 +20,17 @@
    ```
 
 3. Install baux-bot:
-   ```bash
-   cd /usr/ports/misc/baux-bot
-   make install clean
-   ```
+    ```bash
+    cd /usr/ports/misc/baux-bot
+    make install clean
+    ```
+
+4. Enable automatic startup (optional, but recommended):
+    The port automatically enables Ollama service in `/etc/rc.conf` during installation. If not:
+    ```bash
+    sudo service ollama enable  # Adds to rc.conf
+    sudo service ollama start   # Starts immediately
+    ```
 
 ## Usage
 
@@ -46,7 +53,8 @@ Starts an interactive chat session with full RoxieOS codebase context.
 ## Features
 
 - **Auto-detection**: Finds RoxieOS repo in `~/src/RoxieOS`, `/src/roxieos`, or via `$ROXIE_ROOT`
-- **Real-time monitoring**: Automatically rebuilds knowledge base when repo changes
+- **Auto-startup**: Ollama service starts automatically on boot after installation
+- **Real-time monitoring**: Automatically rebuilds knowledge base when repo changes (lazy loading for speed)
 - **FreeBSD optimized**: Uses FreeBSD-compatible commands and paths
 - **Privacy focused**: Local Ollama models, no cloud dependencies
 - **Development focused**: Specialized prompts for BAUXBSD/FreeBSD development
@@ -67,6 +75,13 @@ export ROXIE_ROOT=/path/to/your/roxieos/repo
 
 ### Permission issues
 The bot uses `~/.baux-bot/` for logs and RAG data - ensure write permissions.
+
+### Auto-startup issues
+If Ollama doesn't start on boot:
+```bash
+grep ollama_enable /etc/rc.conf  # Check if enabled
+service ollama status           # Check status
+```
 
 ## Architecture
 

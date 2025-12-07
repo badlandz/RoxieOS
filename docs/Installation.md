@@ -9,12 +9,12 @@
 - `bvi` - Neovim wrapper with Gruvbox theme
 - `bwm` - Window manager (dwm-based) with session integration
 - `chaos` - Anti-burn-in screensaver
-- `baux-bot` - AI assistant with Ollama integration
+- `baux-bot` - AI assistant with Ollama integration and auto-startup
 
 **🔄 Installation Status:**
-- Automated install script: `install-baux-manual.sh` - *working but blocked at bbase*
-- Manual installation: Possible with workarounds
-- Core functionality: Ready but requires bug fixes
+- Automated install script: `install-baux-manual.sh` - *working with privilege fixes*
+- Manual installation: Fully functional
+- Core functionality: Ready with auto-startup for services
 
 ## Troubleshooting
 

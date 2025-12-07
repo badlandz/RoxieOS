@@ -26,4 +26,11 @@ do-install:
 	${INSTALL_SCRIPT} ${FILESDIR}/usr/local/bin/xai-chat ${STAGEDIR}${PREFIX}/bin/xai-chat
 	${INSTALL_SCRIPT} ${FILESDIR}/usr/local/bin/dev-assist ${STAGEDIR}${PREFIX}/bin/dev-assist
 
+post-install:
+	@if [ ! -f /etc/rc.conf ]; then touch /etc/rc.conf; fi
+	@if ! grep -q "^ollama_enable=" /etc/rc.conf; then \
+		echo 'ollama_enable="YES"' >> /etc/rc.conf; \
+	fi
+	@service ollama start || true
+
 .include <bsd.port.mk>

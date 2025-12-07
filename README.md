@@ -67,7 +67,7 @@ baux
 ### What You Get
 - **Caps Lock → Escape** globally (bbase) ✅
 - **baux command** starts tmux session with custom config ✅
-- **bvi filename** opens files with neovim (⚠️ config issues)
+- **bvi filename** opens files with neovim (✅ lua config fixed)
 - **bwm** window manager with session display in status bar
 - **chaos** anti-burn-in screensaver
 - **baux-bot** AI assistant (Alt+b in tmux, or `baux-bot` command)
@@ -92,7 +92,7 @@ baux
 
 **🔄 AI Assistance:**
 - **xai-chat**: XAI API integrated and working
-- **baux-bot**: Ollama-based assistant (setup pending workstation completion)
+- **baux-bot**: Ollama-based assistant with auto-startup (service enabled in port install)
 - **Manual Development** - Full access to codebase for manual debugging
 
 **🧪 Comparison Testing Ready:**

@@ -197,7 +197,7 @@ make release
 ### Core Package Matrix
 | Package | FreeBSD Dependencies | Size |
 |---------|-------------------|-------|
-| bbase | bash, tmux | 50MB | *⚠️ install blocked*
+| bbase | bash, tmux | 50MB |
 | baux | tmux, seaweedfs, rsync, git | 80MB |
 | bwm | dwm, picom | 25MB |
 | bterm | st, libXft | 5MB |
@@ -283,7 +283,7 @@ cp *.txz /mnt/usb/baux-packages/
 **Goal:** Complete BAUX environment booting to X on ThinkPad X300**
 
 #### Week 1: Core Packages ✅
-- [x] bbase: Keymaps working everywhere (FreeBSD port + install script) - *⚠️ install script has privilege bug*
+- [x] bbase: Keymaps working everywhere (FreeBSD port + install script) - *✅ privilege bug fixed*
 - [x] bvi: Neovim with full config (FreeBSD port + lite/dev variants)
 - [x] baux: Local session management (FreeBSD port + tmux config)
 - [ ] bwm: Window manager with session display

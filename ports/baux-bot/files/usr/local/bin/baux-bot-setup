@@ -41,6 +41,16 @@ else
     echo "✓ Model already available"
 fi
 
+# Enable Ollama service for auto-start
+if ! grep -q "^ollama_enable=" /etc/rc.conf; then
+    echo 'ollama_enable="YES"' >> /etc/rc.conf
+    echo "✓ Ollama service enabled for auto-start"
+fi
+
+# Preload model in background
+echo "Preloading model in background..."
+ollama run llama3.2:3b "warmup" >/dev/null 2>&1 &
+
 # Check if baux-bot is installed
 if ! command -v baux-bot >/dev/null 2>&1; then
     echo "ERROR: baux-bot not found. Please install the port first:"

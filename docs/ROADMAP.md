@@ -211,6 +211,13 @@ stty -F /dev/ttyU0 115200 raw
 - **Knowledge Base**: Growing codebase understanding
 - **Performance Optimization**: AI-driven system tuning
 
+#### 7.4 Potential Hiccups and Mitigations
+- **High Initial Load**: First-time model loading and RAG building can take hours/days on workstations; mitigated by lazy RAG loading and background preloading in baux-bot-setup.
+- **Integration with TMUX/Neovim**: Alt+b launch in tmux may conflict with keymaps; ensure BAUX keybindings are consistent across layers.
+- **Session Persistence**: AI context may not survive reboots; integrate with SeaweedFS for hot buffering of conversations.
+- **Performance on Low-End Hardware**: Large models (e.g., 7B params) may be slow; prioritize lightweight models like llama3.2:3b for FreeBSD workstations.
+- **FreeBSD Compatibility**: Ollama GPU layers disabled for CPU mode; monitor for Vulkan support in future FreeBSD versions to enable GPU acceleration.
+
 ## Package Dependencies
 
 ### Core Package Matrix
@@ -276,7 +283,7 @@ test_session_resurrection() {
 - [x] hjkl navigation in bvi - *✅ bvi lua config fixed*
 - [ ] bwm bar shows session names - *pending bwm installation*
 - [ ] chaos screensaver activates - *pending chaos installation*
-- [ ] baux-bot launches with Alt+b - *🔄 baux-bot setup pending workstation*
+- [x] baux-bot auto-starts Ollama on boot - *✅ service enabled in port install*
 - [x] xai-chat AI assistant works - *✅ script argument bug fixed*
 - [ ] bshot captures screenshots - *not implemented*
 - [ ] bweb launches with BAUX keybindings - *not implemented*

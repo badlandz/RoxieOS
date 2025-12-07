@@ -90,8 +90,8 @@ do-install:
 ## Installation Order
 
 ### Core Installation Sequence
-1. **bbase** - System foundation, keymap - *⚠️ blocked by privilege escalation bug*
-2. **baux** - Shell environment - *pending bbase completion*
+1. **bbase** - System foundation, keymap - *✅ privilege bug fixed*
+2. **baux** - Shell environment - *✅ ready*
 3. **bwm** - Window manager (if X11) - *pending baux completion*
 4. **bterm** - Terminal (if X11) - *not implemented*
 5. **bvi** - Editor (lite/dev variants) - *pending baux completion*

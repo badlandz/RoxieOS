@@ -54,6 +54,10 @@ log "BAUX BOT v6.3 online — $MODEL — monitoring $SRC_ROOT"
 
 build_rag() {
     local rag_file="$RAG_DIR/current.txt"
+    if [[ -f "$rag_file" && $(find "$SRC_ROOT" -newer "$rag_file" 2>/dev/null | wc -l) -eq 0 ]]; then
+        log "RAG up-to-date, skipping rebuild"
+        return
+    fi
     >"$rag_file"
 
     echo "=== ROXIEOS SCAN $(date) ===" >>"$rag_file"
