@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Display Verification Script
 # Verifies display and font configuration
 

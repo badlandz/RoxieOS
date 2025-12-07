@@ -30,6 +30,10 @@ log "Log file: $LOG_FILE"
 log "=== Installing Prerequisites ==="
 pkg update >> "$LOG_FILE" 2>&1 || log "pkg update failed, continuing..."
 pkg install -y bash git neovim tmux >> "$LOG_FILE" 2>&1 || error "Package installation failed"
+# Ensure bash is available at the expected path
+if [ ! -x "/usr/local/bin/bash" ]; then
+    log "bash not found at /usr/local/bin/bash, pkg install may have failed"
+fi
 
 ## Install bbase (Foundation)
 log "=== Installing bbase (Foundation) ==="

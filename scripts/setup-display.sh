@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Display Setup Script
 # Configures display resolution and font settings for accessibility
 

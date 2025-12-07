@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Keymap Installation Verification
 # Simple, effective verification following Unix philosophy
 

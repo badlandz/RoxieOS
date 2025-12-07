@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Neovim Performance Optimization
 # Simple, effective startup time improvements
 

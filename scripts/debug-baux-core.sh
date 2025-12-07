@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Core Components Debugging Script
 # Tests Neovim, Tmux, and Keymap functionality
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # BAUX Debug Script - Comprehensive logging for troubleshooting
 # Logs system state, display settings, and BAUX functionality
 
@@ -34,6 +34,7 @@ log ""
 log "=== SYSTEM INFORMATION ==="
 log "Hostname: $(hostname)"
 log "FreeBSD Version: $(freebsd-version 2>/dev/null || uname -rs)"
+log "Bash Path: $(which bash 2>/dev/null || echo 'bash not found')"
 log "Hardware: $(sysctl -n hw.model 2>/dev/null || echo 'unknown')"
 log "Memory: $(sysctl -n hw.physmem 2>/dev/null || echo 'unknown')"
 log "CPU: $(sysctl -n hw.ncpu 2>/dev/null || echo 'unknown') cores"
