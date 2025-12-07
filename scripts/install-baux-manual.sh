@@ -57,35 +57,47 @@ log "Caps Lock should now be Escape. Test it!"
 log "=== Installing baux (Session Manager) ==="
 log "Changing to ../baux..."
 cd ../baux || { error "Cannot cd to ../baux"; exit 1; }
-echo "Running install.sh..."
-doas ./install.sh || { echo "ERROR: baux install.sh failed"; exit 1; }
+log "Running install.sh..."
+if doas ./install.sh >> "$LOG_FILE" 2>&1; then
+    success "baux install.sh completed"
+else
+    error "baux install.sh failed"
+    exit 1
+fi
 
-# Test session manager
-echo "Testing baux command..."
-baux --help || echo "baux command not found or failed"
-echo "baux should show help. Try 'baux' to start session"
+log "Testing baux command..."
+baux --help >> "$LOG_FILE" 2>&1 || log "baux command not found or failed (expected during install)"
+log "baux should show help. Try 'baux' to start session"
 
 ## Install bvi (Editor)
-echo "=== Installing bvi (Editor) ==="
-echo "Changing to ../bvi..."
-cd ../bvi || { echo "ERROR: Cannot cd to ../bvi"; exit 1; }
-echo "Running install.sh..."
-doas ./install.sh || { echo "ERROR: bvi install.sh failed"; exit 1; }
+log "=== Installing bvi (Editor) ==="
+log "Changing to ../bvi..."
+cd ../bvi || { error "Cannot cd to ../bvi"; exit 1; }
+log "Running install.sh..."
+if doas ./install.sh >> "$LOG_FILE" 2>&1; then
+    success "bvi install.sh completed"
+else
+    error "bvi install.sh failed"
+    exit 1
+fi
 
-# Test editor
-echo "Testing bvi command..."
-bvi --version 2>/dev/null || echo "bvi wrapper ready"
-echo "Try 'bvi test.txt' to edit a file"
+log "Testing bvi command..."
+bvi --version >> "$LOG_FILE" 2>&1 2>/dev/null || log "bvi wrapper ready"
+log "Try 'bvi test.txt' to edit a file"
 
 ## Run System Test
-echo "=== Running System Test ==="
-echo "Changing to ../scripts..."
-cd ../scripts || { echo "ERROR: Cannot cd to ../scripts"; exit 1; }
-echo "Running test-baux.sh..."
+log "=== Running System Test ==="
+log "Changing to ../scripts..."
+cd ../scripts || { error "Cannot cd to ../scripts"; exit 1; }
+log "Running test-baux.sh..."
 ./test-baux.sh
 
 ## Next Steps
-echo "=== Installation Complete ==="
-echo "Core BAUX components installed!"
-echo "Next: Test bwm (window manager) and chaos (screensaver)"
-echo "Then: Implement live USB persistence"
+success "=== Installation Complete ==="
+log "Core BAUX components installed!"
+log "Log saved to: $LOG_FILE"
+log ""
+log "Next: Test bwm (window manager) and chaos (screensaver)"
+log "Then: Implement live USB persistence"
+log ""
+log "Check the log file for details: $LOG_FILE"
