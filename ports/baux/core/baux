@@ -6,7 +6,7 @@ set -euo pipefail
 
 export BAUX_HOME="/usr/local/share/baux"
 export NVIM_INIT="$BAUX_HOME/nvim/init.lua"
-TMUX_CONF="$BAUX_HOME/tmux/baux.conf"
+TMUX_CONF="/usr/local/share/tmux/baux.conf"
 SESSION="baux-$(hostname)"
 
 # ──────────────────────────────────────────────────────────────
@@ -55,4 +55,12 @@ fi
 # ──────────────────────────────────────────────────────────────
 # 3. Normal local entry — start tmux with our config
 # ──────────────────────────────────────────────────────────────
+
+# Verify config exists before starting tmux
+if [ ! -f "$TMUX_CONF" ]; then
+    echo "ERROR: TMUX config not found: $TMUX_CONF"
+    echo "BAUX installation may be incomplete."
+    exit 1
+fi
+
 exec tmux -f "$TMUX_CONF" new-session -A -s "$SESSION"

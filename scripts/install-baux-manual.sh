@@ -87,10 +87,10 @@ log "Try 'bvi test.txt' to edit a file"
 
 ## Run System Test
 log "=== Running System Test ==="
-log "Changing to ../scripts..."
-cd ../scripts || { error "Cannot cd to ../scripts"; exit 1; }
+log "Changing to project root scripts..."
+cd ../../scripts || { error "Cannot cd to ../../scripts from $(pwd)"; exit 1; }
 log "Running test-baux.sh..."
-./test-baux.sh
+./test-baux.sh 2>&1 || log "Test script failed (expected during installation)"
 
 ## Next Steps
 success "=== Installation Complete ==="

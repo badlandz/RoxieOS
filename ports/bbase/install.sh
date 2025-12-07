@@ -46,10 +46,36 @@ if ! doas sysrc keymap="baux"; then
     exit 1
 fi
 
+# Configure console font for readability
+echo "Setting console font for readability..."
+doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null || echo "Console font setting failed (expected on some systems)"
+
+# Configure X11 fonts if X11 is available
+if command -v xrdb >/dev/null 2>&1; then
+    echo "Configuring X11 fonts for accessibility..."
+    XRESOURCES="$HOME/.Xresources"
+    touch "$XRESOURCES"
+
+    # Add BAUX font settings if not already present
+    if ! grep -q "Xft.dpi" "$XRESOURCES"; then
+        echo "Xft.dpi: 120" >> "$XRESOURCES"
+        echo "Xft.antialias: true" >> "$XRESOURCES"
+        echo "Xft.hinting: true" >> "$XRESOURCES"
+        echo "Xft.hintstyle: hintslight" >> "$XRESOURCES"
+    fi
+
+    xrdb -merge "$XRESOURCES" 2>/dev/null || echo "X11 font config failed (expected if no X11)"
+fi
+
 echo "bbase installed successfully!"
 echo "Keymap file: $(ls -la /usr/share/syscons/keymaps/baux.kbd)"
 echo "System keymap setting: $(doas sysrc -n keymap 2>/dev/null || echo 'not set')"
 echo ""
-echo "To activate immediately: doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd"
-echo "To activate on boot: reboot required"
+echo "Font configuration:"
+echo "  Console: 8x16 TERMINAL font (readable)"
+echo "  X11: 120 DPI with antialiasing (if available)"
+echo ""
+echo "To activate immediately:"
+echo "  Keymap: doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd"
+echo "  Fonts: reboot or restart X11"
 echo "Caps Lock should now act as Escape globally"
