@@ -84,7 +84,23 @@ log "=== DISPLAY CONFIGURATION ==="
 
 # Console display
 if command -v vidcontrol >/dev/null 2>&1; then
-    log "Console font: $(doas vidcontrol -i active 2>/dev/null | head -1 || echo 'unknown')"
+    CONSOLE_FONT=$(doas vidcontrol -i active 2>/dev/null | head -1 || echo 'unknown')
+    log "Console font: $CONSOLE_FONT"
+
+    # Check if font is accessibility-compliant
+    if [[ "$CONSOLE_FONT" == *"16x32"* ]]; then
+        success "Console font is excellent (16x32)"
+    elif [[ "$CONSOLE_FONT" == *"12x24"* ]]; then
+        success "Console font is very good (12x24)"
+    elif [[ "$CONSOLE_FONT" == *"8x16"* ]]; then
+        warn "Console font acceptable but could be larger (8x16)"
+    else
+        error "Console font may be too small for accessibility"
+    fi
+
+    # Show available fonts
+    log "Available console fonts:"
+    doas ls -1 /usr/share/syscons/fonts/ 2>/dev/null | grep TERMINAL | head -5 >> "$LOG_FILE" 2>&1
 else
     log "vidcontrol not available"
 fi
@@ -101,6 +117,18 @@ if [ -n "${DISPLAY:-}" ]; then
     if command -v xrdb >/dev/null 2>&1; then
         log "X11 Resources (font settings):"
         xrdb -query | grep -E "(Xft|dpi)" >> "$LOG_FILE" 2>&1 || log "No Xft settings found"
+
+        # Check DPI specifically
+        X_DPI=$(xrdb -query | grep "Xft.dpi" | awk '{print $2}' || echo "not set")
+        log "X11 DPI setting: $X_DPI"
+
+        if [ "$X_DPI" -ge 192 ] 2>/dev/null; then
+            success "X11 DPI is excellent for accessibility ($X_DPI)"
+        elif [ "$X_DPI" -ge 120 ] 2>/dev/null; then
+            warn "X11 DPI acceptable but could be higher ($X_DPI)"
+        else
+            error "X11 DPI too low for accessibility ($X_DPI)"
+        fi
     fi
 
     if command -v xrandr >/dev/null 2>&1; then
@@ -122,6 +150,9 @@ if command -v kbdcontrol >/dev/null 2>&1; then
         success "BAUX keymap is active"
     else
         warn "BAUX keymap not active"
+        log "Available keymaps:"
+        doas ls -la /usr/share/syscons/keymaps/ | grep baux >> "$LOG_FILE" 2>&1 || log "No baux keymap found"
+        log "To fix: doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd"
     fi
 else
     log "kbdcontrol not available"
@@ -132,6 +163,12 @@ if [ -f "/etc/rc.conf" ]; then
     KEYMAP_SETTING=$(grep "keymap" /etc/rc.conf || echo "not set")
     log "rc.conf keymap setting: $KEYMAP_SETTING"
 fi
+
+# Multiple keymap sources check
+log "Keymap sources:"
+log "- rc.conf: $(grep -s "keymap" /etc/rc.conf 2>/dev/null || echo "not set")"
+log "- loader.conf: $(grep -s "keymap" /boot/loader.conf 2>/dev/null || echo "not set")"
+log "- Current active: $CURRENT_KEYMAP"
 
 # BAUX Config Files
 log ""
@@ -197,10 +234,24 @@ fi
 
 if [ -z "${DISPLAY:-}" ]; then
     warn "Console mode detected - X11 display settings won't apply"
+    log "For console accessibility: ./scripts/setup-early-font.sh"
 fi
 
 if [[ "$CURRENT_KEYMAP" != *"baux"* ]]; then
-    warn "BAUX keymap not active - Caps Lock won't work as Escape"
+    error "BAUX keymap not active - Caps Lock won't work as Escape"
+    log "Fix: doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd"
+    log "Make permanent: echo 'keymap=\"baux\"' >> /etc/rc.conf"
+fi
+
+# Font accessibility check
+if [[ "$CONSOLE_FONT" == *"8x16"* ]] || [[ "$CONSOLE_FONT" == "unknown" ]]; then
+    error "Console font too small for accessibility"
+    log "Fix: ./scripts/setup-early-font.sh (run after video driver loads)"
+fi
+
+if [ -n "${DISPLAY:-}" ] && [ "$X_DPI" -lt 192 ] 2>/dev/null; then
+    error "X11 DPI too low for accessibility"
+    log "Fix: ./scripts/setup-display.sh"
 fi
 
 log ""

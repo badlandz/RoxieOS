@@ -38,21 +38,62 @@ if [ ! -f "/usr/share/syscons/keymaps/baux.kbd" ]; then
     exit 1
 fi
 
-# Set as default keymap
+# Set as default keymap (multiple methods for reliability)
 echo "Setting keymap to baux..."
+
+# Method 1: sysrc (persistent)
 if ! doas sysrc keymap="baux"; then
-    echo "ERROR: Failed to set keymap with sysrc"
-    echo "Check doas permissions for sysrc"
+    echo "WARNING: sysrc keymap setting failed, trying alternative methods"
+fi
+
+# Method 2: Direct rc.conf edit (backup)
+if ! grep -q "keymap.*baux" /etc/rc.conf 2>/dev/null; then
+    echo 'keymap="baux"' | doas tee -a /etc/rc.conf >/dev/null
+fi
+
+# Method 3: Immediate application
+echo "Applying keymap immediately..."
+if ! doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd; then
+    echo "ERROR: Failed to load keymap immediately"
+    echo "Check if keymap file exists and is readable"
+    ls -la /usr/share/syscons/keymaps/baux.kbd
     exit 1
+fi
+
+# Method 4: Verify it took effect
+echo "Verifying keymap is active..."
+CURRENT_KEYMAP=$(doas kbdcontrol -d | head -1)
+if [[ "$CURRENT_KEYMAP" == *"baux"* ]]; then
+    echo "✓ Keymap successfully applied"
+else
+    echo "WARNING: Keymap may not be active yet (reboot may be required)"
+    echo "Current keymap: $CURRENT_KEYMAP"
 fi
 
 # Configure console font for maximum readability (accessibility requirement)
 echo "Setting console font for impaired vision accessibility..."
+
+# Check available fonts first
+echo "Available console fonts:"
+ls -1 /usr/share/syscons/fonts/ | grep -E "(12x24|16x32|8x16)" | head -5
+
 # Try largest fonts first for maximum readability
-doas vidcontrol -f 12x24 /usr/share/syscons/fonts/TERMINAL_12x24.fnt 2>/dev/null || \
-doas vidcontrol -f 16x32 /usr/share/syscons/fonts/TERMINAL_16x32.fnt 2>/dev/null || \
-doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null || \
-echo "Console font setting failed - no suitable fonts found"
+# Note: vidcontrol may not work if video driver isn't loaded yet
+if doas vidcontrol -f 16x32 /usr/share/syscons/fonts/TERMINAL_16x32.fnt 2>/dev/null; then
+    echo "✓ Set console font to 16x32 (maximum readability)"
+elif doas vidcontrol -f 12x24 /usr/share/syscons/fonts/TERMINAL_12x24.fnt 2>/dev/null; then
+    echo "✓ Set console font to 12x24 (very readable)"
+elif doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null; then
+    echo "✓ Set console font to 8x16 (minimum acceptable)"
+else
+    echo "WARNING: Console font setting failed - may need to run after video driver loads"
+    echo "Available fonts:"
+    ls -la /usr/share/syscons/fonts/ | head -10
+fi
+
+# Show current font setting
+CURRENT_FONT=$(doas vidcontrol -i active 2>/dev/null | head -1 || echo "unknown")
+echo "Current console font: $CURRENT_FONT"
 
 # Configure X11 fonts if X11 is available
 if command -v xrdb >/dev/null 2>&1; then

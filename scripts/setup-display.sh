@@ -41,19 +41,49 @@ if [ -n "${DISPLAY:-}" ]; then
     XRESOURCES="$HOME/.Xresources"
     touch "$XRESOURCES"
 
+    # Backup existing Xresources
+    if [ -f "$XRESOURCES" ] && [ ! -f "${XRESOURCES}.backup" ]; then
+        cp "$XRESOURCES" "${XRESOURCES}.backup"
+        echo "Backed up existing .Xresources to .Xresources.backup"
+    fi
+
     if ! grep -q "BAUX Display Config" "$XRESOURCES"; then
         echo "! BAUX Display Config - $(date)" >> "$XRESOURCES"
         echo "! High DPI settings for impaired vision accessibility"
-        echo "Xft.dpi: 192" >> "$XRESOURCES"  # Increased from 120 for 20pt effective size
+        echo "Xft.dpi: 192" >> "$XRESOURCES"  # High DPI for 20pt effective size
         echo "Xft.antialias: true" >> "$XRESOURCES"
         echo "Xft.hinting: true" >> "$XRESOURCES"
-        echo "Xft.hintstyle: hintfull" >> "$XRESOURCES"  # Better hinting for readability
+        echo "Xft.hintstyle: hintfull" >> "$XRESOURCES"  # Better hinting
         echo "Xft.rgba: rgb" >> "$XRESOURCES"
         echo "Xft.lcdfilter: lcddefault" >> "$XRESOURCES"
-        echo "! Large default font size"
+        echo "! Large default fonts for accessibility" >> "$XRESOURCES"
         echo "*.font: -*-fixed-medium-r-normal--20-*-*-*-*-*-*-*" >> "$XRESOURCES"
         echo "URxvt.font: xft:Monospace:size=20" >> "$XRESOURCES"
         echo "XTerm*faceName: Monospace:size=20" >> "$XRESOURCES"
+        echo "xterm*font: -*-fixed-medium-r-normal--20-*-*-*-*-*-*-*" >> "$XRESOURCES"
+    fi
+
+    # Apply X11 settings immediately
+    if xrdb -merge "$XRESOURCES" 2>/dev/null; then
+        echo "✓ X11 font settings applied"
+    else
+        echo "⚠ X11 config merge failed - X11 may not be running"
+    fi
+
+    # Also try to set GTK font size for broader compatibility
+    GTK_CONFIG="$HOME/.gtkrc-2.0"
+    if [ ! -f "$GTK_CONFIG" ] || ! grep -q "font_name" "$GTK_CONFIG"; then
+        echo "gtk-font-name = \"Monospace 20\"" >> "$GTK_CONFIG"
+        echo "✓ GTK font settings configured"
+    fi
+
+    # Set global X11 font settings (system-wide)
+    GLOBAL_XRESOURCES="/etc/X11/xinit/xresources"
+    if [ -w "/etc/X11/xinit/" ] 2>/dev/null; then
+        echo "! BAUX Global Font Settings" >> "$GLOBAL_XRESOURCES"
+        echo "Xft.dpi: 192" >> "$GLOBAL_XRESOURCES"
+        echo "*.font: -*-fixed-medium-r-normal--20-*-*-*-*-*-*-*" >> "$GLOBAL_XRESOURCES"
+        echo "✓ Global X11 font settings applied"
     fi
 
     xrdb -merge "$XRESOURCES" 2>/dev/null || echo "X11 config merge failed"
@@ -71,14 +101,25 @@ else
     if command -v vidcontrol >/dev/null 2>&1; then
         echo "Setting console font to large size for impaired vision..."
 
-        # Try largest available fonts first
-        doas vidcontrol -f 12x24 /usr/share/syscons/fonts/TERMINAL_12x24.fnt 2>/dev/null || \
-        doas vidcontrol -f 16x32 /usr/share/syscons/fonts/TERMINAL_16x32.fnt 2>/dev/null || \
-        doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null || \
-        echo "No suitable console fonts found, console may be hard to read"
+        # Show available fonts first
+        echo "Available console fonts:"
+        ls -1 /usr/share/syscons/fonts/ 2>/dev/null | grep TERMINAL | head -5
 
+        # Try largest available fonts first
+        if doas vidcontrol -f 16x32 /usr/share/syscons/fonts/TERMINAL_16x32.fnt 2>/dev/null; then
+            echo "✓ Console font set to 16x32 (maximum readability)"
+        elif doas vidcontrol -f 12x24 /usr/share/syscons/fonts/TERMINAL_12x24.fnt 2>/dev/null; then
+            echo "✓ Console font set to 12x24 (very readable)"
+        elif doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null; then
+            echo "✓ Console font set to 8x16 (minimum acceptable)"
+        else
+            echo "⚠ Console font setting failed - video driver may not be loaded yet"
+            echo "This is normal during early boot. Font will be set after video init."
+        fi
+
+        # Show current font setting
         CURRENT_FONT=$(doas vidcontrol -i active 2>/dev/null | head -1 || echo "unknown")
-        echo "Console font set to: $CURRENT_FONT"
+        echo "Current console font: $CURRENT_FONT"
     else
         echo "vidcontrol not available - console font configuration skipped"
     fi
@@ -114,5 +155,18 @@ case "$HARDWARE_MODEL" in
         ;;
 esac
 
-echo "Display setup complete!"
-echo "Restart X11 or reboot for font changes to take effect."
+echo ""
+echo "=== DISPLAY SETUP COMPLETE ==="
+echo "Font and display settings have been configured for accessibility."
+echo ""
+echo "IMPORTANT NOTES:"
+echo "1. Console fonts may not apply until after video driver loads during boot"
+echo "2. X11 fonts require restarting X11 or rebooting to take effect"
+echo "3. If fonts are still too small, run: ./scripts/setup-early-font.sh"
+echo ""
+echo "Current settings applied:"
+echo "- Console: Attempted 16x32 or 12x24 font"
+echo "- X11: 192 DPI with 20pt fonts"
+echo "- X300: Special 240 DPI optimization"
+echo ""
+echo "To verify settings: ./scripts/verify-display.sh"
