@@ -4,37 +4,37 @@
 static char *font = "JetBrains Mono:size=13:antialias=true:autohint=true";
 static int borderpx = 5;
 
-/* BAUX toxic color scheme */
+/* BAUX Gruvbox Dark color scheme */
 static char *colorname[] = {
-	/* 8 normal colors */
-	"#0e281c", /* 0: deep radioactive green-black */
-	"#d4af37", /* 1: toxic gold */
-	"#aaacb2", /* 2: muted cyan-gray */
-	"#2e482c", /* 3: glowing toxic green */
-	"#5c6bc0", /* 4: electric blue */
-	"#ba68c8", /* 5: radioactive purple */
-	"#26a69a", /* 6: toxic teal */
-	"#aaacb2", /* 7: muted cyan-gray */
+ 	/* 8 normal colors */
+ 	"#282828", /* 0: gruvbox bg */
+ 	"#cc241d", /* 1: gruvbox red */
+ 	"#98971a", /* 2: gruvbox green */
+ 	"#d79921", /* 3: gruvbox yellow */
+ 	"#458588", /* 4: gruvbox blue */
+ 	"#b16286", /* 5: gruvbox purple */
+ 	"#689d6a", /* 6: gruvbox aqua */
+ 	"#a89984", /* 7: gruvbox gray */
 
-	/* 8 bright colors */
-	"#1b5e20", /* 8: dark toxic green */
-	"#f57c00", /* 9: radioactive orange */
-	"#aaacb2", /* 10: muted cyan-gray */
-	"#4caf50", /* 11: bright toxic green */
-	"#7986cb", /* 12: bright electric blue */
-	"#ce93d8", /* 13: bright radioactive purple */
-	"#4db6ac", /* 14: bright toxic teal */
-	"#ffffff", /* 15: pure white */
+ 	/* 8 bright colors */
+ 	"#928374", /* 8: gruvbox gray bright */
+ 	"#fb4934", /* 9: gruvbox red bright */
+ 	"#b8bb26", /* 10: gruvbox green bright */
+ 	"#fabd2f", /* 11: gruvbox yellow bright */
+ 	"#83a598", /* 12: gruvbox blue bright */
+ 	"#d3869b", /* 13: gruvbox purple bright */
+ 	"#8ec07c", /* 14: gruvbox aqua bright */
+ 	"#ebdbb2", /* 15: gruvbox fg */
 
-	[255] = 0,
+ 	[255] = 0,
 
-	/* more colors can be added after 255 to use with DefaultXX */
-	"#cccccc", /* 256: cursor */
-	"#0e281c", /* 257: rev cursor */
+ 	/* more colors can be added after 255 to use with DefaultXX */
+ 	"#ebdbb2", /* 256: cursor */
+ 	"#282828", /* 257: rev cursor */
 };
 
-unsigned int defaultfg = 2; /* muted cyan-gray */
-unsigned int defaultbg = 0; /* deep radioactive green-black */
+unsigned int defaultfg = 15; /* gruvbox fg */
+unsigned int defaultbg = 0; /* gruvbox bg */
 unsigned int defaultcs = 256; /* cursor */
 unsigned int defaultrcs = 257; /* rev cursor */
 

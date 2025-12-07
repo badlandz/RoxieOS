@@ -3,18 +3,20 @@
 /* Mod4 = dwm | Alt = tmux | hjkl = vim */
 
 static const unsigned int borderpx  = 5;        /* thick toxic border */
+static const unsigned int gappx     = 5;        /* gap pixel between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 = no bar */
 static const int topbar             = 0;        /* 0 = bottom bar (cleaner) */
+static const int smartgaps          = 0;        /* 1 = no gaps when only one window */
 static const char *fonts[]          = { "monospace:size=13" };
 static const char dmenufont[]       = "monospace:size=13";
 
-/* Roxanne radioactive color scheme — pure poison */
-static const char col_bg[]          = "#0e281c";  /* deep radioactive green-black */
-static const char col_border[]      = "#000000";  /* pure black */
-static const char col_text[]        = "#aaacb2";  /* muted cyan-gray */
-static const char col_seltext[]     = "#d4af37";  /* toxic gold */
-static const char col_selbg[]       = "#2e482c";  /* glowing toxic green */
+/* BAUX Gruvbox Dark color scheme — unified theming */
+static const char col_bg[]          = "#282828";  /* gruvbox bg */
+static const char col_border[]      = "#282828";  /* gruvbox bg */
+static const char col_text[]        = "#ebdbb2";  /* gruvbox fg */
+static const char col_seltext[]     = "#282828";  /* gruvbox bg */
+static const char col_selbg[]       = "#cc241d";  /* gruvbox red */
 
 static const char *colors[][3] = {
        /*               fg         bg         border   */

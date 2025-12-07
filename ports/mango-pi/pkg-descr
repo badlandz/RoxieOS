@@ -1,0 +1,7 @@
+Mango Pi RISC-V board support for BAUXBSD with ESP32 sensing integration.
+
+The Mango Pi provides RISC-V computing capabilities for embedded BAUXBSD
+deployments, featuring ESP32 wireless sensing for environmental monitoring
+and fast recovery mechanisms.
+
+WWW: https://github.com/badlandz/RoxieOS

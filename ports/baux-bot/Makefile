@@ -23,5 +23,7 @@ do-install:
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/baux-bot
 	${INSTALL_SCRIPT} ${FILESDIR}/usr/local/bin/baux-bot ${STAGEDIR}${PREFIX}/bin/baux-bot
 	${INSTALL_SCRIPT} ${FILESDIR}/usr/local/bin/baux-bot-setup ${STAGEDIR}${PREFIX}/bin/baux-bot-setup
+	${INSTALL_SCRIPT} ${FILESDIR}/usr/local/bin/xai-chat ${STAGEDIR}${PREFIX}/bin/xai-chat
+	${INSTALL_SCRIPT} ${FILESDIR}/usr/local/bin/dev-assist ${STAGEDIR}${PREFIX}/bin/dev-assist
 
 .include <bsd.port.mk>

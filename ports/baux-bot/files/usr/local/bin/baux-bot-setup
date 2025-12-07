@@ -4,6 +4,9 @@
 
 set -e
 
+# Force CPU mode for compatibility
+export OLLAMA_GPU_LAYERS=0
+
 echo "=== BAUX BOT SETUP ==="
 echo
 

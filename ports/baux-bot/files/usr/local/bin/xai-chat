@@ -1,0 +1,41 @@
+#!/usr/local/bin/bash
+# xai-chat.sh - XAI API chat client for BAUXBSD
+# Dec 07 2025
+
+set -euo pipefail
+
+API_KEY="${GROK_API_KEY:-}"
+if [[ -z "$API_KEY" ]]; then
+    echo "ERROR: GROK_API_KEY environment variable not set"
+    echo "Set it with: export GROK_API_KEY='your-api-key'"
+    exit 1
+fi
+
+# Collect all arguments as the prompt
+if [[ $# -eq 0 ]]; then
+    echo "Usage: xai-chat <prompt>"
+    exit 1
+fi
+
+PROMPT="$*"
+
+# API call
+RESPONSE=$(curl -s -X POST "https://api.x.ai/v1/chat/completions" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $API_KEY" \
+    -d "{
+        \"model\": \"grok-2-latest\",
+        \"messages\": [
+            {
+                \"role\": \"user\",
+                \"content\": \"$PROMPT\"
+            }
+        ],
+        \"max_tokens\": 1024,
+        \"temperature\": 0.7
+    }")
+
+# Extract the response text
+TEXT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content' 2>/dev/null || echo "Error parsing response")
+
+echo "$TEXT"

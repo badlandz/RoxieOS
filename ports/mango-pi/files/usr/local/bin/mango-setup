@@ -1,0 +1,46 @@
+#!/usr/local/bin/bash
+# mango-setup.sh - Setup script for Mango Pi RISC-V board
+# BAUXBSD RISC-V expansion with ESP32 sensing integration
+# Dec 07 2025
+
+set -e
+
+echo "=== MANGO PI SETUP ==="
+echo "RISC-V board setup for BAUXBSD"
+echo
+
+# Check if running on RISC-V
+if [[ $(uname -m) != "riscv64" ]]; then
+    echo "WARNING: Not running on RISC-V architecture"
+    echo "This script is designed for Mango Pi boards"
+fi
+
+echo "✓ Architecture check complete"
+
+# Install ESP32 tools for sensing
+echo "Installing ESP32 development tools..."
+pkg install -y esptool || {
+    echo "esptool not available, installing python packages..."
+    pip install esptool
+}
+
+echo "✓ ESP32 tools installed"
+
+# Setup GPIO access
+echo "Setting up GPIO access..."
+# Add gpio group and permissions
+pw groupadd gpio 2>/dev/null || true
+# Note: Actual GPIO setup would require device tree modifications
+
+echo "✓ GPIO setup prepared"
+
+echo
+echo "=== SETUP COMPLETE ==="
+echo
+echo "Mango Pi is ready for BAUXBSD RISC-V development"
+echo "ESP32 sensing integration available"
+echo
+echo "Next steps:"
+echo "1. Connect ESP32 for sensing"
+echo "2. Configure device tree for GPIO"
+echo "3. Test BAUX components on RISC-V"

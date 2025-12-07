@@ -157,6 +157,60 @@ make release
 # Pre-installed core packages
 ```
 
+### Phase 6: RISC-V Expansion (Month 3-4)
+**Goal:** Mango Pi RISC-V port with ESP32 sensing integration
+
+#### 6.1 RISC-V Architecture Support
+```bash
+# Cross-compilation setup
+pkg install riscv64-gcc riscv64-binutils
+export CROSS_COMPILE=riscv64-unknown-freebsd-
+
+# Build minimal BAUXBSD for RISC-V
+make TARGET=riscv64 buildworld buildkernel
+make TARGET=riscv64 packages
+```
+
+#### 6.2 Mango Pi Hardware Integration
+- **Serial Console**: Direct UART access for ESP32 communication
+- **GPIO Integration**: Sensor/actuator control via sysfs
+- **Power Management**: Low-power optimizations for battery operation
+- **Display Support**: Small LCD/OLED integration
+
+#### 6.3 ESP32 Sensing Framework
+```bash
+# ESP32 serial communication
+stty -F /dev/ttyU0 115200 raw
+# JSON sensor data parsing
+# Real-time telemetry display
+# Firmware update capabilities
+```
+
+#### 6.4 Embedded Development Workflow
+- **Code Editing**: neovim with ESP32/Arduino syntax
+- **Serial Monitoring**: tmux panes for sensor data
+- **Fast Recovery**: ZFS snapshots for firmware development
+- **Cross-Compilation**: Seamless x86_64 ↔ RISC-V development
+
+### Phase 7: AI Integration & Automation (Month 5-6)
+**Goal:** Complete AI-assisted development environment
+
+#### 7.1 AI Shepherding Implementation
+- **Query Analysis**: Determine best AI for specific questions
+- **Multi-Model Orchestration**: XAI + Ollama + local models
+- **Context Preservation**: Session-aware AI assistance
+
+#### 7.2 Development Automation
+- **Code Generation**: AI-assisted BAUX component creation
+- **Bug Analysis**: Automated issue detection and fixes
+- **Documentation**: AI-generated comprehensive docs
+- **Testing**: AI-driven test case generation
+
+#### 7.3 Self-Improving System
+- **Feedback Loop**: User corrections improve AI responses
+- **Knowledge Base**: Growing codebase understanding
+- **Performance Optimization**: AI-driven system tuning
+
 ## Package Dependencies
 
 ### Core Package Matrix
@@ -251,6 +305,66 @@ test_session_resurrection() {
 3. bbot AI integration
 4. Performance optimizations
 
+## RISC-V Expansion & Mesh Networking
+
+### Phase 3: Embedded & Mesh Infrastructure (Month 2-3)
+**Goal:** RISC-V Mango Pi deployment with headscale mesh networking
+
+#### 3.1 Headscale Server Deployment
+```bash
+# Deploy headscale control server on VPS
+# Requirements: Public IP, DNS domain (baux.roxieos.org)
+# Server: Ubuntu 22.04 LTS or FreeBSD 15.0
+
+# Install headscale
+pkg install headscale  # or apt install headscale
+
+# Configure headscale
+headscale serve --config /usr/local/etc/headscale/config.yaml
+
+# DNS setup
+# A record: headscale.baux.roxieos.org → VPS_IP
+# Magic DNS: Enable in headscale config
+
+# Client registration
+# On each BAUXBSD machine:
+tailscale up --login-server https://headscale.baux.roxieos.org
+```
+
+#### 3.2 Mango Pi RISC-V Port
+- **Hardware**: Mango Pi SBC with RISC-V CPU
+- **ESP32 Integration**: Wireless sensing and communication
+- **BAUX Components**: Port core packages to RISC-V
+- **Fast Recovery**: Hardware watchdog for system stability
+
+#### 3.3 Mesh Networking Features
+- **Zero-config VPN**: Automatic device discovery
+- **NAT Traversal**: Work behind firewalls
+- **ACL Policies**: Device-to-device access control
+- **Magic DNS**: Hostname resolution across mesh
+- **Subnet Routing**: Access local networks remotely
+
+#### 3.4 Sensing Infrastructure
+- **ESP32 Sensors**: Temperature, humidity, motion
+- **Data Collection**: Time-series environmental data
+- **Alert System**: Threshold-based notifications
+- **Integration**: Feed data to BAUXBSD dashboard
+
+### Phase 4: Production Deployment (Month 4+)
+**Goal:** Scalable BAUXBSD ecosystem with global mesh
+
+#### 4.1 Multi-Architecture Support
+- **amd64**: Primary workstations
+- **aarch64**: ARM laptops, SBCs
+- **riscv64**: Mango Pi embedded systems
+- **Cross-compilation**: Unified build system
+
+#### 4.2 Enterprise Features
+- **Device Management**: Centralized configuration
+- **Monitoring**: System health and performance
+- **Backup**: Automated offsite backups
+- **Security**: Encrypted mesh communication
+
 ---
 
-This roadmap prioritizes working system over comprehensive features, ensuring v0.1 is achievable and immediately useful.
+This roadmap prioritizes working system over comprehensive features, ensuring v0.1 is achievable and immediately useful. RISC-V expansion provides future-proofing for embedded deployments.

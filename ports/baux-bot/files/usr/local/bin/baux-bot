@@ -5,6 +5,9 @@
 
 set -euo pipefail
 
+# Force CPU mode for compatibility (disable Vulkan GPU)
+export OLLAMA_GPU_LAYERS=0
+
 # Auto-detect RoxieOS repo location
 detect_roxie_root() {
     # Check common locations
@@ -97,7 +100,12 @@ build_rag
 log "RAG ready — $(wc -l <"$RAG_DIR/current.txt") lines"
 
 echo -e "\nBAUX BOT v6.3 alive — model: $MODEL — $SRC_ROOT is law"
-echo "Commands: 'exit' to quit, 'read FILE' to force file into RAG, 'status' for repo status"
+echo "Commands:"
+echo "  'exit' to quit"
+echo "  'status' for repo status"
+echo "  'read FILE' to force file into RAG"
+echo "  'develop TASK' for development advice"
+echo "  'code REQUEST' for code generation/review"
 echo "Type anything. Only the word 'exit' kills me.\n"
 
 while true; do
@@ -125,6 +133,33 @@ while true; do
             echo "=== REPO STATUS ==="
             (cd "$SRC_ROOT" && git status -sb)
             echo
+            continue
+            ;;
+        develop*)
+            # Development assistance mode
+            task="${input#develop }"
+            prompt="You are a senior FreeBSD/BAUXBSD developer. Provide practical, actionable development advice for: $task
+
+Live BAUXBSD codebase context:
+$(cat "$RAG_DIR/current.txt")
+
+Focus on FreeBSD ports, shell scripting, C development, and BAUXBSD architecture.
+Give specific code examples and commands when possible."
+            response=$(ask_ollama "$prompt")
+            echo -e "BAUX DEV: $response\n"
+            continue
+            ;;
+        code*)
+            # Code generation/review
+            request="${input#code }"
+            prompt="You are an expert coder for BAUXBSD/FreeBSD. $request
+
+Use this codebase context:
+$(cat "$RAG_DIR/current.txt")
+
+Provide complete, working code with proper error handling. Follow BAUXBSD conventions and FreeBSD best practices."
+            response=$(ask_ollama "$prompt")
+            echo -e "BAUX CODE: $response\n"
             continue
             ;;
         read*)
