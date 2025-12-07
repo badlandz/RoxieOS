@@ -1,34 +1,62 @@
 #!/usr/local/bin/bash
 # BAUX Manual Installation Guide for X300 ThinkPad
 # Run these commands on your FreeBSD X300 system
+# Creates comprehensive installation log for debugging
 
 set -e  # Exit on any error
 
-echo "=== BAUX Manual Installation Started ==="
-echo "Current directory: $(pwd)"
-echo "User: $(whoami)"
+# Configuration
+LOG_FILE="${1:-baux-manual-install-$(date +%Y%m%d-%H%M%S).log}"
+
+# Logging functions
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $*" | tee -a "$LOG_FILE"
+}
+
+error() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] $*" | tee -a "$LOG_FILE" >&2
+}
+
+success() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [SUCCESS] $*" | tee -a "$LOG_FILE"
+}
+
+log "=== BAUX Manual Installation Started ==="
+log "Current directory: $(pwd)"
+log "User: $(whoami)"
+log "Log file: $LOG_FILE"
 
 ## Prerequisites
-echo "=== Installing Prerequisites ==="
-pkg update || echo "pkg update failed, continuing..."
-pkg install -y bash git neovim tmux || echo "Package installation failed"
+log "=== Installing Prerequisites ==="
+pkg update >> "$LOG_FILE" 2>&1 || log "pkg update failed, continuing..."
+pkg install -y bash git neovim tmux >> "$LOG_FILE" 2>&1 || error "Package installation failed"
 
 ## Install bbase (Foundation)
-echo "=== Installing bbase (Foundation) ==="
-echo "Changing to ports/bbase..."
-cd ports/bbase || { echo "ERROR: Cannot cd to ports/bbase from $(pwd)"; exit 1; }
-echo "Running install.sh..."
-doas ./install.sh || { echo "ERROR: bbase install.sh failed"; exit 1; }
+log "=== Installing bbase (Foundation) ==="
+log "Changing to ports/bbase..."
+cd ports/bbase || { error "Cannot cd to ports/bbase from $(pwd)"; exit 1; }
+log "Running install.sh..."
+if doas ./install.sh >> "$LOG_FILE" 2>&1; then
+    success "bbase installed successfully"
+else
+    error "bbase install.sh failed"
+    log "Check the log file for details: $LOG_FILE"
+    exit 1
+fi
 
 # Test keymap
-echo "Testing keymap..."
-doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd || echo "Keymap load failed"
-echo "Caps Lock should now be Escape. Test it!"
+log "Testing keymap..."
+if doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd >> "$LOG_FILE" 2>&1; then
+    success "Keymap loaded successfully"
+else
+    error "Keymap load failed"
+fi
+log "Caps Lock should now be Escape. Test it!"
 
 ## Install baux (Session Manager)
-echo "=== Installing baux (Session Manager) ==="
-echo "Changing to ../baux..."
-cd ../baux || { echo "ERROR: Cannot cd to ../baux"; exit 1; }
+log "=== Installing baux (Session Manager) ==="
+log "Changing to ../baux..."
+cd ../baux || { error "Cannot cd to ../baux"; exit 1; }
 echo "Running install.sh..."
 doas ./install.sh || { echo "ERROR: baux install.sh failed"; exit 1; }
 
