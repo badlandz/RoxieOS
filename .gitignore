@@ -1,0 +1,75 @@
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+
+# FreeBSD build
+.work
+.obj
+.tmp
+*.debug
+
+# Package builds
+*.deb
+*.pkg
+*.txz
+*.tbz
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+logs/
+
+# Cache
+.cache/
+__pycache__/
+*.pyc
+
+# Node modules (if any)
+node_modules/
+
+# Archives
+*.tar.gz
+*.zip
+*.7z
+
+# USB images
+*.img
+*.iso
+
+# Git
+.git/
+
+# Documentation build
+docs/_build/
+docs/build/
+
+# Local config
+.local
+config.local

@@ -1,4 +1,4 @@
-# BAUXBSD v0.1 - Minimal Cyberdeck OS
+# BAUXBSD GruvBAUX Prototype
 **badlandz - root is love, layers forever**
 
 ## Core Philosophy
@@ -72,6 +72,25 @@ This is not a traditional distribution. This is a loaded USB stick that contains
 - **Init system:** rc.d services
 - **Filesystem layout:** /usr/local hierarchy
 
+### Live Persistence (Inspired by NomadBSD)
+RoxieOS adopts NomadBSD's unionfs-fuse approach for live USB persistence:
+- Read-only base system with writable overlay
+- Automatic filesystem expansion on first boot
+- Support for both UFS and ZFS variants
+
+See [NomadBSD Handbook](https://nomadbsd.org/handbook/handbook.html) for detailed persistence implementation.
+
+### Bootloader & UEFI (NomadBSD Integration)
+- Dual BIOS/UEFI support with EFI framebuffer fixes
+- Custom bootloader with graphics driver detection
+- Boot menu options for troubleshooting (disable graphics detection, syscons, etc.)
+
+### Automatic Hardware Setup (NomadBSD Approach)
+- **Graphics:** Auto-detection for Intel, NVIDIA, AMD with fallback to VESA/SCFB
+- **Sound:** Pre-configured audio drivers with mixer tools
+- **Network:** Wireless setup with NetworkMgr
+- **Input:** Touchpad and keyboard configuration
+
 ### Keymap Integration
 ```
 # Console keymap
@@ -107,6 +126,14 @@ baux revive --all  # Restore exact state on any machine
 - **bwm running:** bwm bar shows session names
 - **Console only:** tmux status shows session names
 - **Never both:** BAUXWM=1 controls visibility
+
+### Unified Gruvbox Theming
+**GruvBAUX Prototype**: All components use Gruvbox color scheme for consistency:
+- **Console:** Gruvbox vt(4) theme
+- **dwm/bwm:** Gruvbox window borders and bar
+- **neovim:** Gruvbox plugin
+- **tmux:** Gruvbox status line
+- **Terminal:** Gruvbox color palette
 
 ## Installation Strategy
 

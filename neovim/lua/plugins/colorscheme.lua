@@ -1,6 +1,6 @@
 -- ~/.config/nvim/lua/plugins/colorscheme.lua
 return {
-  -- Add the plugin for your desired colorscheme here, for example:
+  -- Gruvbox for unified BAUXBSD theming
   { "ellisonleao/gruvbox.nvim" },
 
   -- Configure LazyVim to load your colorscheme by default
@@ -8,7 +8,7 @@ return {
     "LazyVim/LazyVim",
     opts = {
       -- colorscheme = "delek",
-      colorscheme = "biohazard",
+      colorscheme = "gruvbox",
     },
   },
 }

@@ -11,6 +11,17 @@ The project is transitioning from Debian-based packaging to FreeBSD src/ports mo
 - Live upstream patching workflow
 - Workstation cloning integration
 
+### NomadBSD Integration
+RoxieOS incorporates key principles from NomadBSD for live USB systems:
+
+- **Persistence:** unionfs-fuse for read-only base + writable overlay
+- **Bootloader:** Dual BIOS/UEFI support with EFI fixes
+- **Hardware Setup:** Automatic graphics/sound/network driver detection
+- **Installer:** Qt-based GUI for hard disk installation
+- **Setup:** First-boot wizard for localization and configuration
+
+See [NomadBSD Handbook](https://nomadbsd.org/handbook/handbook.html) and [GitHub](https://github.com/nomadbsd/NomadBSD) for implementation details.
+
 ### Directory Structure
 ```
 RoxieOS/
@@ -247,12 +258,18 @@ test_session_resurrection() {
 
 ## Rollout Plan
 
-### v0.1 Release Criteria
-1. All 7 core packages ported to FreeBSD
+### GruvBAUX Prototype Release Criteria
+1. Core packages ported to FreeBSD with Gruvbox theming
 2. Keymap integration working system-wide
 3. Session resurrection functional
-4. ISO boots under 5 seconds
+4. Unified Gruvbox theming across console, WM, editor, terminal
 5. Documentation updated
+
+### v0.1 Release Criteria
+1. Live USB persistence (unionfs-fuse)
+2. All 7 core packages fully functional
+3. ISO boots under 5 seconds
+4. Hardware auto-detection working
 
 ### v0.2 Release Criteria
 1. bdrop full implementation
@@ -262,4 +279,4 @@ test_session_resurrection() {
 
 ---
 
-This roadmap prioritizes working system over comprehensive features, ensuring v0.1 is achievable and immediately useful.
+The GruvBAUX prototype prioritizes unified theming and core functionality, ensuring a cohesive development experience before full v0.1 release.

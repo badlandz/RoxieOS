@@ -1,18 +1,29 @@
 # BAUXBSD Handbook
-**FreeBSD-Based Workstation Cloning OS**
+**GruvBAUX Prototype - FreeBSD-Based Workstation Cloning OS**
 
-Version: v0.1 (Development)
+Version: GruvBAUX (Pre-v0.1)
 Last Updated: December 2025
 
 ## Table of Contents
 
 1. [Introduction](Introduction.md) - Philosophy and overview
-2. [Installation](Installation.md) - Workstation cloning setup
-3. [Packages](PACKAGES.md) - Package architecture and ports
-4. [Configuration](Configuration.md) - Keymaps and system setup
-5. [Usage](Usage.md) - Daily workflows and examples
-6. [Development](Development.md) - Roadmap and contribution
+2. [Installation](Installation.md) - Setup and cloning
+3. [Packages](PACKAGES.md) - Package architecture
+4. [Configuration](Configuration.md) - Keymaps and setup
+5. [Usage](Usage.md) - Workflows and examples
+6. [Development](Development.md) - Roadmap and contributing
 7. [FAQ](FAQ.md) - Common questions and troubleshooting
+8. [NomadBSD Integration](NomadBSD-Integration.md) - Live USB implementation details
+
+## Credits & Acknowledgments
+
+RoxieOS builds upon the excellent work of:
+
+- **[NomadBSD](https://nomadbsd.org)**: Live USB persistence with unionfs-fuse, bootloader/UEFI handling, automatic hardware setup, and Qt-based tools
+- **[FreeBSD Project](https://www.freebsd.org/)**: The rock-solid foundation and comprehensive documentation
+- **[Suckless Tools](https://suckless.org/)**: dwm, st, and dmenu inspiration for the BAUX window management layer
+
+Special thanks to the NomadBSD team for pioneering FreeBSD live systems. Their [handbook](https://nomadbsd.org/handbook/handbook.html) and [GitHub repository](https://github.com/nomadbsd/NomadBSD) were invaluable references.
 
 ## Quick Start
 
@@ -30,6 +41,7 @@ Last Updated: December 2025
 - **Caps Lock → Escape globally** - Muscle memory preserved
 - **Immortal sessions** - Survive everything
 - **Unified keybindings** - Same keys across all layers
+- **Gruvbox theming** - Consistent colors everywhere
 - **Zero friction** - Instant productivity
 
 ## Package Layers

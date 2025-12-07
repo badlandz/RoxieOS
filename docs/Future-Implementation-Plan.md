@@ -22,6 +22,25 @@
 - **Neovim**: `<C-hjkl>` navigation, `<leader>1-9` buffers, tmux integration
 - **BAUX Bot**: `<leader>b/l` for AI assistance
 
+## Live USB Persistence (NomadBSD Approach)
+
+### Implementation Plan
+- **Filesystem:** Adopt unionfs-fuse for read-only base + writable overlay
+- **Expansion:** Automatic filesystem growth on first boot
+- **Variants:** Support both UFS and ZFS for different use cases
+- **Tools:** Qt-based installer for hard disk deployment
+
+### Bootloader & UEFI
+- **Dual Support:** BIOS and UEFI with EFI framebuffer fixes
+- **Graphics Detection:** Boot-time driver selection with fallback options
+- **Troubleshooting:** Boot menu options (disable graphics detection, syscons)
+
+### Hardware Auto-Setup
+- **Graphics:** Intel/NVIDIA/AMD auto-detection with VESA/SCFB fallback
+- **Sound:** Pre-configured drivers with DSBMixer interface
+- **Network:** NetworkMgr for wireless setup
+- **Input:** Touchpad and keyboard configuration
+
 ## Chaos Screensaver Implementation
 
 ### Current Status
@@ -139,8 +158,8 @@ do-build:
 - Mod4+1-9 session switching
 
 ### bterm + bwm
-- Matching BAUX color schemes
-- Font rendering consistency
+- Matching Gruvbox color schemes
+- Font consistency
 - Seamless terminal spawning
 
 ### chaos + baux

@@ -1,12 +1,14 @@
 # BAUXBSD Changelog
 
-## v0.1 (Development) - December 2025
+## GruvBAUX Prototype (Pre-v0.1) - December 2025
 
 ### Major Changes
 - **FreeBSD Migration**: Complete restructure from Debian to FreeBSD ports/src model
 - **Directory Reorganization**: New layout with src/, ports/, patches/, scripts/, docs/, archive/
 - **Package Renaming**: keymap → bbase, consistent b* naming (baux, bwm, bterm, bvi)
+- **Unified Gruvbox Theming**: Gruvbox colors across console, dwm/bwm, neovim, tmux, and all components
 - **Documentation Overhaul**: FreeBSD handbook-style structure with cross-references
+- **NomadBSD Integration**: Adopted unionfs-fuse persistence, bootloader/UEFI handling, automatic hardware setup
 
 ### New Features
 - **bbase**: System foundation with global Caps→Esc keymap

@@ -7,13 +7,13 @@
 
 ### 1. Lite Mode (Default)
 - **Target**: Pi Zero, minimal systems
-- **Features**: LazyVim core, persistence, mini.files, undotree, gruvbox theme
+- **Features**: LazyVim core, persistence, mini.files, undotree, unified Gruvbox theme
 - **Size**: ~15MB + LazyVim
 - **Plugins**: Essential for embedded workflow
 
 ### 2. Dev Mode (-dev package)
 - **Target**: Development workstations
-- **Features**: Full LazyVim ecosystem, vimwiki, dadbod, lazygit, taskwiki
+- **Features**: Full LazyVim ecosystem, vimwiki, dadbod, lazygit, taskwiki, Gruvbox theming
 - **Size**: ~50MB + plugins
 - **Plugins**: Complete development environment
 
@@ -67,4 +67,4 @@ pkg install bvi-dev  # Install dev variant on workstations
 - **bvi**: Lite mode for embedded systems
 - **bvi-dev**: Full development mode for workstations
 
-bvi provides a consistent editing experience across all BAUXBSD deployments, from Pi Zero to development workstations.
+bvi provides a consistent editing experience with unified Gruvbox theming across all BAUXBSD deployments, from Pi Zero to development workstations.

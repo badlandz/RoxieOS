@@ -8,6 +8,7 @@
 - **Session display**: Shows BAUX session names in status bar
 - **Mod4 integration**: Mod4+1-9 switches sessions (same as tmux)
 - **BAUXWM=1**: Environment variable controls tmux status visibility
+- **Gruvbox theming**: Unified colors for borders, bar, and windows
 - **Minimal footprint**: ~25MB installed
 - **Keyboard-native**: No mouse required
 
@@ -44,5 +45,6 @@ The bwm status bar shows:
 - Current BAUX session names (when BAUXWM=1)
 - System information (battery, time)
 - Active window title
+- **Gruvbox colors**: Consistent with console and editor theming
 
-bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory.
+bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory, all with unified Gruvbox aesthetics.

@@ -1,13 +1,21 @@
-# RoxieOS - Instant Workstation Cloning OS
+# RoxieOS - GruvBAUX Prototype
 
 **Clone your workstation from USB in 5 seconds. Immortal sessions, zero friction.**
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+*Codename: GruvBAUX - Unified Gruvbox theming across all layers*
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![FreeBSD](https://img.shields.io/badge/FreeBSD-15.0+-red.svg)](https://www.freebsd.org/)
+[![GitHub issues](https://img.shields.io/github/issues/badlandz/RoxieOS)](https://github.com/badlandz/RoxieOS/issues)
+[![GitHub stars](https://img.shields.io/github/stars/badlandz/RoxieOS)](https://github.com/badlandz/RoxieOS/stargazers)
 
 ## Overview
 
-RoxieOS is a minimal FreeBSD-based operating system designed for instant workstation cloning and persistent development environments. Boot from USB, clone your exact setup in seconds, and continue working seamlessly across any hardware.
+RoxieOS is a minimal FreeBSD-based operating system designed for instant workstation cloning and persistent development environments. Inspired by NomadBSD's live USB persistence approach, RoxieOS uses unionfs-fuse for read-only base systems with writable overlays. Boot from USB, clone your exact setup in seconds, and continue working seamlessly across any hardware.
+
+**GruvBAUX Prototype**: This pre-v0.1 release features unified Gruvbox theming across console, dwm/bwm, neovim, tmux, and all BAUX components for a cohesive development experience.
+
+![RoxieOS Screenshot](https://via.placeholder.com/800x400/000000/00FF00?text=RoxieOS+Screenshot+Coming+Soon)
 
 ## Key Features
 
@@ -19,24 +27,51 @@ RoxieOS is a minimal FreeBSD-based operating system designed for instant worksta
 
 ## Quick Start
 
-### 1. Backup Your Workstation
+### Prerequisites
+- FreeBSD 15.0+ system
+- USB drive (≥8GB recommended)
+- Basic FreeBSD knowledge
+
+### 1. Backup Your Current Workstation
 ```bash
+# On your existing FreeBSD system
 baux-backup /mnt/usb/backup
 ```
 
-### 2. Boot New Hardware
-Download FreeBSD 15.0-RELEASE, boot from USB.
-
-### 3. Install RoxieOS Packages
+### 2. Prepare Boot Media
 ```bash
-pkg install bbase baux bwm bterm bvi bweb chaos
+# Download and write RoxieOS ISO (when available)
+# fetch https://github.com/badlandz/RoxieOS/releases/download/latest/roxieos-gruvbaux.iso
+# dd if=roxieos-gruvbaux.iso of=/dev/da0 bs=1M conv=sync
+
+# For now, build from source or use FreeBSD 15.0 + BAUX packages
 ```
 
-### 4. Clone and Work
+### 3. Boot and Install Packages
 ```bash
+# Boot from USB, then install core packages
+pkg update
+pkg install bbase baux bwm bvi chaos
+```
+
+### 4. Clone and Configure
+```bash
+# Clone your workstation
 baux-clone /mnt/usb/backup
-# Sessions restore instantly - you're productive immediately
+
+# Enable services
+echo 'baux_enable="YES"' >> /etc/rc.conf
+echo 'bwm_enable="YES"' >> /etc/rc.conf
+
+# Start working - sessions restore instantly!
+baux
 ```
+
+## Status
+
+**Version:** GruvBAUX Prototype (Pre-v0.1)  
+**Release:** Alpha  
+**Target:** Unified theming + workstation cloning MVP
 
 ## Package Ecosystem
 
@@ -74,6 +109,7 @@ RoxieOS/
 - **[Installation](docs/Installation.md)**: Setup and cloning
 - **[Configuration](docs/Configuration.md)**: Keymaps and customization
 - **[Development](docs/Development.md)**: Roadmap and contributing
+- **[NomadBSD Integration](docs/NomadBSD-Integration.md)**: Live USB implementation details
 
 ## Philosophy
 
@@ -84,6 +120,7 @@ RoxieOS eliminates friction in development workflows:
 - Mod4+1-9 switches sessions everywhere
 - hjkl navigation in all contexts
 - Sessions persist across any interruption
+- **Gruvbox theming**: Unified colors across console, WM, editor, and terminal
 
 ## Requirements
 
@@ -92,13 +129,63 @@ RoxieOS eliminates friction in development workflows:
 - USB boot capability
 - 512MB RAM minimum (Pi Zero compatible)
 
+## Roadmap
+
+### GruvBAUX Prototype (Current)
+- ✅ FreeBSD ports migration
+- ✅ Workstation cloning foundation
+- ✅ BAUX session management
+- ✅ Unified keymap system
+- ✅ Gruvbox theming across all layers
+- 🚧 Live USB persistence (unionfs-fuse)
+
+### v0.1 (Q1 2026)
+- Full unionfs-fuse persistence
+- Qt-based installer
+- Hardware auto-detection
+- Production ISO release
+
+### v0.2 (2026)
+- SeaweedFS cross-machine sync
+- AI-powered development
+- Complete digital twin
+
+See [Development Guide](docs/Development.md) for detailed roadmap.
+
 ## Contributing
 
-See [Development Guide](docs/Development.md) for roadmap, building, and contribution guidelines.
+We welcome contributions! See [Development Guide](docs/Development.md) for:
+
+- Building from source
+- Package development
+- Testing guidelines
+- Code style
+
+### Getting Help
+
+- 📖 [Handbook](docs/Handbook.md) - Complete documentation
+- 🐛 [Issues](https://github.com/badlandz/RoxieOS/issues) - Bug reports
+- 💬 [Discussions](https://github.com/badlandz/RoxieOS/discussions) - Q&A
 
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
+
+## Credits & Inspiration
+
+- **NomadBSD**: Live USB persistence, bootloader/UEFI handling, automatic hardware setup, Qt installer
+- **FreeBSD Handbook**: Documentation structure and best practices
+- **Suckless Tools**: dwm, st, dmenu inspiration for bwm, bterm
+
+See [NomadBSD Handbook](https://nomadbsd.org/handbook/handbook.html) for detailed implementation of live systems.
+
+## Repository Status
+
+- **Status**: Active Development
+- **Version**: GruvBAUX Prototype (Pre-v0.1)
+- **License**: MIT
+- **Issues**: [GitHub Issues](https://github.com/badlandz/RoxieOS/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/badlandz/RoxieOS/discussions)
 
 ---
 

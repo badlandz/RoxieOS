@@ -17,11 +17,12 @@ baux-backup /mnt/usb/workstation-backup
 
 ### Phase 2: Create Clone-Ready USB
 ```bash
-# Download BAUXBSD ISO
-fetch https://bauxbsd.org/releases/BAUXBSD-15.0-RELEASE.iso
+# Download RoxieOS ISO (when available)
+# fetch https://github.com/badlandz/RoxieOS/releases/download/latest/roxieos-gruvbaux.iso
+# dd if=roxieos-gruvbaux.iso of=/dev/da0 bs=1M conv=sync
 
-# Write to USB (creates bootable live environment)
-dd if=BAUXBSD-15.0-RELEASE.iso of=/dev/da0 bs=1M conv=sync
+# For now: Use FreeBSD 15.0 + install BAUX packages
+# Note: Future versions will use unionfs-fuse for read-only base + writable overlay
 ```
 
 ### Phase 3: Boot New Machine and Clone
@@ -38,6 +39,11 @@ echo 'keymap="baux"' >> /etc/rc.conf
 # Enable cloning services
 echo 'baux_enable="YES"' >> /etc/rc.conf
 echo 'bwm_enable="YES"' >> /etc/rc.conf
+
+# Automatic hardware setup (NomadBSD-inspired)
+# Graphics drivers auto-detected and configured
+# Sound drivers pre-configured with DSBMixer
+# Network setup with NetworkMgr
 
 # Clone your workstation
 baux-clone /mnt/usb/workstation-backup

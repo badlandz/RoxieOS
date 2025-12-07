@@ -112,7 +112,33 @@ The bvi package includes comprehensive neovim keymaps aligned with BAUXBSD:
 - **File Operations**: `<leader>pv` (mini.files), `<leader>ff/fg/fb` (telescope)
 - **Tmux Integration**: `<C-b>` commands for pane/window management
 - **BAUX Bot**: `<leader>b/l` in visual mode
+- **Theme**: Gruvbox (unified with console, WM, terminal)
 
 See `neovim/lua/config/keymaps.lua` for complete implementation.
 
-This unified keymap system ensures maximum productivity while maintaining consistency across all BAUXBSD components.
+## Gruvbox Theming System
+
+**GruvBAUX Prototype** uses Gruvbox across all layers:
+
+### Console
+- vt(4) color theme: Gruvbox palette
+- Consistent with terminal colors
+
+### Window Manager (bwm)
+- Window borders: Gruvbox accent colors
+- Status bar: Gruvbox background with contrast
+- Selected windows: Gruvbox bright colors
+
+### Neovim
+- Colorscheme: Gruvbox
+- Status line: Gruvbox integration
+- Consistent with tmux and terminal
+
+### Tmux
+- Status bar: Gruvbox colors
+- Pane borders: Gruvbox accents
+- Window indicators: Gruvbox highlights
+
+This unified theming system ensures visual consistency while maintaining readability and the signature Gruvbox aesthetic.
+
+This unified keymap and theming system ensures maximum productivity while maintaining consistency across all BAUXBSD components.
