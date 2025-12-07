@@ -1,138 +1,129 @@
-# BAUXBSD Installation Guide
-**Clone your workstation in 5 seconds**
+# BAUX/RoxieOS Installation Guide
+**FreeBSD-based immortal terminal environment**
 
-## Workstation Cloning Workflow
+## Current Implementation Status
 
-### Phase 1: Backup Current Workstation
+**✅ Available Now:**
+- `bbase` - BAUX keymap (Caps→Esc)
+- `baux` - Session management with tmux
+- `bvi` - Neovim wrapper with Gruvbox theme
+
+**🚧 In Development:**
+- `bwm` - Window manager (dwm-based)
+- `chaos` - Screensaver
+- Live USB persistence
+- Full ecosystem packages
+
+## Manual Installation (Current Method)
+
+### Prerequisites
 ```bash
-# On your current machine: Backup sessions, projects, configs to USB
-baux-backup /mnt/usb/workstation-backup
-
-# This saves:
-# - Tmux sessions (immortal state)
-# - Neovim sessions (open files, undo history)
-# - Projects in ~/src/
-# - All BAUX configs
+# Install FreeBSD 15.0 on your X300 ThinkPad
+# Boot into system and install dependencies
+pkg update
+pkg install bash git neovim tmux
 ```
 
-### Phase 2: Create Clone-Ready USB
+### Install BAUX Components
 ```bash
-# Download RoxieOS ISO (when available)
-# fetch https://github.com/badlandz/RoxieOS/releases/download/latest/roxieos-gruvbaux.iso
-# dd if=roxieos-gruvbaux.iso of=/dev/da0 bs=1M conv=sync
+# Clone the repository
+git clone https://github.com/badlandz/RoxieOS.git
+cd RoxieOS
 
-# For now: Use FreeBSD 15.0 + install BAUX packages
-# Note: Future versions will use unionfs-fuse for read-only base + writable overlay
+# Run the installation script
+./scripts/install-baux-manual.sh
+
+# Test the installation
+./scripts/test-baux.sh
 ```
 
-### Phase 3: Boot New Machine and Clone
+### Expected Results
 ```bash
-# Boot new laptop with BAUXBSD USB
-# System boots live in <5 seconds
+# Keymap active (Caps Lock → Escape)
+doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd
 
-# Install core packages (fast, <400MB)
-pkg install bbase baux bwm bterm bvi bweb chaos
+# Session manager works
+baux --help
 
-# Enable BAUX keymap globally
-echo 'keymap="baux"' >> /etc/rc.conf
-
-# Enable cloning services
-echo 'baux_enable="YES"' >> /etc/rc.conf
-echo 'bwm_enable="YES"' >> /etc/rc.conf
-
-# Automatic hardware setup (NomadBSD-inspired)
-# Graphics drivers auto-detected and configured
-# Sound drivers pre-configured with DSBMixer
-# Network setup with NetworkMgr
-
-# Clone your workstation
-baux-clone /mnt/usb/workstation-backup
-
-# You're productive instantly:
-# Sessions revive, projects sync, keymaps active
-# 1:shell  2:edit  3:web  4:project1  5:project2  6:——  7:——  8:——  9:——  15:33
+# Editor launches with Gruvbox theme
+bvi test.txt
 ```
 
 ## Package Details
 
-### bbase
+### bbase (✅ Implemented)
 **Purpose:** System foundation with BAUX keymap
-**Size:** 50MB installed
+**Size:** ~1MB installed
 **Files:**
 - `/usr/share/syscons/keymaps/baux.kbd` - Console keymap
-- `/usr/local/share/X11/xkb/symbols/baux` - X11 keymap
 - `/etc/rc.conf` - System configuration
 
 **Key Features:**
 - Caps Lock → Escape globally
-- Mod4 keybindings for session switching
-- Root autologin configuration
+- FreeBSD syscons keymap integration
 
-### baux
+**Installation:**
+```bash
+cd ports/bbase
+doas ./install.sh
+doas sysrc keymap="baux"
+```
+
+### baux (✅ Implemented)
 **Purpose:** Shell and session management
-**Size:** 80MB installed
-**Dependencies:** tmux, seaweedfs, rsync, git
+**Size:** ~5MB installed
+**Dependencies:** tmux, neovim
 
 **Key Features:**
-- Immortal tmux sessions with resurrection
+- Immortal tmux sessions with TPM resurrection
 - Anti-nesting detection
-- SeaweedFS buffering for offline sync
-- Cross-machine session synchronization
+- Gruvbox theming throughout
+- Ctrl+Space prefix for tmux commands
 
 **Configuration:**
 ```bash
-# Main configuration
-/usr/local/etc/baux/baux.conf
+# Main tmux config
+/usr/local/share/tmux/baux.conf
 
-# Session storage
-~/.local/share/baux/sessions/
+# TPM plugins auto-install
+# Session resurrection enabled
 ```
-
-### bwm
-**Purpose:** Minimal window manager
-**Size:** 25MB installed
-**Dependencies:** dwm, picom
-
-**Key Features:**
-- Shows BAUX session names in bar
-- Mod4+1-9 session switching
-- BAUXWM=1 environment variable
-- Consistent with tmux session management
-
-**Keybindings:**
-- Mod4+hjkl - Tag navigation
-- Mod4+Enter - New terminal
-- Mod4+Shift+1-9 - Move windows
-- Mod4+b - Toggle status bar
-
-### bterm
-**Purpose:** BAUX-themed terminal
-**Size:** 5MB installed
-**Dependencies:** st, libXft
-
-**Key Features:**
-- BAUX color scheme
-- Custom font rendering
-- Perfect integration with bwm
-
-### bvi
-**Purpose:** Editor with intelligent fallback
-**Size:** 90MB installed
-**Dependencies:** neovim
-
-**Key Features:**
-- Neovim with Lazy.nvim integration
-- Fallback: vim → vi.tiny
-- Session state persistence
-- LSP for embedded development
 
 **Usage:**
 ```bash
-bvi file.c           # Opens with neovim
-bvi --fallback file.c  # Forces vim if neovim unavailable
+baux                    # Start BAUX session
+baux --help            # Show help
+Ctrl+Space + ?         # Tmux help
 ```
 
-**Note:** Intentionally replaces the basic `editors/bvi` binary editor with enhanced Neovim integration.
+### bvi (✅ Implemented)
+**Purpose:** Editor with intelligent fallback
+**Size:** ~50MB installed
+**Dependencies:** neovim
+
+**Key Features:**
+- Neovim with LazyVim integration
+- Gruvbox color scheme
+- Fallback: vim → vi.tiny
+- Isolated config (NVIM_APPNAME=bvi)
+
+**Configuration:**
+```bash
+# Neovim config
+/usr/local/etc/bvi/init.vim
+
+# Fallback vim config
+/usr/local/etc/bvi/vimrc.tiny
+
+# Shared lua configs
+/usr/local/share/bvi/lua/
+```
+
+**Usage:**
+```bash
+bvi file.c           # Opens with neovim + Gruvbox
+bvi --version        # Shows neovim version
+```
 
 ### bweb
 **Purpose:** Keyboard-native browser
@@ -160,31 +151,34 @@ bvi --fallback file.c  # Forces vim if neovim unavailable
 
 ### Development Session
 ```bash
-# Start development environment
-baux                    # Opens BAUX with sessions
-Mod4+1                  # Switch to shell session
-Mod4+2                  # Switch to editor session
-Mod4+3                  # Switch to browser session
-Alt+1-4                  # Navigate within session
+# Start BAUX environment
+baux                    # Opens tmux with BAUX config
+
+# Within tmux (Ctrl+Space prefix):
+Ctrl+Space + c          # New window
+Ctrl+Space + 1          # Switch to window 1
+Ctrl+Space + %          # Split vertically
+Ctrl+Space + "          # Split horizontally
+Alt+h/j/k/l             # Navigate panes
 ```
 
-### Session Resurrection
+### Editor Integration
 ```bash
-# Save current state
-baux save
+# Edit files with bvi
+bvi main.c              # Opens in neovim with Gruvbox
+bvi README.md           # Same editor, consistent theme
 
-# Boot on different machine
-baux revive --all
-
-# Exact state restored: same panes, same files, same commands
+# Tmux integration
+Ctrl+Space + :          # Tmux command mode
+:neww bvi file.c        # Open editor in new window
 ```
 
-### Cross-Machine Sync
+### Session Persistence
 ```bash
-# Sync projects between machines
-baux sync forge          # Sync to 'forge' machine
-baux sync nas             # Sync to NAS storage
-baux sync --all           # Sync all configured targets
+# Sessions auto-save every 5 minutes (continuum)
+# Manual save/restore via TPM resurrect plugin
+Ctrl+Space + Ctrl+s     # Save current session
+Ctrl+Space + Ctrl+r     # Restore saved session
 ```
 
 ## ZFS Setup for Session Persistence
@@ -221,35 +215,48 @@ zfs list -t snapshot
 ### Keymap Issues
 ```bash
 # Verify keymap installation
-dumpkeys | grep -i escape     # Should show Caps→Esc mapping
+ls -la /usr/share/syscons/keymaps/baux.kbd
 
-# Test in X11
-setxkbmap -print | grep baux  # Should load BAUX symbols
+# Test keymap loading
+doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd
+
+# Check system keymap setting
+grep keymap /etc/rc.conf
 
 # Reset if needed
-kbdcontrol -l /usr/share/syscons/keymaps/us.kbd
+doas sysrc keymap="us"
+doas kbdcontrol -l /usr/share/syscons/keymaps/us.kbd
 ```
 
 ### Session Problems
 ```bash
-# List all sessions
-baux list
+# Check tmux installation
+tmux -V
 
-# Kill broken session
-baux kill session-name
+# Verify baux config
+ls -la /usr/local/share/tmux/baux.conf
 
-# Reset configuration
-baux reset --hard
+# Test tmux directly
+tmux -f /usr/local/share/tmux/baux.conf
+
+# Check TPM installation
+ls -la /usr/local/share/tmux/plugins/tpm/
 ```
 
-### Performance Issues
+### Editor Issues
 ```bash
-# Check resource usage
-btop                      # System monitor
-ps aux | grep baux         # BAUX processes
+# Check bvi installation
+ls -la /usr/local/bin/bvi
 
-# Optimize startup
-baux optimize              # Cleanup old sessions
+# Verify configs
+ls -la /usr/local/etc/bvi/
+ls -la /usr/local/share/bvi/
+
+# Test neovim directly
+nvim --version
+
+# Check if configs load
+bvi --headless -c "echo 'Config loaded'" 2>/dev/null
 ```
 
 ## Advanced Configuration

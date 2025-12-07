@@ -30,24 +30,31 @@ RoxieOS is a minimal FreeBSD-based operating system designed for instant worksta
 ## Quick Start
 
 ### Prerequisites
-- FreeBSD 15.0+ system
-- USB drive (≥8GB recommended)
+- FreeBSD 15.0+ system (tested on ThinkPad X300)
 - Basic FreeBSD knowledge
 
-### 1. Backup Your Current Workstation
+### Manual Installation (Current Method)
 ```bash
-# On your existing FreeBSD system
-baux-backup /mnt/usb/backup
+# Install FreeBSD 15.0 and basic dependencies
+pkg update
+pkg install bash git neovim tmux
+
+# Clone and install BAUX
+git clone https://github.com/badlandz/RoxieOS.git
+cd RoxieOS
+./scripts/install-baux-manual.sh
+./scripts/test-baux.sh
+
+# Start BAUX session
+baux
 ```
 
-### 2. Prepare Boot Media
-```bash
-# Download and write RoxieOS ISO (when available)
-# fetch https://github.com/badlandz/RoxieOS/releases/download/latest/roxieos-gruvbaux.iso
-# dd if=roxieos-gruvbaux.iso of=/dev/da0 bs=1M conv=sync
-
-# For now, build from source or use FreeBSD 15.0 + BAUX packages
-```
+### What You Get
+- **Caps Lock → Escape** globally
+- **baux** session manager with tmux
+- **bvi** neovim wrapper with Gruvbox theme
+- Immortal sessions with TPM resurrection
+- Unified Gruvbox theming across all components
 
 ### 3. Boot and Install Packages
 ```bash

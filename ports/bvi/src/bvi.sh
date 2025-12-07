@@ -9,9 +9,9 @@ VIM_BIN=$(command -v vim)
 VI_BIN=$(command -v vi)
 
 if [ -n "$NVIM_BIN" ]; then
-  exec "$NVIM_BIN" -u /etc/bvi/init.vim "$@"
+  exec "$NVIM_BIN" -u /usr/local/etc/bvi/init.vim "$@"
 elif [ -n "$VIM_BIN" ]; then
-  exec "$VIM_BIN" -u /etc/bvi/vimrc.tiny --cmd "set runtimepath^=/etc/bvi" "$@"
+  exec "$VIM_BIN" -u /usr/local/etc/bvi/vimrc.tiny "$@"
 else
-  exec "$VI_BIN" -u /etc/bvi/vimrc.tiny --cmd "set runtimepath^=/etc/bvi" "$@"
+  exec "$VI_BIN" -u /usr/local/etc/bvi/vimrc.tiny "$@"
 fi

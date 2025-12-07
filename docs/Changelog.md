@@ -28,6 +28,25 @@
 
 #### Milestone 3: bvi Editor Wrapper ✅
 - **Created FreeBSD port structure** for bvi package
+- **Fixed config file paths** in bvi.sh wrapper
+- **Created missing config files** (/usr/local/etc/bvi/init.vim, vimrc.tiny)
+- **Added Gruvbox theming** to neovim configs
+- **Status**: Ready for testing on X300 ThinkPad
+
+#### Milestone 4: Path Fixes & FreeBSD Compatibility ✅
+- **Fixed shebang paths** from /bin/bash to /usr/local/bin/bash in all scripts
+- **Replaced sudo with doas** in all installation scripts
+- **Updated install-baux-manual.sh** with correct relative paths
+- **Fixed file location issues** in port install scripts (baux.conf, bvi.sh)
+- **Updated tmux theming** to proper Gruvbox colors
+- **Created missing bvi config files** for neovim integration
+- **Status**: All core components ready for X300 testing
+
+#### Milestone 5: Documentation Updates ✅
+- **Updated Installation.md** to reflect current manual installation process
+- **Updated README.md** with correct quick start instructions
+- **Verified Configuration.md** Gruvbox theming documentation
+- **Status**: Documentation matches current implementation
 - **Implemented intelligent fallback** (neovim → vim → vi)
 - **Added lite configuration** with Gruvbox theming
 - **Created installation script** for manual testing
