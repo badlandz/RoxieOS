@@ -9,8 +9,10 @@ BAUX includes comprehensive accessibility features and display management to ens
 BAUX automatically sets readable console fonts:
 
 ```bash
-# In bbase installation
+# In bbase installation (fonts provided by base FreeBSD system)
 doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt
+
+# If TERMINAL fonts not available, base system provides alternatives
 ```
 
 **Font Selection Criteria:**
@@ -37,9 +39,9 @@ Xft.lcdfilter: lcddefault
 BAUX prevents tiny fonts on high-resolution displays:
 
 ```bash
-# Maximum resolution enforcement (updated for accessibility)
+# Maximum resolution enforcement (updated for better readability)
 MAX_WIDTH=1920
-MAX_HEIGHT=1280  # Increased from 1080 for better readability
+MAX_HEIGHT=1280  # Increased from 1080 for better font visibility
 
 # Auto-detect and limit display resolution
 ./scripts/setup-display.sh

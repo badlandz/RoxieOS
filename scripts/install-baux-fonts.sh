@@ -6,18 +6,30 @@ set -euo pipefail
 
 echo "=== BAUX Font Installation Check ==="
 
-# Check if x11-fonts package is installed
-if pkg info | grep -q "x11-fonts"; then
-    echo "✓ x11-fonts package is installed"
+# Check for console fonts in base system first
+echo "Checking for console fonts in base FreeBSD system..."
+if [ -d "/usr/share/syscons/fonts" ]; then
+    FONT_COUNT=$(ls /usr/share/syscons/fonts/*.fnt 2>/dev/null | wc -l)
+    if [ "$FONT_COUNT" -gt 0 ]; then
+        echo "✓ Found $FONT_COUNT console fonts in base system"
+        ls /usr/share/syscons/fonts/*.fnt | head -3
+    else
+        echo "⚠ No console fonts found in base system"
+        echo "Checking if x11-fonts package provides them..."
+        if pkg info | grep -q "x11-fonts"; then
+            echo "✓ x11-fonts package is installed"
+        else
+            echo "⚠ x11-fonts package not found"
+            echo "Installing x11-fonts for console font support..."
+            pkg install -y x11-fonts || {
+                echo "❌ Failed to install x11-fonts"
+                echo "Console fonts may be provided by base FreeBSD system"
+                echo "BAUX will continue but font options may be limited"
+            }
+        fi
+    fi
 else
-    echo "⚠ x11-fonts package not found"
-    echo "Installing x11-fonts for console font support..."
-    pkg install -y x11-fonts || {
-        echo "❌ Failed to install x11-fonts"
-        echo "Manual installation required: pkg install x11-fonts"
-        exit 1
-    }
-    echo "✓ x11-fonts installed successfully"
+    echo "⚠ Console fonts directory not found"
 fi
 
 # Check console fonts

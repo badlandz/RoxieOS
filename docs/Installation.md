@@ -33,7 +33,7 @@
 doas pkg update && doas pkg upgrade -y
 
 # Install required packages for BAUX
-doas pkg install -y bash git neovim tmux x11-fonts xterm
+doas pkg install -y bash git neovim tmux xterm
 
 # Configure doas for your user (replace 'username' with your actual username)
 echo "permit nopass username" | doas tee -a /usr/local/etc/doas.conf

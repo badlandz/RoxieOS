@@ -24,20 +24,38 @@ if [ -n "$AVAILABLE" ]; then
             echo "✓ Set console font to $LARGEST"
         else
             echo "✗ Failed to set $LARGEST"
+            echo "This may be normal if video driver not loaded"
         fi
+    else
+        echo "No suitable large fonts found in available fonts"
     fi
 else
     echo "No console fonts found in /usr/share/syscons/fonts/"
+    echo "Console fonts may be provided by base FreeBSD system"
+    echo "BAUX will continue with available system fonts"
 fi
 
 # Method 2: Install fonts if missing
 echo ""
-echo "Method 2: Ensuring fonts are installed..."
-if ! pkg info | grep -q "x11-fonts"; then
-    echo "Installing x11-fonts package..."
-    pkg install -y x11-fonts || echo "Failed to install fonts package"
+echo "Method 2: Ensuring fonts are available..."
+if ! ls /usr/share/syscons/fonts/*.fnt >/dev/null 2>&1; then
+    echo "No console fonts found, attempting to install x11-fonts..."
+    if pkg install -y x11-fonts 2>/dev/null; then
+        echo "✓ x11-fonts installed"
+        # Check again after installation
+        if ls /usr/share/syscons/fonts/*.fnt >/dev/null 2>&1; then
+            echo "✓ Console fonts now available"
+        else
+            echo "⚠ x11-fonts installed but no console fonts found"
+            echo "Console fonts may be in base FreeBSD system"
+        fi
+    else
+        echo "Failed to install x11-fonts package"
+        echo "Console fonts may be provided by base FreeBSD system"
+    fi
 else
-    echo "x11-fonts already installed"
+    FONT_COUNT=$(ls /usr/share/syscons/fonts/*.fnt | wc -l)
+    echo "✓ $FONT_COUNT console fonts already available"
 fi
 
 # Method 3: X11 font emergency

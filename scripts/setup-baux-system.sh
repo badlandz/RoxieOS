@@ -25,7 +25,7 @@ pkg update || {
 
 # Install basic requirements
 echo "Installing basic requirements..."
-pkg install -y bash git || {
+pkg install -y bash git xterm || {
     echo "❌ Basic package installation failed"
     exit 1
 }

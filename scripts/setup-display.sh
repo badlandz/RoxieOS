@@ -107,20 +107,27 @@ else
         echo "$AVAILABLE_FONTS" | head -5
 
         # Try largest available fonts first (check availability first)
+        FONT_SET=false
         if echo "$AVAILABLE_FONTS" | grep -q "TERMINAL_16x32.fnt" && \
            doas vidcontrol -f 16x32 /usr/share/syscons/fonts/TERMINAL_16x32.fnt 2>/dev/null; then
             echo "✓ Console font set to 16x32 (maximum readability)"
+            FONT_SET=true
         elif echo "$AVAILABLE_FONTS" | grep -q "TERMINAL_12x24.fnt" && \
              doas vidcontrol -f 12x24 /usr/share/syscons/fonts/TERMINAL_12x24.fnt 2>/dev/null; then
             echo "✓ Console font set to 12x24 (very readable)"
+            FONT_SET=true
         elif echo "$AVAILABLE_FONTS" | grep -q "TERMINAL_8x16.fnt" && \
              doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null; then
             echo "✓ Console font set to 8x16 (minimum acceptable)"
-        else
+            FONT_SET=true
+        fi
+
+        if [ "$FONT_SET" = false ]; then
             echo "⚠ Console font setting failed"
             if [ -z "$AVAILABLE_FONTS" ]; then
                 echo "  No .fnt files found in /usr/share/syscons/fonts/"
-                echo "  Install with: pkg install x11-fonts"
+                echo "  Console fonts may be provided by base FreeBSD system"
+                echo "  Or install additional fonts: pkg install x11-fonts"
             else
                 echo "  Available fonts: $AVAILABLE_FONTS"
                 echo "  Video driver may not be loaded yet - try after boot completes"

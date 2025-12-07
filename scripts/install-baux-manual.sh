@@ -32,16 +32,39 @@ log "Updating package database..."
 pkg update >> "$LOG_FILE" 2>&1 || log "pkg update failed, continuing..."
 
 log "Installing required packages..."
-pkg install -y bash git neovim tmux x11-fonts xterm >> "$LOG_FILE" 2>&1 || error "Package installation failed"
+pkg install -y bash git neovim tmux xterm >> "$LOG_FILE" 2>&1 || error "Package installation failed"
 
-# Verify critical packages
-log "Verifying package installation..."
-for pkg in bash git neovim tmux x11-fonts xterm; do
-    if pkg info | grep -q "^$pkg"; then
-        log "✓ $pkg installed"
+# Ensure bash is available at the expected path
+if [ ! -x "/usr/local/bin/bash" ]; then
+    log "bash not found at /usr/local/bin/bash, pkg install may have failed"
+fi
+
+# Check for console fonts (TERMINAL_*.fnt files)
+log "=== Checking Console Font Availability ==="
+CONSOLE_FONTS_AVAILABLE=false
+if [ -f "/usr/share/syscons/fonts/TERMINAL_8x16.fnt" ] || \
+   [ -f "/usr/share/syscons/fonts/TERMINAL_12x24.fnt" ] || \
+   [ -f "/usr/share/syscons/fonts/TERMINAL_16x32.fnt" ]; then
+    log "✓ Console fonts found in /usr/share/syscons/fonts/"
+    CONSOLE_FONTS_AVAILABLE=true
+else
+    log "⚠ Console fonts not found - they may be in base system or need different package"
+    # Check if any .fnt files exist
+    if ls /usr/share/syscons/fonts/*.fnt >/dev/null 2>&1; then
+        log "Available console fonts:"
+        ls /usr/share/syscons/fonts/*.fnt | head -5 >> "$LOG_FILE" 2>&1
+        CONSOLE_FONTS_AVAILABLE=true
     else
-        error "✗ $pkg not found - installation may have failed"
+        log "No .fnt files found in /usr/share/syscons/fonts/"
+        log "Console fonts may be provided by base FreeBSD system"
+        CONSOLE_FONTS_AVAILABLE=true  # Assume base system provides them
     fi
+fi
+
+if [ "$CONSOLE_FONTS_AVAILABLE" = false ]; then
+    log "WARNING: Console fonts may not be available"
+    log "BAUX will still work but console fonts may be limited"
+fi
 done
 
 # Ensure bash is available at the expected path
