@@ -73,22 +73,32 @@ fi
 # Configure console font for maximum readability (accessibility requirement)
 echo "Setting console font for impaired vision accessibility..."
 
-# Check available fonts first
+# Check what fonts are actually available
+AVAILABLE_FONTS=$(ls -1 /usr/share/syscons/fonts/ 2>/dev/null | grep '\.fnt$' | sort)
 echo "Available console fonts:"
-ls -1 /usr/share/syscons/fonts/ | grep -E "(12x24|16x32|8x16)" | head -5
+echo "$AVAILABLE_FONTS" | head -5
 
 # Try largest fonts first for maximum readability
-# Note: vidcontrol may not work if video driver isn't loaded yet
-if doas vidcontrol -f 16x32 /usr/share/syscons/fonts/TERMINAL_16x32.fnt 2>/dev/null; then
+# Note: vidcontrol may not work if video driver isn't loaded yet during install
+if echo "$AVAILABLE_FONTS" | grep -q "TERMINAL_16x32.fnt" && \
+   doas vidcontrol -f 16x32 /usr/share/syscons/fonts/TERMINAL_16x32.fnt 2>/dev/null; then
     echo "✓ Set console font to 16x32 (maximum readability)"
-elif doas vidcontrol -f 12x24 /usr/share/syscons/fonts/TERMINAL_12x24.fnt 2>/dev/null; then
+elif echo "$AVAILABLE_FONTS" | grep -q "TERMINAL_12x24.fnt" && \
+     doas vidcontrol -f 12x24 /usr/share/syscons/fonts/TERMINAL_12x24.fnt 2>/dev/null; then
     echo "✓ Set console font to 12x24 (very readable)"
-elif doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null; then
+elif echo "$AVAILABLE_FONTS" | grep -q "TERMINAL_8x16.fnt" && \
+     doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null; then
     echo "✓ Set console font to 8x16 (minimum acceptable)"
 else
-    echo "WARNING: Console font setting failed - may need to run after video driver loads"
-    echo "Available fonts:"
-    ls -la /usr/share/syscons/fonts/ | head -10
+    echo "WARNING: Console font setting failed during install"
+    if [ -z "$AVAILABLE_FONTS" ]; then
+        echo "  No console fonts found - install x11-fonts package"
+        echo "  Run after install: pkg install x11-fonts"
+    else
+        echo "  Available fonts: $AVAILABLE_FONTS"
+        echo "  Font will be set after video driver loads during boot"
+        echo "  Run after boot: ./scripts/setup-early-font.sh"
+    fi
 fi
 
 # Show current font setting

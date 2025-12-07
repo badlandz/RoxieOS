@@ -29,10 +29,34 @@ log "Log file: $LOG_FILE"
 ## Prerequisites
 log "=== Installing Prerequisites ==="
 pkg update >> "$LOG_FILE" 2>&1 || log "pkg update failed, continuing..."
-pkg install -y bash git neovim tmux >> "$LOG_FILE" 2>&1 || error "Package installation failed"
+pkg install -y bash git neovim tmux x11-fonts >> "$LOG_FILE" 2>&1 || error "Package installation failed"
+
 # Ensure bash is available at the expected path
 if [ ! -x "/usr/local/bin/bash" ]; then
     log "bash not found at /usr/local/bin/bash, pkg install may have failed"
+fi
+
+# Ensure fonts are available for accessibility
+log "=== Ensuring Font Availability ==="
+if ! pkg info | grep -q "x11-fonts"; then
+    error "x11-fonts package not installed - required for console fonts"
+    exit 1
+fi
+
+# Check for required console fonts
+MISSING_FONTS=""
+for font in "TERMINAL_16x32.fnt" "TERMINAL_12x24.fnt" "TERMINAL_8x16.fnt"; do
+    if [ ! -f "/usr/share/syscons/fonts/$font" ]; then
+        MISSING_FONTS="$MISSING_FONTS $font"
+    fi
+done
+
+if [ -n "$MISSING_FONTS" ]; then
+    error "Missing required console fonts:$MISSING_FONTS"
+    log "This will cause font accessibility issues"
+    log "Try: pkg delete x11-fonts && pkg install x11-fonts"
+else
+    success "All required console fonts are available"
 fi
 
 ## Install bbase (Foundation)

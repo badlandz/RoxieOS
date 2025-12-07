@@ -100,7 +100,21 @@ if command -v vidcontrol >/dev/null 2>&1; then
 
     # Show available fonts
     log "Available console fonts:"
-    doas ls -1 /usr/share/syscons/fonts/ 2>/dev/null | grep TERMINAL | head -5 >> "$LOG_FILE" 2>&1
+    AVAILABLE_FONTS=$(doas ls -1 /usr/share/syscons/fonts/ 2>/dev/null | grep '\.fnt$' | sort)
+    echo "$AVAILABLE_FONTS" | head -5 >> "$LOG_FILE" 2>&1
+
+    # Check if required fonts are missing
+    MISSING_FONTS=""
+    for font in "TERMINAL_16x32.fnt" "TERMINAL_12x24.fnt" "TERMINAL_8x16.fnt"; do
+        if ! echo "$AVAILABLE_FONTS" | grep -q "$font"; then
+            MISSING_FONTS="$MISSING_FONTS $font"
+        fi
+    done
+
+    if [ -n "$MISSING_FONTS" ]; then
+        warn "Missing accessibility fonts:$MISSING_FONTS"
+        log "Install with: pkg install x11-fonts"
+    fi
 else
     log "vidcontrol not available"
 fi

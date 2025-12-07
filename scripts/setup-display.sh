@@ -101,20 +101,30 @@ else
     if command -v vidcontrol >/dev/null 2>&1; then
         echo "Setting console font to large size for impaired vision..."
 
-        # Show available fonts first
+        # Check what fonts are actually available
+        AVAILABLE_FONTS=$(doas ls -1 /usr/share/syscons/fonts/ 2>/dev/null | grep '\.fnt$' | sort)
         echo "Available console fonts:"
-        ls -1 /usr/share/syscons/fonts/ 2>/dev/null | grep TERMINAL | head -5
+        echo "$AVAILABLE_FONTS" | head -5
 
-        # Try largest available fonts first
-        if doas vidcontrol -f 16x32 /usr/share/syscons/fonts/TERMINAL_16x32.fnt 2>/dev/null; then
+        # Try largest available fonts first (check availability first)
+        if echo "$AVAILABLE_FONTS" | grep -q "TERMINAL_16x32.fnt" && \
+           doas vidcontrol -f 16x32 /usr/share/syscons/fonts/TERMINAL_16x32.fnt 2>/dev/null; then
             echo "✓ Console font set to 16x32 (maximum readability)"
-        elif doas vidcontrol -f 12x24 /usr/share/syscons/fonts/TERMINAL_12x24.fnt 2>/dev/null; then
+        elif echo "$AVAILABLE_FONTS" | grep -q "TERMINAL_12x24.fnt" && \
+             doas vidcontrol -f 12x24 /usr/share/syscons/fonts/TERMINAL_12x24.fnt 2>/dev/null; then
             echo "✓ Console font set to 12x24 (very readable)"
-        elif doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null; then
+        elif echo "$AVAILABLE_FONTS" | grep -q "TERMINAL_8x16.fnt" && \
+             doas vidcontrol -f 8x16 /usr/share/syscons/fonts/TERMINAL_8x16.fnt 2>/dev/null; then
             echo "✓ Console font set to 8x16 (minimum acceptable)"
         else
-            echo "⚠ Console font setting failed - video driver may not be loaded yet"
-            echo "This is normal during early boot. Font will be set after video init."
+            echo "⚠ Console font setting failed"
+            if [ -z "$AVAILABLE_FONTS" ]; then
+                echo "  No .fnt files found in /usr/share/syscons/fonts/"
+                echo "  Install with: pkg install x11-fonts"
+            else
+                echo "  Available fonts: $AVAILABLE_FONTS"
+                echo "  Video driver may not be loaded yet - try after boot completes"
+            fi
         fi
 
         # Show current font setting
@@ -122,6 +132,7 @@ else
         echo "Current console font: $CURRENT_FONT"
     else
         echo "vidcontrol not available - console font configuration skipped"
+        echo "Install with: pkg install x11-fonts"
     fi
 fi
 
