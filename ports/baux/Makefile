@@ -19,7 +19,8 @@ WWW=		https://github.com/badlandz/RoxieOS
 LICENSE=	MIT
 
 RUN_DEPENDS=	tmux:sysutils/tmux \
-		neovim:editors/neovim
+		neovim:editors/neovim \
+		rsync:net/rsync
 
 NO_ARCH=	yes
 NO_BUILD=	yes

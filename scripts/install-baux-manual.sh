@@ -8,6 +8,9 @@ set -e  # Exit on any error
 # Configuration
 LOG_FILE="${1:-baux-manual-install-$(date +%Y%m%d-%H%M%S).log}"
 
+# Trap to log unexpected exits
+trap 'echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] Script failed at line $LINENO" >> "$LOG_FILE"; echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] Last command: $BASH_COMMAND" >> "$LOG_FILE"' ERR
+
 # Logging functions
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $*" | tee -a "$LOG_FILE"
@@ -26,13 +29,32 @@ log "Current directory: $(pwd)"
 log "User: $(whoami)"
 log "Log file: $LOG_FILE"
 
+## Verify doas is configured
+log "=== Verifying doas Configuration ==="
+if ! doas -C /etc/doas.conf >/dev/null 2>&1; then
+    log "⚠ doas configuration check failed"
+    if [ ! -f "/etc/doas.conf" ]; then
+        log "doas.conf not found - creating basic configuration"
+        echo "permit nopass :wheel" | doas tee /etc/doas.conf >/dev/null 2>&1 || {
+            error "Failed to create doas.conf - run as root or configure doas manually"
+            log "Try: su root -c 'echo \"permit nopass :wheel\" >> /etc/doas.conf'"
+            exit 1
+        }
+    else
+        log "doas.conf exists but may not be configured correctly"
+        log "Ensure your user is in the wheel group or has doas permissions"
+    fi
+else
+    log "✓ doas configuration verified"
+fi
+
 ## Prerequisites
 log "=== Installing Prerequisites ==="
 log "Updating package database..."
 pkg update >> "$LOG_FILE" 2>&1 || log "pkg update failed, continuing..."
 
 log "Installing required packages..."
-pkg install -y bash git neovim tmux xterm >> "$LOG_FILE" 2>&1 || error "Package installation failed"
+pkg install -y bash git neovim tmux xterm rsync >> "$LOG_FILE" 2>&1 || error "Package installation failed"
 
 # Ensure bash is available at the expected path
 if [ ! -x "/usr/local/bin/bash" ]; then
@@ -100,15 +122,30 @@ done
 
 if [ -n "$MISSING_FONTS" ]; then
     log "Missing some console fonts:$MISSING_FONTS"
-    log "This may limit font accessibility options"
-    log "Consider installing additional fonts: pkg install misc/console-fonts"
-    log "BAUX will still work with available fonts"
+    log "Installing additional console fonts for better accessibility..."
+    pkg install -y misc/console-fonts >> "$LOG_FILE" 2>&1 || log "Failed to install console-fonts, continuing with available fonts"
+
+    # Check again after installation
+    MISSING_FONTS=""
+    for font in "TERMINAL_16x32.fnt" "TERMINAL_12x24.fnt" "TERMINAL_8x16.fnt"; do
+        if [ ! -f "/usr/share/syscons/fonts/$font" ]; then
+            MISSING_FONTS="$MISSING_FONTS $font"
+        fi
+    done
+
+    if [ -n "$MISSING_FONTS" ]; then
+        log "Some fonts still missing after installation:$MISSING_FONTS"
+        log "BAUX will work with available fonts"
+    else
+        success "All required console fonts now available!"
+    fi
 else
     success "All required console fonts are available"
 fi
 
 ## Install bbase (Foundation)
 log "=== Installing bbase (Foundation) ==="
+log "Current working directory before cd: $(pwd)"
 log "Changing to ports/bbase..."
 cd ports/bbase || { error "Cannot cd to ports/bbase from $(pwd)"; exit 1; }
 
@@ -122,6 +159,7 @@ fi
 log "Running install.sh..."
 if doas ./install.sh >> "$LOG_FILE" 2>&1; then
     success "bbase installed successfully"
+    log "bbase installation completed successfully"
 else
     error "bbase install.sh failed"
     log "Check the log file: $LOG_FILE"
@@ -129,6 +167,7 @@ else
     exit 1
 fi
 
+log "bbase installation section completed"
 # Test keymap
 log "Testing keymap..."
 if doas kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd >> "$LOG_FILE" 2>&1; then
