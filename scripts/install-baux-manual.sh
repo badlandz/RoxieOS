@@ -31,7 +31,7 @@ run_privileged() {
 }
 
 # Trap to log unexpected exits (now that LOG_FILE and functions are available)
-trap 'error "Script failed at line $LINENO"; log "Last command: $BASH_COMMAND"' ERR
+# trap 'error "Script failed at line $LINENO"; log "Last command: $BASH_COMMAND"' ERR
 
 log "=== BAUX Manual Installation Started ==="
 log "Current directory: $(pwd)"
@@ -167,17 +167,30 @@ fi
 ## Install bbase (Foundation)
 log "=== Installing bbase (Foundation) ==="
 log "Current working directory before cd: $(pwd)"
+log "Checking if ports/bbase exists..."
+if [ -d "ports/bbase" ]; then
+    log "✓ ports/bbase directory exists"
+else
+    error "ports/bbase directory not found"
+    ls -la ports/ 2>/dev/null || log "ports/ directory not found either"
+    exit 1
+fi
 log "Changing to ports/bbase..."
 cd ports/bbase || { error "Cannot cd to ports/bbase from $(pwd)"; exit 1; }
+log "Successfully changed to: $(pwd)"
 
 # Verify install.sh exists and is executable
+log "Checking for install.sh in $(pwd)..."
+ls -la install.sh 2>/dev/null || log "install.sh listing failed"
 if [ ! -x "install.sh" ]; then
     error "install.sh not found or not executable in $(pwd)"
-    ls -la install.sh 2>/dev/null || log "install.sh not found"
+    log "Full listing of current directory:"
+    ls -la 2>/dev/null >> "$LOG_FILE" 2>&1 || log "ls failed"
     exit 1
 fi
 
 log "Running install.sh..."
+log "About to execute: run_privileged ./install.sh"
 if run_privileged ./install.sh >> "$LOG_FILE" 2>&1; then
     success "bbase installed successfully"
     log "bbase installation completed successfully"
