@@ -49,6 +49,10 @@ User: $prompt
 
 Provide practical, actionable advice. If suggesting code changes, be specific."
 
+    # Escape for JSON
+    local escaped_prompt
+    escaped_prompt=$(jq -Rs . <<< "$full_prompt")
+
     local response
     response=$(curl -s -X POST "https://api.x.ai/v1/chat/completions" \
         -H "Content-Type: application/json" \
@@ -58,7 +62,7 @@ Provide practical, actionable advice. If suggesting code changes, be specific."
             \"messages\": [
                 {
                     \"role\": \"user\",
-                    \"content\": \"$full_prompt\"
+                    \"content\": $escaped_prompt
                 }
             ],
             \"max_tokens\": 1024,
