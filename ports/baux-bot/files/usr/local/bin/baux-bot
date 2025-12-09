@@ -223,6 +223,7 @@ echo "  'read FILE' to force file into RAG"
 echo "  'develop TASK' for development advice"
 echo "  'code REQUEST' for code generation/review"
 echo "  'switch ollama' or 'switch grok' to change backend"
+echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
 echo "Type anything. Only the word 'exit' kills me.\n"
 
 while true; do
@@ -314,6 +315,13 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             else
                 echo "Invalid backend. Use 'switch ollama' or 'switch grok'."
             fi
+            continue
+            ;;
+        mesh*)
+            # Route query to .101 baux-bot
+            query="${input#mesh }"
+            echo "Routing to BAUX-MESH (.101)..."
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null badlandz@192.168.33.101 "echo '$query' | baux-bot" 2>/dev/null
             continue
             ;;
     esac
