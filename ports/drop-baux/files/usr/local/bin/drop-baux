@@ -6,7 +6,7 @@
 set -euo pipefail
 
 # Configuration
-MOUNT_BASE="/mnt/drop-baux"
+MOUNT_BASE="$HOME/mnt/drop-baux"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/drop-baux"
 PEERS_FILE="$CONFIG_DIR/peers"
 LOG_FILE="$CONFIG_DIR/drop.log"
@@ -52,11 +52,11 @@ mount_drop() {
     
     # Use sshfs for mounting (requires fuse)
     if command -v sshfs >/dev/null 2>&1; then
-        sshfs -o allow_other -o reconnect -p "$port" "$user@$ip:/var/drop-baux" "$mount_point"
+        sshfs -o allow_other -o reconnect -p "$port" "$user@$ip:$HOME/mnt/drop-baux" "$mount_point"
         log "Mounted via sshfs"
     else
         echo "sshfs not available, trying rsync sync"
-        rsync -avz -e "ssh -p $port" "$user@$ip:/var/drop-baux/" "$mount_point/"
+        rsync -avz -e "ssh -p $port" "$user@$ip:$HOME/mnt/drop-baux/" "$mount_point/"
         log "Synced via rsync"
     fi
 }
@@ -88,7 +88,7 @@ sync_to_peers() {
         fi
         
         log "Syncing to $name ($ip)"
-        rsync -avz --delete -e "ssh -p $port" "$source_dir/" "$user@$ip:/var/drop-baux/" || log "Sync to $name failed"
+        rsync -avz --delete -e "ssh -p $port" "$source_dir/" "$user@$ip:$HOME/mnt/drop-baux/" || log "Sync to $name failed"
     done < "$PEERS_FILE"
 }
 
