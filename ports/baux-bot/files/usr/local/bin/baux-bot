@@ -18,7 +18,9 @@ fi
 
 if [[ $# -gt 0 && "$1" == "--internal-autotune" ]]; then
     # Auto-tune Ollama models
-    TUNE_LOG="$HOME/.baux-bot/tune.log"
+    CONFIG_DIR="$HOME/.baux-bot"
+    mkdir -p "$CONFIG_DIR"
+    TUNE_LOG="$CONFIG_DIR/tune.log"
     echo "=== BAUX BOT Ollama Auto-Tune $(date) ===" > "$TUNE_LOG"
     echo "Hardware: $(uname -m) $(nproc) cores" >> "$TUNE_LOG"
 
