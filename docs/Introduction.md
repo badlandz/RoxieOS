@@ -136,12 +136,13 @@ baux revive --all  # Restore exact state on any machine
 - **Terminal:** Gruvbox color palette
 
 ### AI-Powered Development Environment
-**BAUX Bot Integration**: Seamless AI assistance across all layers:
+**BAUX Bot Integration**: Seamless AI assistance across all layers, leveraging BAUX-MESH for distributed intelligence:
 - **Local AI**: Ollama models for privacy-focused development
 - **Cloud AI**: xAI Grok and Google Gemini for advanced queries
-- **Context Awareness**: Real-time codebase understanding via RAG
+- **Mesh AI**: Distributed RAG and model execution across RoxieOS installs via Tailscale
+- **Context Awareness**: Real-time codebase understanding via shared RAG pools
 - **Keybindings**: Alt+b (tmux) and <leader>b (neovim) for instant AI help
-- **Multi-Modal**: Code generation, debugging, documentation search
+- **Multi-Modal**: Code generation, debugging, documentation search, session resurrection
 
 ## Installation Strategy
 

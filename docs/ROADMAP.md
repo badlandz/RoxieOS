@@ -200,6 +200,7 @@ stty -F /dev/ttyU0 115200 raw
 - **Context Awareness**: Real-time RAG system for codebase understanding
 - **Seamless Switching**: Dynamic backend selection (Ollama/Grok) in baux-bot
 - **TMUX/Neovim Integration**: Alt+b (tmux) and <leader>b (neovim) keybindings
+- **BAUX-MESH AI**: Distributed AI resources across RoxieOS installs via Tailscale
 
 #### 7.2 Advanced AI Features (Future Implementation)
 - **AI Shepherding**: Local AI suggests best model for queries (Ollama vs Grok vs Gemini)
@@ -223,6 +224,7 @@ stty -F /dev/ttyU0 115200 raw
 - **Session Persistence**: RAG rebuilds on changes; SeaweedFS integration planned for hot buffering
 - **Keymap Conflicts**: Alt+b tested; BAUX bindings verified consistent across layers
 - **Ollama Tuning**: `baux-bot --autotune-ollama` benchmarks models for optimal speed/quality per hardware
+- **BAUX-MESH Potential**: Distributed AI unlocks global session resurrection, mesh-wide tutoring, AI-optimized builds
 
 ## Package Dependencies
 

@@ -205,15 +205,26 @@ do-build:
 - **Proactive Suggestions**: Code improvements based on usage patterns
 
 ### Ollama Tuning for Hardware Optimization
-**Status:** Implemented in v0.2 with quality scoring
+**Status:** Implemented in v0.2
 **Features:**
 - **Auto-Tune Command**: `baux-bot --autotune-ollama` benchmarks available models on current hardware
-- **Performance Metrics**: Measures response time (60s timeout), length, and basic quality scoring for coding tasks
-- **Quality Checks**: Evaluates responses for correct bash syntax (e.g., `[ -f`, `test -f`)
-- **Dynamic Model Selection**: Updates `MODEL_PREF` array prioritizing speed + quality
-- **Workstation-Specific**: Adapts for old laptops (prioritize smollm2:135m) vs. servers (larger models)
+- **Performance Metrics**: Measures response time, quality, and resource usage for each model
+- **Dynamic Model Selection**: Updates `MODEL_PREF` array based on hardware capabilities
+- **Workstation-Specific**: Adapts for old laptops (prioritize smollm2:135m) vs. servers (llama3.1:8b)
 - **Fallback Logic**: Ensures at least one model works; skips unavailable models
 - **Documentation**: Logs tuning results to `~/.baux-bot/tune.log` for troubleshooting
+
+### BAUX-MESH AI Distribution
+**Status:** Planned for v0.3
+**Vision:** Leverage RoxieOS's persistent pane ecosystem for distributed AI intelligence
+**Core Concept:** RoxieOS requires 2+ installs (live IP holder with Tailscale keys, maintenance sessions); AI resources shared across mesh based on latency/ollama performance
+**Features:**
+- **Distributed RAG**: Shared codebase knowledge pools across devices (USB, VM, cloud, LAN)
+- **Mesh Model Execution**: Route AI queries to optimal RoxieOS install (e.g., server for heavy models, local for privacy)
+- **Session Resurrection with AI**: Grab panes from crashed systems, AI reconstructs context
+- **Collaborative Learning**: Bots across mesh share learnings, improve collectively
+- **Latency-Aware Routing**: Auto-select closest/fastest AI resource in BAUX-MESH
+- **Novel Capabilities**: Global tutoring (learn vim on one device, continue on another), distributed builds with AI oversight
 - **Future Enhancement**: Background daemon mode for 24-48 hour continuous tuning
 
 ### Custom AI Model Training (baux-bot v1.0)
