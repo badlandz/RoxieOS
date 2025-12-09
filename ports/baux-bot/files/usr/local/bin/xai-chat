@@ -24,7 +24,7 @@ RESPONSE=$(curl -s -X POST "https://api.x.ai/v1/chat/completions" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $API_KEY" \
     -d "{
-        \"model\": \"grok-2-latest\",
+        \"model\": \"grok-3\",
         \"messages\": [
             {
                 \"role\": \"user\",
@@ -35,7 +35,11 @@ RESPONSE=$(curl -s -X POST "https://api.x.ai/v1/chat/completions" \
         \"temperature\": 0.7
     }")
 
-# Extract the response text
-TEXT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content' 2>/dev/null || echo "Error parsing response")
+# Check if response is valid JSON and extract text
+if echo "$RESPONSE" | jq -e '.choices[0].message.content' >/dev/null 2>&1; then
+    TEXT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+else
+    TEXT="Error: Invalid API response format. Raw response: $RESPONSE"
+fi
 
 echo "$TEXT"
