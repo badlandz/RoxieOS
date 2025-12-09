@@ -43,6 +43,13 @@ Yes, BAUXBSD packages are designed to work on standard FreeBSD installations.
 
 See Configuration.md for complete reference.
 
+### How do I get AI assistance?
+BAUXBSD includes AI tools for development help:
+- `dev-assist "your question"`: Get BAUXBSD/FreeBSD development advice from xAI's Grok.
+- `xai-chat "message"`: General chat with Grok.
+- Set `GROK_API_KEY` in your shell (e.g., `~/.bashrc`).
+- For local AI: `baux-bot` provides Ollama-based assistance with repo context.
+
 ## Troubleshooting
 
 ### Keymap not working?
