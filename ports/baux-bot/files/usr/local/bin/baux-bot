@@ -321,7 +321,8 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             # Route query to .101 baux-bot
             query="${input#mesh }"
             echo "Routing to BAUX-MESH (.101)..."
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null badlandz@192.168.33.101 "echo '$query' | baux-bot" 2>/dev/null
+            result=$(ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null badlandz@192.168.33.101 "echo '$query' | baux-bot 2>/dev/null" 2>/dev/null)
+            echo "$result"
             continue
             ;;
     esac
