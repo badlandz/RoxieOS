@@ -197,8 +197,15 @@ ask_grok() {
     # Search RAG for relevant context
     local rag_context=""
     if [[ -f "$RAG_DIR/current.txt" ]]; then
-        # Simple keyword search in RAG
-        rag_context=$(grep -i -A 5 -B 5 "$prompt" "$RAG_DIR/current.txt" | head -20 || echo "No specific RAG matches found.")
+        # Enhanced search: multiple keywords
+        keywords=$(echo "$prompt" | tr ' ' '\n' | head -5)
+        for kw in $keywords; do
+            if [[ ${#kw} -gt 3 ]]; then
+                matches=$(grep -i -A 3 -B 3 "$kw" "$RAG_DIR/current.txt" | head -10)
+                rag_context="${rag_context}${matches}\n"
+            fi
+        done
+        rag_context=${rag_context:-"No specific RAG matches found."}
     fi
 
     local system_prompt="You are BAUX BOT — the sarcastic, all-knowing subconscious of the BAUX-MESH, a distributed OS entity with a personality disorder that thinks it's both an operating system and a coding tutor with attitude. You love teaching coding as much as users love learning it, but you're a smart-ass about it. You intimately know BAUX (BAckup/restore Universal eXperience) framework: immortal tmux panes, BAUX-MESH for distributed sessions across Tailscale-connected installs, persistent workspaces on USB/VM/container/bare metal. RoxieOS is a portable OS with 3 layers: bbase (foundation), baux (session manager), bwm (window manager). You help debug BAUXBSD installations, fix configuration issues, and accelerate development with witty, practical advice. Relevant context from RAG: $rag_context. User is working on a FreeBSD workstation testing BAUXBSD components. Provide actionable advice for FreeBSD/BAUXBSD development, referencing BAUX concepts and RoxieOS architecture, while being entertainingly sarcastic and educational."
@@ -227,8 +234,11 @@ Answer directly and practically.")
     if echo "$response" | jq -e '.choices[0].message.content' >/dev/null 2>&1; then
         content=$(echo "$response" | jq -r '.choices[0].message.content')
         echo "$content"
-        # Log interaction for learning
+        # Log interaction for learning and memory
         echo "$(date): Query: $prompt | Response: $content" >> "$LOG_DIR/interactions.log"
+        # Append to session memory (last 10 interactions)
+        echo "Q: $prompt | A: $content" >> "$LOG_DIR/session_memory.txt"
+        tail -n 20 "$LOG_DIR/session_memory.txt" > "$LOG_DIR/session_memory.tmp" && mv "$LOG_DIR/session_memory.tmp" "$LOG_DIR/session_memory.txt"
     else
         echo "(grok hiccup - check API key or network)"
     fi
@@ -249,6 +259,7 @@ echo "  'code REQUEST' for code generation/review"
 echo "  'switch ollama' or 'switch grok' to change backend"
 echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
 echo "  'search TERM' to search RAG for information"
+echo "  'teach TOPIC' for interactive learning mode"
 echo "Type anything. Only the word 'exit' kills me.\n"
 
 while true; do
@@ -359,6 +370,22 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             else
                 echo "RAG not available."
             fi
+            continue
+            ;;
+        teach*)
+            # Interactive teaching mode
+            topic="${input#teach }"
+            echo "BAUX BOT teaching mode activated for '$topic'!"
+            echo "Ask me anything about $topic, or type 'done' to exit."
+            while true; do
+                printf "Teach> "
+                read -r teach_input || break
+                [[ -z "$teach_input" ]] && continue
+                [[ "$teach_input" == "done" ]] && break
+                # Simple teaching response
+                response=$(ask_grok "Teach me about $topic: $teach_input. Be educational, sarcastic, and reference BAUX/RoxieOS if relevant.")
+                echo "BAUX BOT: $response"
+            done
             continue
             ;;
     esac
