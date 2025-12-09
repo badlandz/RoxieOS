@@ -115,12 +115,16 @@ RoxieOS requires at least 2 installs for full functionality:
 ### BAUX-MESH: Persistent Pane Ecosystem
 BAUX-MESH enables seamless session resurrection across devices:
 - Immortal tmux panes persist across reboots/crashes.
-- Grab any session from any RoxieOS install via Tailscale.
+- Session naming: Default $HOSTNAME-1 to $HOSTNAME-9 for tty mapping; custom names allowed.
+- Grab any session from any RoxieOS install via Tailscale (or LAN discovery pre-Tailscale).
 - AI resources (baux-bot) distributed across mesh for optimal performance.
 - 5-second boot to full productivity anywhere.
 
 ```bash
-baux revive --all  # Restore exact state on any machine
+baux 3              # Switch to hostname-3 session
+baux switch ProjectX baux02  # Switch to ProjectX on baux02
+baux pull baux01 MyProject   # Pull MyProject from baux01
+baux revive --all   # Restore exact state on any machine
 ```
 
 ## The Unified Workflow
