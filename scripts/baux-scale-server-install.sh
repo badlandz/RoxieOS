@@ -23,14 +23,10 @@ mkdir -p /etc/headscale
 cp /usr/local/etc/headscale/config.yaml /etc/headscale/config.yaml
 
 # Configure Headscale for HTTPS with Let's Encrypt
-cat >> /etc/headscale/config.yaml << EOF
-server_url: https://bs.coseismic.org
-listen_addr: 0.0.0.0:443
-acme_email: robert.current@gmail.com
-acme_url: https://acme-v02.api.letsencrypt.org/directory
-tls_letsencrypt_hostname: bs.coseismic.org
-tls_letsencrypt_cache_dir: /var/lib/headscale/cache
-EOF
+sed -i "" "s|server_url: http://127.0.0.1:8080|server_url: https://bs.coseismic.org|" /etc/headscale/config.yaml
+sed -i "" "s|listen_addr: 127.0.0.1:8080|listen_addr: 0.0.0.0:443|" /etc/headscale/config.yaml
+sed -i "" "s|acme_email: \"\"|acme_email: robert.current@gmail.com|" /etc/headscale/config.yaml
+sed -i "" "s|tls_letsencrypt_hostname: \"\"|tls_letsencrypt_hostname: bs.coseismic.org|" /etc/headscale/config.yaml
 
 # Create headscale user and group
 pw groupadd headscale 2>/dev/null || true
