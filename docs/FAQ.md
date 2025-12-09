@@ -47,7 +47,9 @@ See Configuration.md for complete reference.
 BAUXBSD includes AI tools for development help:
 - `dev-assist "your question"`: Get BAUXBSD/FreeBSD development advice from xAI's Grok.
 - `xai-chat "message"`: General chat with Grok.
-- Set `GROK_API_KEY` in your shell (e.g., `~/.bashrc`).
+- `dev-gemini "your question"`: Get BAUXBSD/FreeBSD development advice from Google's Gemini (requires paid API quota).
+- `gemini-chat "message"`: General chat with Gemini (requires paid API quota).
+- Set `GROK_API_KEY` and `GEMINI_API_KEY` in your shell (e.g., `~/.bashrc`).
 - For local AI: `baux-bot` provides Ollama-based assistance with repo context.
 
 ## Troubleshooting
