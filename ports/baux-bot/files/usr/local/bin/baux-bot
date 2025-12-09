@@ -9,6 +9,10 @@ set -euo pipefail
 if [[ -f ~/.bashrc ]]; then
     source ~/.bashrc
 fi
+# Source mesh keys
+if [[ -f ~/mnt/drop-baux/keys/api_keys.sh ]]; then
+    source ~/mnt/drop-baux/keys/api_keys.sh
+fi
 
 # Force CPU mode for compatibility (disable Vulkan GPU)
 export OLLAMA_GPU_LAYERS=0
