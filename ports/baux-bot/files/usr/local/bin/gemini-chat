@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 # gemini-chat.sh - Google Gemini API chat client for BAUXBSD
 # Dec 09 2025
 

@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 # dev-assist.sh - Development assistant using XAI API for BAUXBSD
 # Dec 07 2025
 

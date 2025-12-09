@@ -53,8 +53,21 @@ HELP
 fi
 
 # ──────────────────────────────────────────────────────────────
-# 3. Normal local entry — start tmux with our config
+# 3. Console session mapping via tty switching
 # ──────────────────────────────────────────────────────────────
+
+# Handle tty-based session mapping
+if [[ $# -gt 0 && $1 =~ ^[0-9]+$ ]]; then
+    # User specified tty number - switch to it
+    chvt "$1" 2>/dev/null || echo "Warning: Could not switch to tty$1 (may require root)"
+    SESSION="$SESSION-$1"
+else
+    # Auto-detect current tty for session naming
+    CURRENT_TTY=$(tty 2>/dev/null | sed 's/.*tty//' | tr -d '\n' || echo "")
+    if [[ $CURRENT_TTY =~ ^[0-9]+$ ]]; then
+        SESSION="$SESSION-$CURRENT_TTY"
+    fi
+fi
 
 # Verify config exists before starting tmux
 if [ ! -f "$TMUX_CONF" ]; then

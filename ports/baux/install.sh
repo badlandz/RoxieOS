@@ -40,6 +40,11 @@ if [ ! -f "/usr/local/share/tmux/baux.conf" ]; then
     exit 1
 fi
 
+# Install tmux plugin manager
+echo "Installing tmux plugin manager..."
+doas mkdir -p /usr/local/share/tmux/plugins
+doas git clone https://github.com/tmux-plugins/tpm /usr/local/share/tmux/plugins/tpm 2>/dev/null || echo "TPM already cloned or git failed"
+
 # Create BAUX directories
 echo "Creating BAUX directories..."
 doas mkdir -p /usr/local/share/baux/tmux
@@ -48,3 +53,4 @@ doas mkdir -p /usr/local/etc/baux
 echo "baux installed successfully!"
 echo "Run 'baux' to start your BAUX session"
 echo "Use Ctrl+Space as tmux prefix in BAUX sessions"
+echo "To install tmux plugins (resurrect/continuum), run tmux and press Ctrl+Space then I"

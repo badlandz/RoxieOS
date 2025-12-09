@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 # xai-chat.sh - XAI API chat client for BAUXBSD
 # Dec 07 2025
 

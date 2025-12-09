@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 # grok-workshop.sh - Interactive Grok workshop for BAUXBSD development
 # Allows reading files and chatting with Grok for assistance
 # Dec 09 2025

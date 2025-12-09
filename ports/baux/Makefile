@@ -28,10 +28,13 @@ NO_BUILD=	yes
 do-install:
 	${MKDIR} ${STAGEDIR}${PREFIX}/bin
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/baux
+	${MKDIR} ${STAGEDIR}${PREFIX}/share/baux/scripts
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/tmux
 	${INSTALL_SCRIPT} ${FILESDIR}${PREFIX}/bin/baux \
 		${STAGEDIR}${PREFIX}/bin/baux
 	${INSTALL_DATA} ${FILESDIR}${PREFIX}/share/tmux/baux.conf \
 		${STAGEDIR}${PREFIX}/share/tmux/
+	${INSTALL_SCRIPT} ${FILESDIR}${PREFIX}/share/baux/scripts/baux-hosts \
+		${STAGEDIR}${PREFIX}/share/baux/scripts/baux-hosts
 
 .include <bsd.port.mk>

@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 # dev-gemini.sh - Development assistant using Google Gemini API for BAUXBSD
 # Dec 09 2025
 

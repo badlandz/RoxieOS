@@ -1,0 +1,29 @@
+#!/usr/local/bin/bash
+# baux-hosts — LAN discovery for BAUX-MESH peers (pre-Headscale)
+
+set -euo pipefail
+
+echo "Discovering BAUX peers on LAN..."
+
+# Method 1: Avahi/Bonjour discovery (if available)
+if command -v avahi-browse >/dev/null 2>&1; then
+    echo "Using Avahi for service discovery..."
+    avahi-browse -t _baux._tcp 2>/dev/null | grep -E "^=" | awk '{print $8 " (" $7 ")"}' || echo "No Avahi services found"
+else
+    echo "Avahi not available, using fallback methods..."
+fi
+
+# Method 2: ARP table scan
+echo -e "\nARP neighbors:"
+arp -a | grep -v incomplete | awk '{print $2 " " $4}' | sed 's/[()]//g' || echo "No ARP entries"
+
+# Method 3: Ping sweep on common subnet (adjust as needed)
+SUBNET="192.168.33"
+echo -e "\nPinging subnet $SUBNET.0/24 for SSH responders..."
+for i in {1..254}; do
+    (ping -c 1 -t 1 $SUBNET.$i >/dev/null 2>&1 && echo "$SUBNET.$i responds") &
+done
+wait
+
+echo -e "\nTo add a peer: baux vpn add <ip> <hostname>"
+echo "For mesh routing: use 'mesh <query>' in baux-bot"

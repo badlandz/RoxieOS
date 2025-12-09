@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# baux-push — Push current session to remote BAUX-MESH node
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: baux push <remote-host> [session-name]"
+    echo "Example: baux push baux-133 my-session"
+    exit 1
+fi
+
+REMOTE="$1"
+SESSION="${2:-baux-$(hostname)}"
+
+echo "Pushing session '$SESSION' to $REMOTE..."
+
+# Save current session first
+tmux run-shell ~/.tmux/plugins/tmux-resurrect/scripts/save.sh || echo "Save failed."
+
+# Use rsync to sync tmux resurrect data
+rsync -avz "/var/tmp/baux-resurrect/$(hostname -s)/" "$REMOTE:/var/tmp/baux-resurrect/$(hostname -s)/" || true
+
+echo "Session pushed. Remote can now 'baux pull $(hostname)' to resurrect."</content>
+<parameter name="filePath">ports/baux/files/usr/local/share/baux/scripts/baux-pull

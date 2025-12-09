@@ -392,11 +392,21 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             continue
             ;;
         mesh*)
-            # Route query to .101 baux-bot
+            # Route query to BAUX-MESH (.101)
             query="${input#mesh }"
             echo "Routing to BAUX-MESH (.101)..."
-            result=$(ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null badlandz@192.168.33.101 "source ~/mnt/drop-baux/keys/api_keys.sh && echo '$query' | baux-bot 2>/dev/null" 2>/dev/null)
-            echo "$result"
+            # Ensure drop-baux is mounted and synced
+            if [[ ! -d "$HOME/mnt/drop-baux" ]]; then
+                drop-baux mount 2>/dev/null || echo "drop-baux mount failed"
+            fi
+            drop-baux sync 2>/dev/null || echo "drop-baux sync failed"
+            # Attempt SSH with timeout and better error handling
+            result=$(timeout 30 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 badlandz@192.168.33.101 "source ~/mnt/drop-baux/keys/api_keys.sh && echo '$query' | baux-bot 2>/dev/null" 2>/dev/null)
+            if [[ -z "$result" ]]; then
+                echo "Mesh routing failed - check SSH keys, network, and .101 availability"
+            else
+                echo "$result"
+            fi
             continue
             ;;
         search*)

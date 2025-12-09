@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 # baux-bot-setup.sh - Quick setup for BAUXBSD AI assistant
 # Run this after installing the baux-bot port
 

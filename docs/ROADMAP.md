@@ -149,6 +149,27 @@ weed filer -dir=/tmp/baux-filer -master=localhost:9333 -port=8888 &
 # Security configurations
 echo 'sshd_enable="YES"' >> /etc/rc.conf
 echo 'clear_tmp_enable="YES"' >> /etc/rc.conf
+echo 'pf_enable="YES"' >> /etc/rc.conf
+echo 'blacklistd_enable="YES"' >> /etc/rc.conf
+
+# Firewall rules (/etc/pf.conf)
+# Allow SSH, Tailscale, essential services
+# Block all other incoming traffic
+
+# SSH hardening
+# Use key-based authentication only
+# Disable root login over SSH
+# Enable fail2ban-like protection with blacklistd
+
+# API key security
+# Store keys in encrypted drop-baux volumes
+# Rotate keys periodically
+# Use environment variables, not files
+
+# Mesh security
+# Encrypt all BAUX-MESH communications
+# Validate peer certificates
+# Implement access control lists
 ```
 
 #### 5.2 ISO Creation
@@ -272,9 +293,14 @@ stty -F /dev/ttyU0 115200 raw
 ### Performance Targets
 - **Boot time:** <5 seconds to baux prompt
 - **Memory usage:** <200MB idle (core packages)
+- **CPU usage:** <5% idle across all cores
+- **Disk I/O:** <10MB/s average for session operations
+- **Network latency:** <10ms for local mesh queries, <100ms for remote
 - **Session restore:** <3 seconds from USB
-- **Battery life:** Minimal impact on laptops
-- **Accessibility:** Readable fonts for impaired vision
+- **AI response time:** <2 seconds for local Ollama, <5 seconds for Grok
+- **Battery life:** Minimal impact on laptops (<10% additional drain)
+- **Accessibility:** Readable fonts for impaired vision (12pt minimum)
+- **Mesh sync:** <30 seconds for full RAG synchronization
 
 ## Quality Assurance
 

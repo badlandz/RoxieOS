@@ -1,8 +1,8 @@
-# RoxieOS - GruvBAUX Prototype
+# RoxieOS - BAUXBSD Workstation OS
 
-**Clone your workstation from USB in 5 seconds. Immortal sessions, zero friction.**
+**Immortal sessions across devices. AI-powered development. Zero friction cloning.**
 
-*Codename: GruvBAUX - Unified Gruvbox theming across all layers*
+*Codename: BAUX-MESH - Distributed session resurrection via Tailscale*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![FreeBSD](https://img.shields.io/badge/FreeBSD-15.0+-red.svg)](https://www.freebsd.org/)
@@ -11,7 +11,7 @@
 
 ## Overview
 
-RoxieOS is a minimal FreeBSD-based operating system designed for instant workstation cloning and persistent development environments. Inspired by NomadBSD's live USB persistence approach, RoxieOS uses unionfs-fuse for read-only base systems with writable overlays. Boot from USB, clone your exact setup in seconds, and continue working seamlessly across any hardware.
+RoxieOS is a FreeBSD-based operating system for persistent, distributed development environments. Boot from USB, resurrect your exact tmux/neovim sessions on any hardware, and access AI assistance across a BAUX-MESH network. Sessions persist across reboots, crashes, and device switches via Tailscale integration.
 
 **GruvBAUX Prototype**: This pre-v0.1 release features unified Gruvbox theming across console, dwm/bwm, neovim, tmux, and all BAUX components. Sessions become distributed network resources via Headscale mesh networking, accessible from any enrolled device.
 
