@@ -366,9 +366,9 @@ test_session_resurrection() {
 
 #### 3.1 Baux-Scale Server Deployment (Cloud)
 **Purpose:** Minimal FreeBSD VM for headscale control plane and session registry
-- **Hardware**: 1 vCPU, 1GB RAM, 50-100GB SSD, 1TB bandwidth ($5-10/month Vultr)
+- **Hardware**: 2 vCPU, 4GB RAM, 80GB SSD, 3TB bandwidth ($20/month Vultr)
 - **Software**: FreeBSD 15 thin jail with headscale, drop-baux for session storage
-- **Domain**: hs.coseismic.org (public IP for global access)
+- **Domain**: bs.<your-domain> (public IP for global access)
 - **Features**:
   - Headscale control server with ACL policies
   - Session registry (SQLite DB for location tracking)
