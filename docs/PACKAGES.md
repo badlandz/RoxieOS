@@ -4,6 +4,8 @@
 ## Core Philosophy
 Every package starts with 'b' for muscle memory and minimal typing. Maximum 4 characters per command.
 
+BAUX (BAckup/restore Universal eXperience) provides the framework for RoxieOS's persistent pane ecosystem, enabling session resurrection across devices via BAUX-MESH.
+
 ## Package Hierarchy
 
 ### Core Packages (v0.1 Essential)

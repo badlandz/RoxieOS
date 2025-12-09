@@ -1,7 +1,9 @@
 # BAUXBSD Technical Roadmap
 **BAUXBSD Workstation Cloning Roadmap**
 
-## Cloning-Centric Development Strategy
+## RoxieOS Development Strategy
+
+RoxieOS enables instant workstation cloning via BAUX-MESH: persistent tmux/neovim sessions resurrect on any hardware (USB, VM, container, bare metal) via Tailscale networking.
 
 ### Phase 1: Core Cloning Foundation (Week 1-2)
 **Goal:** Bootable USB with instant workstation restoration
@@ -193,7 +195,7 @@ stty -F /dev/ttyU0 115200 raw
 - **Cross-Compilation**: Seamless x86_64 ↔ RISC-V development
 
 ### Phase 7: AI Integration & Automation (Month 5-6)
-**Goal:** Complete AI-assisted development environment
+**Goal:** Complete AI-assisted development environment with BAUX-MESH distribution
 
 #### 7.1 AI Integration (Completed ✅)
 - **Multi-Model Support**: Ollama (local), xAI Grok (cloud), Google Gemini (cloud)
@@ -201,6 +203,12 @@ stty -F /dev/ttyU0 115200 raw
 - **Seamless Switching**: Dynamic backend selection (Ollama/Grok) in baux-bot
 - **TMUX/Neovim Integration**: Alt+b (tmux) and <leader>b (neovim) keybindings
 - **BAUX-MESH AI**: Distributed AI resources across RoxieOS installs via Tailscale
+
+#### BAUX-MESH Architecture
+- **Primary Install**: Tailscale-enabled system with public IP, holds session keys/routes.
+- **Secondary Installs**: 1-99 devices (containers/VMs/USB/bare metal) connect via Tailscale for session access.
+- **Session Resurrection**: Immortal tmux panes persist across devices/crashes; 5-second boot to productivity.
+- **Distributed AI**: baux-bot routes queries to optimal mesh node based on latency/model availability.
 
 #### 7.2 Advanced AI Features (Future Implementation)
 - **AI Shepherding**: Local AI suggests best model for queries (Ollama vs Grok vs Gemini)

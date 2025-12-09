@@ -4,15 +4,17 @@
 ## Core Philosophy
 Boot USB → instant productivity → persistent sessions → zero friction
 
-This is not a traditional distribution. This is a loaded USB stick that contains your entire digital life, ready to resurrect on any hardware in seconds.
+RoxieOS is not a traditional OS distribution. It's a portable, session-persistent environment that runs on any hardware (USB, VM, container, bare metal). Your digital workspace resurrects instantly anywhere, with full tmux/neovim sessions intact.
 
 ### The Three Eternal Layers
+
+BAUX (BAckup/restore Universal eXperience) is RoxieOS's core framework for session persistence and cross-device continuity.
 
 | Layer | Name | Purpose | Size | Target Hardware |
 |--------|------|-----------|-------|-----------------|
 | 1 | bbase | System foundation + keymap | <50MB | Any machine |
-| 2 | baux | Shell/session manager | +80MB | Every machine you touch |
-| 3 | bwm | Window manager (dwm fork) | +25MB | Development machines |
+| 2 | baux | Shell/session manager with immortal tmux panes | +80MB | Every machine you touch |
+| 3 | bwm | Window manager (dwm fork) with session integration | +25MB | Development machines |
 
 ## Package Architecture
 
@@ -104,8 +106,19 @@ See [NomadBSD Handbook](https://nomadbsd.org/handbook/handbook.html) for detaile
 keymap="baux"
 ```
 
-### Session Resurrection
-Every pane, every session, every scrollback saved to SeaweedFS buffers:
+### RoxieOS Install Types
+RoxieOS requires at least 2 installs for full functionality:
+
+1. **Primary Install (Tailscale Holder)**: Public IP system running Tailscale, holds keys/routes for session access.
+2. **Secondary Installs (1-99)**: Any hardware - containers, VMs, USB drives, bare metal - connect via Tailscale to grab persistent sessions.
+
+### BAUX-MESH: Persistent Pane Ecosystem
+BAUX-MESH enables seamless session resurrection across devices:
+- Immortal tmux panes persist across reboots/crashes.
+- Grab any session from any RoxieOS install via Tailscale.
+- AI resources (baux-bot) distributed across mesh for optimal performance.
+- 5-second boot to full productivity anywhere.
+
 ```bash
 baux revive --all  # Restore exact state on any machine
 ```
