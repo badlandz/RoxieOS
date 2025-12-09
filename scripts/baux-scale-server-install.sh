@@ -32,6 +32,10 @@ tls_letsencrypt_hostname: bs.coseismic.org
 tls_letsencrypt_cache_dir: /var/lib/headscale/cache
 EOF
 
+# Create headscale user and group
+pw groupadd headscale 2>/dev/null || true
+pw useradd headscale -g headscale -d /var/lib/headscale -s /usr/sbin/nologin 2>/dev/null || true
+
 # Create cache directory
 mkdir -p /var/lib/headscale/cache
 chown headscale:headscale /var/lib/headscale/cache
