@@ -45,12 +45,13 @@ See Configuration.md for complete reference.
 
 ### How do I get AI assistance?
 BAUXBSD provides multi-model AI assistance for development:
-- **Local AI (Ollama)**: `baux-bot` - Context-aware chat with real-time repo monitoring
+- **Local AI (Ollama)**: `baux-bot` - Context-aware chat with real-time repo monitoring, session memory, and interactive teaching
 - **Cloud AI (xAI Grok)**: `dev-assist`, `xai-chat`, `grok-workshop` - Development and general chat
 - **Cloud AI (Google Gemini)**: `dev-gemini`, `gemini-chat` - Alternative cloud assistance (paid quota required)
 - **Keybindings**: Alt+b (tmux) launches baux-bot; <leader>b (neovim) for AI help
 - **Setup**: Set `GROK_API_KEY`, `GEMINI_API_KEY` in `~/.bashrc`; Ollama auto-configured
 - **Model Switching**: `baux-bot` supports dynamic Ollama ↔ Grok switching
+- **Advanced Features**: `search TERM` for RAG queries, `teach TOPIC` for interactive learning, `mesh QUERY` for BAUX-MESH routing
 
 ## Troubleshooting
 
