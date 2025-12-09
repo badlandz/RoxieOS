@@ -101,7 +101,7 @@ add_peer() {
     local priority="${5:-3}"
     
     # Remove existing
-    sed -i "/^$name /d" "$PEERS_FILE"
+    sed "/^$name /d" "$PEERS_FILE" > "$PEERS_FILE.tmp" && mv "$PEERS_FILE.tmp" "$PEERS_FILE"
     
     # Add new
     echo "$name $ip $user $port $priority" >> "$PEERS_FILE"
