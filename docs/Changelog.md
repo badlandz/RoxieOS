@@ -4,9 +4,9 @@
 
 ### Current Status Update (December 9, 2025)
 - **System Testing Results**: Comprehensive testing revealed partial BAUX functionality. baux-bot operational on <your-lan-ip-2> with Grok backend and active RAG. Local baux-bot (<your-lan-ip-1>) has Ollama autotune working but limited interactivity. Mesh infrastructure not active (no Headscale, no port 9999 listening). Session switching not functional due to missing mesh connectivity.
-- **baux-scale Server Plan**: Selected Vultr Cloud Compute Regular Performance - 2 vCPU, 4GB RAM, 80GB storage, 3TB bandwidth for $20/month. This provides optimal cost-to-capability ratio for Headscale control plane, session registry, and potential PostgreSQL knowledge base.
-- **Deployment Status**: VM provisioned at <your-ip>, DNS configured as bs.<your-domain>, user accounts and SSH access established, source code synchronized.
-- **Next Steps**: Install Headscale, configure mesh networking, establish WireGuard tunnels, implement session switching API, and complete distributed session management.
+- **baux-scale Server Deployment**: ✅ VM provisioned at <your-ip> (Vultr: 2 vCPU, 4GB RAM, 80GB storage, 3TB bandwidth, $20/mo). ✅ DNS configured as bs.<your-domain>. ✅ User accounts and SSH access established. ✅ Source code synchronized across all 4 systems.
+- **Infrastructure Status**: All systems have FreeBSD 15, Ollama, and baux-bot. SSH key coordination complete. Ready for mesh implementation.
+- **Next Steps**: Install Headscale on baux-scale server, configure control plane, establish WireGuard mesh, implement session registry, enable cross-device switching.
 
 ### Major Changes
 - **FreeBSD Migration**: Complete restructure from Debian to FreeBSD ports/src model
