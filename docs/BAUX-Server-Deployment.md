@@ -15,7 +15,7 @@ BAUX Server provides the central hub for distributed session management, running
 - **Storage:** 50-100GB SSD (25GB base + 25-75GB drop-baux session data)
 - **Bandwidth:** 1TB/month (coordination + drop-baux syncs)
 - **OS:** FreeBSD 15.0-RELEASE (thin jail for isolation)
-- **Network:** Static public IP with domain (hs.coseismic.org)
+- **Network:** Static public IP with domain (bs.<your-domain>)
 - **Cost:** $5-10/month (Vultr 1GB plan)
 
 ### Recommended Hosting
@@ -81,7 +81,7 @@ vi /usr/local/etc/headscale/config.yaml
 
 **Key Configuration Settings:**
 ```yaml
-server_url: https://hs.coseismic.org
+server_url: https://bs.<your-domain>
 listen_addr: 0.0.0.0:8080
 metrics_listen_addr: 127.0.0.1:9090
 grpc_listen_addr: 127.0.0.1:50443
@@ -105,10 +105,10 @@ log_level: info
 pkg install acme.sh
 
 # Generate certificate
-acme.sh --issue -d hs.coseismic.org --webroot /usr/local/www/headscale/
+acme.sh --issue -d bs.<your-domain> --webroot /usr/local/www/headscale/
 
 # Install certificate
-acme.sh --install-cert -d hs.coseismic.org \
+acme.sh --install-cert -d bs.<your-domain> \
   --key-file /usr/local/etc/headscale/key.pem \
   --fullchain-file /usr/local/etc/headscale/cert.pem
 ```
@@ -129,9 +129,9 @@ headscale nodes list
 ## Domain & DNS Setup
 
 ### Domain Configuration
-1. **Purchase Domain:** coseismic.org (or your preferred domain)
+1. **Purchase Domain:** <your-domain> (your preferred domain)
 2. **DNS Records:**
-   - A record: hs.coseismic.org → [server IP]
+   - A record: bs.<your-domain> → <your-ip>
    - Optional: CAA records for Let's Encrypt
 
 ### Reverse Proxy (Optional)
@@ -173,7 +173,7 @@ vi /usr/local/etc/baux/server.conf
 **Server Configuration:**
 ```bash
 # Headscale integration
-HEADSCALE_URL=https://hs.coseismic.org
+HEADSCALE_URL=https://bs.<your-domain>
 HEADSCALE_API_KEY=your-api-key
 
 # Session registry (location tracking only)
@@ -261,7 +261,7 @@ headscale preauthkeys create --reusable --expiration 24h --tags tag:baux-client
 pkg install headscale
 
 # Register with server
-headscale register --server https://hs.coseismic.org --key <preauth-key>
+headscale register --server https://bs.<your-domain> --key <preauth-key>
 
 # Accept on server
 headscale nodes approve <node-name>
@@ -314,7 +314,7 @@ service headscale status
 tail -f /var/log/headscale.log
 
 # Test connectivity
-curl https://hs.coseismic.org/health
+curl https://bs.<your-domain>/health
 ```
 
 ### Network Problems
