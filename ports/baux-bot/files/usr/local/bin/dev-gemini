@@ -23,7 +23,7 @@ PROMPT="$*"
 SYSTEM_PROMPT="You are a development assistant for BAUXBSD, a FreeBSD-based operating system. Provide helpful, practical advice for coding, debugging, and system administration tasks. Be concise and actionable."
 
 # API call
-RESPONSE=$(curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$API_KEY" \
+RESPONSE=$(curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$API_KEY" \
     -H "Content-Type: application/json" \
     -d "{
         \"contents\": [
