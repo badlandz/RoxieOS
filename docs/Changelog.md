@@ -168,11 +168,13 @@
 
 ## Future Releases
 
-### v0.2 - Extended Persistence
+### v0.2 - Extended Persistence & AI
 - Full SeaweedFS implementation in bdrop
 - Cross-machine session synchronization
 - PostgreSQL knowledge base integration
 - Performance optimizations
+- baux-bot v6.4 with Ollama/Grok/Gemini AI
+- Debian porting with .deb packages
 
 ### v1.0 - Complete Vision
 - AI-powered development environment
