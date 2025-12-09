@@ -2,6 +2,11 @@
 
 ## GruvBAUX Prototype (Pre-v0.1) - December 2025
 
+### Current Status Update (December 9, 2025)
+- **System Testing Results**: Comprehensive testing revealed partial BAUX functionality. baux-bot operational on 192.168.33.101 with Grok backend and active RAG. Local baux-bot (192.168.33.133) has Ollama autotune working but limited interactivity. Mesh infrastructure not active (no Headscale, no port 9999 listening). Session switching not functional due to missing mesh connectivity.
+- **baux-scale Server Plan**: Selected Vultr Cloud Compute Regular Performance - 2 vCPU, 4GB RAM, 80GB storage, 3TB bandwidth for $20/month. This provides optimal cost-to-capability ratio for Headscale control plane, session registry, and potential PostgreSQL knowledge base.
+- **Next Steps**: Deploy baux-scale server, establish mesh connectivity, implement session switching API, and complete distributed session management.
+
 ### Major Changes
 - **FreeBSD Migration**: Complete restructure from Debian to FreeBSD ports/src model
 - **Directory Reorganization**: New layout with src/, ports/, patches/, scripts/, docs/, archive/
