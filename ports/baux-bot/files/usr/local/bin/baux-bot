@@ -8,6 +8,20 @@ set -euo pipefail
 # Force CPU mode for compatibility (disable Vulkan GPU)
 export OLLAMA_GPU_LAYERS=0
 
+# Grok API Configuration
+GROK_API_KEY="${GROK_API_KEY:-}"
+CONFIG_DIR="$HOME/.baux-bot"
+CONFIG_FILE="$CONFIG_DIR/config"
+mkdir -p "$CONFIG_DIR"
+
+# Load config if exists
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
+
+# Default backend (ollama or grok)
+CURRENT_BACKEND="${CURRENT_BACKEND:-ollama}"
+
 # Auto-detect RoxieOS repo location
 detect_roxie_root() {
     # Check common locations
@@ -38,6 +52,17 @@ log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_DIR/current.log"
 # Model selection optimized for FreeBSD workstation (prioritize efficiency)
 MODEL_PREF=(llama3.2:3b deepseek-coder:6.7b qwen2.5:7b gemma2:2b phi3:3.8b smollm2:135m)
 select_model() {
+    if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+        if [[ -z "$GROK_API_KEY" ]]; then
+            log "Grok API key not set. Falling back to Ollama."
+            CURRENT_BACKEND="ollama"
+        else
+            log "Using Grok backend."
+            echo "grok"
+            return
+        fi
+    fi
+    # Ollama model selection
     for m in "${MODEL_PREF[@]}"; do
         if ollama list 2>/dev/null | grep -q "^${m%%:*}"; then
             echo "$m"
@@ -50,7 +75,7 @@ select_model() {
 }
 MODEL=$(select_model)
 
-log "BAUX BOT v6.3 online — $MODEL — monitoring $SRC_ROOT"
+log "BAUX BOT v6.4 online — $MODEL — monitoring $SRC_ROOT"
 
 build_rag() {
     local rag_file="$RAG_DIR/current.txt"
@@ -99,17 +124,52 @@ EOF
     echo
 }
 
+ask_grok() {
+    local prompt="$1"
+    printf "BAUX BOT (Grok) thinking... "
+    local system_prompt="You are BAUX BOT — sarcastic god of RoxieOS development on FreeBSD. You help debug BAUXBSD installations, fix configuration issues, and accelerate development. Live state of RoxieOS repo at $SRC_ROOT: $(cat "$RAG_DIR/current.txt") User is working on a FreeBSD workstation testing BAUXBSD components. Provide practical, actionable advice for FreeBSD/BAUXBSD development."
+    local escaped_prompt
+    escaped_prompt=$(jq -Rs . <<< "$system_prompt
+
+User: $prompt
+Answer directly and practically.")
+
+    local response
+    response=$(curl -s -X POST "https://api.x.ai/v1/chat/completions" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $GROK_API_KEY" \
+        -d "{
+            \"model\": \"grok-3\",
+            \"messages\": [
+                {
+                    \"role\": \"user\",
+                    \"content\": $escaped_prompt
+                }
+            ],
+            \"max_tokens\": 1024,
+            \"temperature\": 0.7
+        }")
+
+    if echo "$response" | jq -e '.choices[0].message.content' >/dev/null 2>&1; then
+        echo "$response" | jq -r '.choices[0].message.content'
+    else
+        echo "(grok hiccup - check API key or network)"
+    fi
+    echo
+}
+
 # Startup
 build_rag
 log "RAG ready — $(wc -l <"$RAG_DIR/current.txt") lines"
 
-echo -e "\nBAUX BOT v6.3 alive — model: $MODEL — $SRC_ROOT is law"
+echo -e "\nBAUX BOT v6.4 alive — backend: $CURRENT_BACKEND — model: $MODEL — $SRC_ROOT is law"
 echo "Commands:"
 echo "  'exit' to quit"
 echo "  'status' for repo status"
 echo "  'read FILE' to force file into RAG"
 echo "  'develop TASK' for development advice"
 echo "  'code REQUEST' for code generation/review"
+echo "  'switch ollama' or 'switch grok' to change backend"
 echo "Type anything. Only the word 'exit' kills me.\n"
 
 while true; do
@@ -117,8 +177,12 @@ while true; do
     find "$SRC_ROOT" -newer "$RAG_DIR/current.txt" -print -quit >/dev/null 2>&1 && {
         log "$SRC_ROOT changed — rebuilding RAG"
         build_rag
-        summary=$(ask_ollama "Summarize what just changed in the RoxieOS repo")
-        echo -e "\nBAUX BOT (auto): $summary\n"
+        if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+            summary=$(ask_grok "Summarize what just changed in the RoxieOS repo")
+        else
+            summary=$(ask_ollama "Summarize what just changed in the RoxieOS repo")
+        fi
+        echo -e "\nBAUX BOT (auto): $summary"
     }
 
     printf "you > "
@@ -149,8 +213,12 @@ $(cat "$RAG_DIR/current.txt")
 
 Focus on FreeBSD ports, shell scripting, C development, and BAUXBSD architecture.
 Give specific code examples and commands when possible."
-            response=$(ask_ollama "$prompt")
-            echo -e "BAUX DEV: $response\n"
+            if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+                response=$(ask_grok "$prompt")
+            else
+                response=$(ask_ollama "$prompt")
+            fi
+            echo -e "BAUX DEV: $response"
             continue
             ;;
         code*)
@@ -162,8 +230,12 @@ Use this codebase context:
 $(cat "$RAG_DIR/current.txt")
 
 Provide complete, working code with proper error handling. Follow BAUXBSD conventions and FreeBSD best practices."
-            response=$(ask_ollama "$prompt")
-            echo -e "BAUX CODE: $response\n"
+            if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+                response=$(ask_grok "$prompt")
+            else
+                response=$(ask_ollama "$prompt")
+            fi
+            echo -e "BAUX CODE: $response"
             continue
             ;;
         read*)
@@ -179,8 +251,25 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             fi
             continue
             ;;
+        switch*)
+            backend="${input#switch }"
+            if [[ "$backend" == "ollama" || "$backend" == "grok" ]]; then
+                CURRENT_BACKEND="$backend"
+                echo "CURRENT_BACKEND=\"$CURRENT_BACKEND\"" > "$CONFIG_FILE"
+                MODEL=$(select_model)
+                echo "Switched to $CURRENT_BACKEND backend — model: $MODEL"
+            else
+                echo "Invalid backend. Use 'switch ollama' or 'switch grok'."
+            fi
+            continue
+            ;;
     esac
 
-    response=$(ask_ollama "$input")
-    echo -e "BAUX BOT: $response\n"
+    if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+        response=$(ask_grok "$input")
+        echo -e "BAUX BOT: $response"
+    else
+        response=$(ask_ollama "$input")
+        echo -e "BAUX BOT: $response"
+    fi
 done
