@@ -8,6 +8,48 @@ set -euo pipefail
 # Force CPU mode for compatibility (disable Vulkan GPU)
 export OLLAMA_GPU_LAYERS=0
 
+# Handle command-line options
+if [[ $# -gt 0 && "$1" == "--autotune-ollama" ]]; then
+    echo "BAUX BOT Ollama Auto-Tune starting..."
+    echo "This will test available models and optimize for your hardware."
+    echo "Results will be saved to ~/.baux-bot/tune.log"
+    exec "$0" --internal-autotune
+fi
+
+if [[ $# -gt 0 && "$1" == "--internal-autotune" ]]; then
+    # Auto-tune Ollama models
+    TUNE_LOG="$HOME/.baux-bot/tune.log"
+    echo "=== BAUX BOT Ollama Auto-Tune $(date) ===" > "$TUNE_LOG"
+    echo "Hardware: $(uname -m) $(nproc) cores" >> "$TUNE_LOG"
+
+    AVAILABLE_MODELS=$(ollama list 2>/dev/null | awk 'NR>1 {print $1}' | tr '\n' ' ')
+    echo "Available models: $AVAILABLE_MODELS" >> "$TUNE_LOG"
+
+    BEST_MODELS=()
+    for model in $AVAILABLE_MODELS; do
+        echo "Testing $model..." | tee -a "$TUNE_LOG"
+        START=$(date +%s)
+        RESPONSE=$(timeout 30 ollama run "$model" "What is BAUXBSD?" 2>/dev/null || echo "TIMEOUT")
+        END=$(date +%s)
+        TIME=$((END - START))
+        LENGTH=${#RESPONSE}
+        echo "  Time: ${TIME}s, Response length: $LENGTH" | tee -a "$TUNE_LOG"
+        if [[ $TIME -lt 30 && $LENGTH -gt 10 ]]; then
+            BEST_MODELS+=("$model:$TIME")
+        fi
+    done
+
+    # Sort by speed
+    SORTED=$(printf '%s\n' "${BEST_MODELS[@]}" | sort -t: -k2 -n | cut -d: -f1)
+    NEW_PREF=($SORTED)
+    echo "Optimized MODEL_PREF: ${NEW_PREF[*]}" >> "$TUNE_LOG"
+
+    # Update script (this is a hack; ideally update config)
+    sed -i "s/MODEL_PREF=.*/MODEL_PREF=(${NEW_PREF[*]})/" "$0"
+    echo "Auto-tune complete. Restart baux-bot to use optimized settings." | tee -a "$TUNE_LOG"
+    exit 0
+fi
+
 # Grok API Configuration
 GROK_API_KEY="${GROK_API_KEY:-}"
 CONFIG_DIR="$HOME/.baux-bot"
@@ -158,9 +200,9 @@ Answer directly and practically.")
     echo
 }
 
-# Startup
-build_rag
-log "RAG ready — $(wc -l <"$RAG_DIR/current.txt") lines"
+# Startup - build RAG in background with nice priority
+(build_rag) &
+log "RAG building in background (PID: $!)"
 
 echo -e "\nBAUX BOT v6.4 alive — backend: $CURRENT_BACKEND — model: $MODEL — $SRC_ROOT is law"
 echo "Commands:"

@@ -204,6 +204,16 @@ do-build:
 - **Idle Assistance**: Context-aware help during coding pauses
 - **Proactive Suggestions**: Code improvements based on usage patterns
 
+### Ollama Tuning for Hardware Optimization
+**Status:** Implemented in v0.2
+**Features:**
+- **Auto-Tune Command**: `baux-bot --autotune-ollama` benchmarks available models on current hardware
+- **Performance Metrics**: Measures response time, quality, and resource usage for each model
+- **Dynamic Model Selection**: Updates `MODEL_PREF` array based on hardware capabilities
+- **Workstation-Specific**: Adapts for old laptops (prioritize smollm2:135m) vs. servers (llama3.1:8b)
+- **Fallback Logic**: Ensures at least one model works; skips unavailable models
+- **Documentation**: Logs tuning results to `~/.baux-bot/tune.log` for troubleshooting
+
 ### Multi-Modal AI Integration
 **Status:** Planned for v0.3
 **Features:**

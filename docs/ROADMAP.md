@@ -222,6 +222,7 @@ stty -F /dev/ttyU0 115200 raw
 - **FreeBSD Compatibility**: CPU-only Ollama mode; Vulkan GPU support monitored for future
 - **Session Persistence**: RAG rebuilds on changes; SeaweedFS integration planned for hot buffering
 - **Keymap Conflicts**: Alt+b tested; BAUX bindings verified consistent across layers
+- **Ollama Tuning**: `baux-bot --autotune-ollama` benchmarks models for optimal speed/quality per hardware
 
 ## Package Dependencies
 
