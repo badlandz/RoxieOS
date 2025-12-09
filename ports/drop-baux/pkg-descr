@@ -1,0 +1,10 @@
+Drop-BAUX is a simple distributed storage system for RoxieOS.
+It provides peer-to-peer file synchronization using rsync and sshfs,
+designed to work with BAUX sessions for persistent data across devices.
+
+Features:
+- Distributed file storage with FUSE integration
+- Peer management and synchronization
+- Integration with BAUX and bvi for seamless access
+
+WWW: https://github.com/badlandz/RoxieOS
