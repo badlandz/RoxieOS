@@ -29,13 +29,18 @@ if [[ $# -gt 0 && "$1" == "--internal-autotune" ]]; then
     for model in $AVAILABLE_MODELS; do
         echo "Testing $model..." | tee -a "$TUNE_LOG"
         START=$(date +%s)
-        RESPONSE=$(timeout 30 ollama run "$model" "What is BAUXBSD?" 2>/dev/null || echo "TIMEOUT")
+        RESPONSE=$(timeout 60 ollama run "$model" "Write a bash function to check if a file exists." 2>/dev/null || echo "TIMEOUT")
         END=$(date +%s)
         TIME=$((END - START))
         LENGTH=${#RESPONSE}
-        echo "  Time: ${TIME}s, Response length: $LENGTH" | tee -a "$TUNE_LOG"
-        if [[ $TIME -lt 30 && $LENGTH -gt 10 ]]; then
-            BEST_MODELS+=("$model:$TIME")
+        # Basic quality check: contains bash-like syntax
+        QUALITY=0
+        if [[ "$RESPONSE" == *"if ["* || "$RESPONSE" == *"[ -f"* || "$RESPONSE" == *"test -f"* ]]; then
+            QUALITY=1
+        fi
+        echo "  Time: ${TIME}s, Length: $LENGTH, Quality: $QUALITY" | tee -a "$TUNE_LOG"
+        if [[ $TIME -lt 60 && $LENGTH -gt 20 && $QUALITY -eq 1 ]]; then
+            BEST_MODELS+=("$model:$TIME:$QUALITY")
         fi
     done
 
