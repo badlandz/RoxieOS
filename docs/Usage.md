@@ -13,12 +13,16 @@ baux-backup /mnt/usb/workstation-backup
 
 ### Boot New Machine and Clone
 ```bash
-# Boot new laptop with BAUXBSD USB
+# Boot new laptop with RoxieOS USB
+# LAN probing: Scans port 9999 for local BAUX sessions; offers login/clone if found
+# Phone home: Connect to baux-scale server for full mesh session list
+
 # Install core packages
 pkg install bbase baux bwm bterm bvi bweb chaos
 
-# Clone your workstation
+# Clone your workstation or resurrect from mesh
 baux-clone /mnt/usb/workstation-backup
+# Or: Select session from LAN/mesh and resurrect
 ```
 
 ## Daily Workflows

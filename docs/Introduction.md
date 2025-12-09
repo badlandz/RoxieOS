@@ -5,6 +5,8 @@
 
 BAUX is a minimalist swiss army knife for makers: USB boot to connect to your Neovim IDE in the BAUX-MESH in 5 seconds from ANY system, getting you to your code with the best vi/tools available on any broken embedded/SBC/server hardware for fast recovery and development.
 
+**Big Picture Example:** Pick up a laptop, stick a USB drive in, boot RoxieOS, connect to BAUX-MESH, find a Mango Pi tiny SBC with RISC-V processor and USB ESP32, push new firmware code from your custom bvi editor directly to the ESP32 with AI-assisted help guiding your coding—from the other side of the world.
+
 ## Core Philosophy
 
 BAUX (BAckup/restore Universal eXperience) is RoxieOS's core framework for session persistence and cross-device continuity.

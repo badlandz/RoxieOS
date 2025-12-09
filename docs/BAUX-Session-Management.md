@@ -15,6 +15,7 @@ This session management supports the core vision of persistent Neovim IDE access
 - **Suspended:** Paused state, resumable on any device
 - **Detached:** Running in background, attachable from anywhere
 - **Archived:** Historical snapshots for recovery
+- **Roaming:** Discovered via LAN probing or phone home to baux-scale
 
 ## tmux Integration
 
@@ -92,6 +93,11 @@ baux session list
 baux session attach dev
 # Session resurrects exactly as left
 ```
+
+### Roaming Session Discovery
+**LAN Probing:** RoxieOS boot scans local network (port 9999) for active sessions; offers immediate login/clone.
+**Phone Home:** Connect to baux-scale server for global session list; select from mesh-wide options.
+**TUI Selection:** Unified interface for choosing sessions from LAN or cloud sources.
 
 ### Archival
 ```bash

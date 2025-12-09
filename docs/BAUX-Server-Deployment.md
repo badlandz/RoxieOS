@@ -9,13 +9,14 @@ BAUX Server provides the central hub for distributed session management, running
 
 ## Server Requirements
 
-### Minimum Specifications
-- **CPU:** 1 vCPU (Headscale is lightweight)
-- **RAM:** 1GB (50MB for Headscale + registry coordination)
-- **Storage:** 25GB SSD (registry data, logs, packages)
-- **Bandwidth:** 1000GB/month (minimal coordination traffic)
-- **OS:** FreeBSD 15.0-RELEASE
-- **Network:** Static IP with domain (hs.coseismic.org)
+### Minimum Specifications (Baux-Scale)
+- **CPU:** 1 vCPU (Headscale lightweight + drop-baux sync)
+- **RAM:** 1GB (50MB Headscale + 200-500MB registry/drop-baux)
+- **Storage:** 50-100GB SSD (25GB base + 25-75GB drop-baux session data)
+- **Bandwidth:** 1TB/month (coordination + drop-baux syncs)
+- **OS:** FreeBSD 15.0-RELEASE (thin jail for isolation)
+- **Network:** Static public IP with domain (hs.coseismic.org)
+- **Cost:** $5-10/month (Vultr 1GB plan)
 
 ### Recommended Hosting
 **Vultr Cloud Compute ($6-12/month):**
@@ -144,15 +145,21 @@ pkg install nginx
 
 ## BAUX Server Components
 
-### Session Registry Setup
+### Session Registry & Drop-Baux Setup
 ```bash
-# Create registry storage directory
-mkdir -p /var/db/baux/registry
+# Create registry and drop-baux storage
+mkdir -p /var/db/baux/registry /var/db/baux/drop-baux
 chmod 700 /var/db/baux
 
 # Install required packages
-pkg install sqlite3
+pkg install sqlite3 rsync openssh-portable  # For drop-baux peer syncing
 ```
+
+#### Self-Preservation Features
+- **Automated Backups**: Cron jobs for registry/drop-baux data (rsync to offsite)
+- **Monitoring**: htop/sysutils/htop for resource tracking
+- **Crash Recovery**: tmux resurrect for maintenance sessions; ZFS snapshots if applicable
+- **Updates**: Quarterly pkg updates with testing
 
 ### BAUX Server Package
 ```bash

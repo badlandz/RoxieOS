@@ -14,8 +14,10 @@ BAUX Mesh transforms workstation cloning from local USB-based recovery into a di
 **BAUX Mesh Approach:** Sessions exist as network resources, accessible from any enrolled device
 
 ### Device Roles
-- **BAUX Server:** Cloud/LAN host running session storage and Headscale control plane
-- **BAUX Client:** Local devices (laptops, workstations) accessing distributed sessions
+- **Baux-Scale Server:** Minimal cloud VM (1 vCPU, 1GB RAM) running headscale + drop-baux for global session coordination
+- **BAUX LAN Server:** FreeBSD server with service jails (PostgreSQL, Jellyfin) and bhyve VMs (OCR/AI), enrolled in mesh
+- **BAUX Client:** Workstations/laptops accessing sessions via LAN probing or phone home to baux-scale
+- **BAUX Backup Server:** Future RoxieOS install for ZFS backups across mesh
 - **BAUX Relay:** Optional intermediate nodes for complex network topologies
 
 ### Authentication Model
@@ -50,6 +52,11 @@ BAUX Mesh transforms workstation cloning from local USB-based recovery into a di
 headscale register --key <auth-key>
 baux mesh enroll
 ```
+
+### Roaming Session Discovery
+- **LAN Probing**: RoxieOS boot probes local network (port 9999) for active BAUX sessions; offers login/clone if found
+- **Phone Home**: Connect to baux-scale domain/IP for full mesh session list; select and resurrect sessions globally
+- **Session Selection**: TUI interface presents available sessions from LAN or mesh for user choice
 
 ### Network Topology
 - **Full Mesh:** All devices can communicate directly

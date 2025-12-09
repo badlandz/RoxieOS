@@ -361,48 +361,53 @@ test_session_resurrection() {
 
 ## RISC-V Expansion & Mesh Networking
 
-### Phase 3: Embedded & Mesh Infrastructure (Month 2-3)
-**Goal:** RISC-V Mango Pi deployment with headscale mesh networking
+### Phase 3: Mesh Infrastructure & Multi-Server Setup (Month 2-3)
+**Goal:** Deploy BAUX-MESH with headscale server, enable roaming sessions, and establish multi-server architecture
 
-#### 3.1 Headscale Server Deployment
+#### 3.1 Baux-Scale Server Deployment (Cloud)
+**Purpose:** Minimal FreeBSD VM for headscale control plane and session registry
+- **Hardware**: 1 vCPU, 1GB RAM, 50-100GB SSD, 1TB bandwidth ($5-10/month Vultr)
+- **Software**: FreeBSD 15 thin jail with headscale, drop-baux for session storage
+- **Domain**: hs.coseismic.org (public IP for global access)
+- **Features**:
+  - Headscale control server with ACL policies
+  - Session registry (SQLite DB for location tracking)
+  - Drop-baux integration for distributed session data storage
+  - Self-preservation: Automated backups, monitoring, crash recovery
+- **Deployment**:
 ```bash
-# Deploy headscale control server on VPS
-# Requirements: Public IP, DNS domain (baux.roxieos.org)
-# Server: Ubuntu 22.04 LTS or FreeBSD 15.0
-
-# Install headscale
-pkg install headscale  # or apt install headscale
-
-# Configure headscale
+# On Vultr FreeBSD VM
+pkg install headscale
 headscale serve --config /usr/local/etc/headscale/config.yaml
-
-# DNS setup
-# A record: headscale.baux.roxieos.org → VPS_IP
-# Magic DNS: Enable in headscale config
-
-# Client registration
-# On each BAUXBSD machine:
-tailscale up --login-server https://headscale.baux.roxieos.org
+# Configure domain and SSL
 ```
 
-#### 3.2 Mango Pi RISC-V Port
-- **Hardware**: Mango Pi SBC with RISC-V CPU
-- **ESP32 Integration**: Wireless sensing and communication
-- **BAUX Components**: Port core packages to RISC-V
-- **Fast Recovery**: Hardware watchdog for system stability
+#### 3.2 LAN Server Replacement (Bare Metal)
+**Purpose:** Replace Proxmox with FreeBSD/RoxieOS for service jails and bhyve VMs
+- **Hardware**: Existing dual Xeon server (192GB RAM, multiple HDD/SSD bays)
+- **Software**: FreeBSD 15 with bhyve (OCR/AI VMs), jails (PostgreSQL, Jellyfin, pi-hole)
+- **BAUX-MESH Role**: Enroll as client; run service jails accessible via mesh
+- **Migration**: Gradual from Proxmox; use ZFS for storage, snapshots for safety
 
-#### 3.3 Mesh Networking Features
-- **Zero-config VPN**: Automatic device discovery
-- **NAT Traversal**: Work behind firewalls
+#### 3.3 Roaming Session Features
+- **LAN Probing**: Boot-time discovery of local BAUX sessions on unused port (e.g., 9999)
+- **Phone Home**: Option to connect to baux-scale for full global session list
+- **Session Selection**: TUI menu to login/clone sessions from LAN or mesh
+- **Implementation**: Add to RoxieOS boot scripts and baux commands
+
+#### 3.4 Future Backup Server (RoxieOS Edition)
+**Purpose:** Replace TrueNAS with RoxieOS thin install for ZFS backups
+- **Hardware**: Spare server or VM
+- **Software**: RoxieOS minimal + ZFS send/receive for mesh backups
+- **Timeline**: Post-LAN server migration
+
+#### 3.5 Mesh Networking Features
+- **Zero-config VPN**: Automatic device discovery via headscale
+- **NAT Traversal**: Automatic relay for firewall traversal
 - **ACL Policies**: Device-to-device access control
 - **Magic DNS**: Hostname resolution across mesh
 - **Subnet Routing**: Access local networks remotely
-
-#### 3.4 Sensing Infrastructure
-- **ESP32 Sensors**: Temperature, humidity, motion
-- **Data Collection**: Time-series environmental data
-- **Alert System**: Threshold-based notifications
-- **Integration**: Feed data to BAUXBSD dashboard
+- **Session Persistence**: Immortal panes via drop-baux and registry
 
 ### Phase 4: Production Deployment (Month 4+)
 **Goal:** Scalable BAUXBSD ecosystem with global mesh
