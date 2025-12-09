@@ -205,14 +205,32 @@ do-build:
 - **Proactive Suggestions**: Code improvements based on usage patterns
 
 ### Ollama Tuning for Hardware Optimization
-**Status:** Implemented in v0.2
+**Status:** Implemented in v0.2 with quality scoring
 **Features:**
 - **Auto-Tune Command**: `baux-bot --autotune-ollama` benchmarks available models on current hardware
-- **Performance Metrics**: Measures response time, quality, and resource usage for each model
-- **Dynamic Model Selection**: Updates `MODEL_PREF` array based on hardware capabilities
-- **Workstation-Specific**: Adapts for old laptops (prioritize smollm2:135m) vs. servers (llama3.1:8b)
+- **Performance Metrics**: Measures response time (60s timeout), length, and basic quality scoring for coding tasks
+- **Quality Checks**: Evaluates responses for correct bash syntax (e.g., `[ -f`, `test -f`)
+- **Dynamic Model Selection**: Updates `MODEL_PREF` array prioritizing speed + quality
+- **Workstation-Specific**: Adapts for old laptops (prioritize smollm2:135m) vs. servers (larger models)
 - **Fallback Logic**: Ensures at least one model works; skips unavailable models
 - **Documentation**: Logs tuning results to `~/.baux-bot/tune.log` for troubleshooting
+- **Future Enhancement**: Background daemon mode for 24-48 hour continuous tuning
+
+### Custom AI Model Training (baux-bot v1.0)
+**Status:** Long-term goal for v1.0
+**Vision:** Train a custom AI model specifically for RoxieOS development
+**Requirements:**
+- **Dataset**: RoxieOS codebase, documentation, user interactions, bug reports
+- **Training**: Cloud GPU resources ($50-100 budget for initial training)
+- **Fine-Tuning**: Focus on FreeBSD, tmux, neovim, shell scripting, C development
+- **Integration**: Replace Ollama models with custom model for superior context understanding
+- **Benefits**: Perfect AI assistant that "knows" RoxieOS intimately
+**Steps:**
+1. Collect training data from git history, docs, chat logs
+2. Set up cloud GPU training environment
+3. Train base model (e.g., fine-tune Llama on RoxieOS data)
+4. Integrate into baux-bot as primary backend
+5. Continuous learning from user corrections
 
 ### Multi-Modal AI Integration
 **Status:** Planned for v0.3

@@ -177,9 +177,10 @@ pkg install bview bmedia bbot bdrop
 - PostgreSQL knowledge base integration
 
 ### v1.0 - Complete Vision
-- AI-powered development environment
+- AI-powered development environment with custom-trained baux-bot model
 - Automatic project resurrection
 - Full digital twin implementation
+- **baux-bot v1.0**: Custom fine-tuned AI model for RoxieOS, trained on codebase and user interactions (requires cloud GPU resources for training)
 
 ---
 
