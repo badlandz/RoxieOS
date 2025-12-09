@@ -44,13 +44,13 @@ if [[ $# -gt 0 && "$1" == "--internal-autotune" ]]; then
         fi
     done
 
-    # Sort by speed
-    SORTED=$(printf '%s\n' "${BEST_MODELS[@]}" | sort -t: -k2 -n | cut -d: -f1)
+    # Sort by speed, then quality
+    SORTED=$(printf '%s\n' "${BEST_MODELS[@]}" | sort -t: -k2 -n -k3 -nr | cut -d: -f1)
     NEW_PREF=($SORTED)
     echo "Optimized MODEL_PREF: ${NEW_PREF[*]}" >> "$TUNE_LOG"
 
-    # Update script (this is a hack; ideally update config)
-    sed -i "s/MODEL_PREF=.*/MODEL_PREF=(${NEW_PREF[*]})/" "$0"
+    # Save to config file
+    echo "MODEL_PREF=(${NEW_PREF[*]})" > "$CONFIG_DIR/models.conf"
     echo "Auto-tune complete. Restart baux-bot to use optimized settings." | tee -a "$TUNE_LOG"
     exit 0
 fi
@@ -98,6 +98,10 @@ log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_DIR/current.log"
 
 # Model selection optimized for FreeBSD workstation (prioritize efficiency)
 MODEL_PREF=(llama3.2:3b deepseek-coder:6.7b qwen2.5:7b gemma2:2b phi3:3.8b smollm2:135m)
+# Load tuned preferences if available
+if [[ -f "$CONFIG_DIR/models.conf" ]]; then
+    source "$CONFIG_DIR/models.conf"
+fi
 select_model() {
     if [[ "$CURRENT_BACKEND" == "grok" ]]; then
         if [[ -z "$GROK_API_KEY" ]]; then
