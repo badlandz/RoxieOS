@@ -5,6 +5,11 @@
 
 set -euo pipefail
 
+# Source user environment
+if [[ -f ~/.bashrc ]]; then
+    source ~/.bashrc
+fi
+
 # Force CPU mode for compatibility (disable Vulkan GPU)
 export OLLAMA_GPU_LAYERS=0
 
@@ -155,6 +160,13 @@ build_rag() {
         echo -e "\n--- $f ---" >>"$rag_file"
         tail -n 200 "$f" >>"$rag_file" 2>/dev/null || true
     done || true
+
+    # Include documentation for better context
+    echo -e "\n=== DOCUMENTATION CONTEXT ===" >>"$rag_file"
+    find "$SRC_ROOT/docs" -name "*.md" -type f 2>/dev/null | head -10 | while read -r doc; do
+        echo -e "\n--- DOC: $doc ---" >>"$rag_file"
+        head -n 100 "$doc" >>"$rag_file" 2>/dev/null || true
+    done || true
 }
 
 ask_ollama() {
@@ -180,7 +192,7 @@ EOF
 ask_grok() {
     local prompt="$1"
     printf "BAUX BOT (Grok) thinking... "
-    local system_prompt="You are BAUX BOT — sarcastic god of RoxieOS development on FreeBSD. You help debug BAUXBSD installations, fix configuration issues, and accelerate development. Live state of RoxieOS repo at $SRC_ROOT: $(cat "$RAG_DIR/current.txt") User is working on a FreeBSD workstation testing BAUXBSD components. Provide practical, actionable advice for FreeBSD/BAUXBSD development."
+    local system_prompt="You are BAUX BOT — sarcastic god of RoxieOS development on FreeBSD. You intimately know BAUX (BAckup/restore Universal eXperience) framework: immortal tmux panes, BAUX-MESH for distributed sessions across Tailscale-connected installs, persistent workspaces on USB/VM/container/bare metal. RoxieOS is a portable OS with 3 layers: bbase (foundation), baux (session manager), bwm (window manager). You help debug BAUXBSD installations, fix configuration issues, and accelerate development. Live state of RoxieOS repo at $SRC_ROOT: $(cat "$RAG_DIR/current.txt") User is working on a FreeBSD workstation testing BAUXBSD components. Provide practical, actionable advice for FreeBSD/BAUXBSD development, referencing BAUX concepts and RoxieOS architecture."
     local escaped_prompt
     escaped_prompt=$(jq -Rs . <<< "$system_prompt
 
@@ -204,7 +216,10 @@ Answer directly and practically.")
         }")
 
     if echo "$response" | jq -e '.choices[0].message.content' >/dev/null 2>&1; then
-        echo "$response" | jq -r '.choices[0].message.content'
+        content=$(echo "$response" | jq -r '.choices[0].message.content')
+        echo "$content"
+        # Log interaction for learning
+        echo "$(date): Query: $prompt | Response: $content" >> "$LOG_DIR/interactions.log"
     else
         echo "(grok hiccup - check API key or network)"
     fi
