@@ -219,12 +219,20 @@ do-build:
 **Vision:** Leverage RoxieOS's persistent pane ecosystem for distributed AI intelligence
 **Core Concept:** RoxieOS requires 2+ installs (live IP holder with Tailscale keys, maintenance sessions); AI resources shared across mesh based on latency/ollama performance
 **Features:**
-- **Distributed RAG**: Shared codebase knowledge pools across devices (USB, VM, cloud, LAN)
+- **Distributed RAG**: Shared codebase knowledge pools across devices (USB, VM, cloud, LAN) via SeaweedFS/drop-baux
 - **Mesh Model Execution**: Route AI queries to optimal RoxieOS install (e.g., server for heavy models, local for privacy)
 - **Session Resurrection with AI**: Grab panes from crashed systems, AI reconstructs context
 - **Collaborative Learning**: Bots across mesh share learnings, improve collectively
 - **Latency-Aware Routing**: Auto-select closest/fastest AI resource in BAUX-MESH
 - **Novel Capabilities**: Global tutoring (learn vim on one device, continue on another), distributed builds with AI oversight
+
+**Current Status:**
+- **drop-baux Port**: Completed FreeBSD port (installed and tested on .101; uses rsync/sshfs for peer syncing)
+- **Remaining Work:**
+- **SeaweedFS Setup**: Install and configure SeaweedFS for distributed storage (requires FreeBSD package or manual build)
+- **RAG Integration**: Modify baux-bot to store/load RAG from drop-baux (user dirs for now; SeaweedFS for full mesh)
+- **Tmux Hooks**: Add resurrect integration for RAG persistence in sessions
+- **Testing**: Validate cross-device RAG sharing and AI routing
 - **Future Enhancement**: Background daemon mode for 24-48 hour continuous tuning
 
 ### Custom AI Model Training (baux-bot v1.0)
