@@ -1,8 +1,13 @@
 # BAUXBSD GruvBAUX Prototype
 **badlandz - root is love, layers forever**
 
+## Vision Summary
+
+BAUX is a minimalist swiss army knife for makers: USB boot to connect to your Neovim IDE in the BAUX-MESH in 5 seconds from ANY system, getting you to your code with the best vi/tools available on any broken embedded/SBC/server hardware for fast recovery and development.
+
 ## Core Philosophy
-Boot USB → instant productivity → persistent sessions → zero friction
+
+BAUX (BAckup/restore Universal eXperience) is RoxieOS's core framework for session persistence and cross-device continuity.
 
 RoxieOS is not a traditional OS distribution. It's a portable, session-persistent environment that runs on any hardware (USB, VM, container, bare metal). Your digital workspace resurrects instantly anywhere, with full tmux/neovim sessions intact.
 

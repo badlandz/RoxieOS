@@ -1,5 +1,7 @@
 # BAUX Core Components: Theoretical Debugging Guide
 
+This debugging guide supports the core vision by ensuring reliable Neovim, tmux, and keymap components for consistent IDE access on any system.
+
 ## Overview
 This document provides theoretical debugging approaches for BAUX's core components: Neovim, Tmux, and Keymap. Based on research of common issues, implementation patterns, and troubleshooting techniques.
 

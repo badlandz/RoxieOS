@@ -6,6 +6,9 @@ Every package starts with 'b' for muscle memory and minimal typing. Maximum 4 ch
 
 BAUX (BAckup/restore Universal eXperience) provides the framework for RoxieOS's persistent pane ecosystem, enabling session resurrection across devices via BAUX-MESH.
 
+## Core Swiss Army Knife Components
+Each package in ports/ is a core component of the BAUX swiss army knife, providing essential tools for USB boot to IDE in 5 seconds on any broken system. These integrated components ensure you get to your code with the best vi/tools available for embedded/SBC/server recovery and development.
+
 ## Package Hierarchy
 
 ### Core Packages (v0.1 Essential)

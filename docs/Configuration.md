@@ -1,5 +1,7 @@
 # BAUXBSD Unified Workflow & Keymap Philosophy
 
+This configuration supports the core vision of consistent, familiar workflows and keymaps at every layer for fast access to your Neovim IDE on any system.
+
 ## Core Principle: One Finger Movement = One Meaning
 
 Every key combination produces identical results across all BAUXBSD layers.

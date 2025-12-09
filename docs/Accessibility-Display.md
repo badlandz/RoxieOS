@@ -1,5 +1,7 @@
 # BAUX Accessibility & Display Management
 
+This accessibility guide supports the core vision by ensuring readable displays for IDE access on any hardware.
+
 ## Overview
 BAUX includes comprehensive accessibility features and display management to ensure usability across different hardware and vision requirements.
 

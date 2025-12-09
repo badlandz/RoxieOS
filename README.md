@@ -9,6 +9,10 @@
 [![GitHub issues](https://img.shields.io/github/issues/badlandz/RoxieOS)](https://github.com/badlandz/RoxieOS/issues)
 [![GitHub stars](https://img.shields.io/github/stars/badlandz/RoxieOS)](https://github.com/badlandz/RoxieOS/stargazers)
 
+## Vision Summary
+
+BAUX is a minimalist swiss army knife for makers: USB boot to connect to your Neovim IDE in the BAUX-MESH in 5 seconds from ANY system, getting you to your code with the best vi/tools available on any broken embedded/SBC/server hardware for fast recovery and development.
+
 ## Overview
 
 RoxieOS is a FreeBSD-based operating system for persistent, distributed development environments. Boot from USB, resurrect your exact tmux/neovim sessions on any hardware, and access AI assistance across a BAUX-MESH network. Sessions persist across reboots, crashes, and device switches via Tailscale integration.

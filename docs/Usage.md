@@ -1,6 +1,8 @@
 # BAUXBSD Usage Guide
 **Workstation Cloning and Daily Workflows**
 
+This guide supports the core vision of getting you to your code with the best vi/tools on any broken system via USB boot to IDE in 5 seconds.
+
 ## Workstation Cloning Workflow
 
 ### Backup Current Workstation

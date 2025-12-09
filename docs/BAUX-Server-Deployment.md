@@ -1,6 +1,8 @@
 # BAUX Server Deployment Guide
 **Setting up Headscale Control Plane & Session Storage**
 
+This deployment guide supports the core vision of BAUX-MESH infrastructure for USB boot to IDE on any system.
+
 ## Overview
 
 BAUX Server provides the central hub for distributed session management, running Headscale (self-hosted Tailscale) and session storage. This guide covers deployment on cloud infrastructure using FreeBSD.

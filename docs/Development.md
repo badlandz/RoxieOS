@@ -1,6 +1,8 @@
 # BAUXBSD Development Guide
 **Planning, Roadmap, and Implementation**
 
+This development guide supports the core vision of building tools that enable USB boot to Neovim IDE in 5 seconds for embedded/SBC/server recovery.
+
 ## Project Planning
 
 ### Restructuring Plan

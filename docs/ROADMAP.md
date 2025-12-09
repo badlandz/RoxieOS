@@ -3,7 +3,7 @@
 
 ## RoxieOS Development Strategy
 
-RoxieOS enables instant workstation cloning via BAUX-MESH: persistent tmux/neovim sessions resurrect on any hardware (USB, VM, container, bare metal) via Tailscale networking.
+RoxieOS enables instant workstation cloning via BAUX-MESH: persistent tmux/neovim sessions resurrect on any hardware (USB, VM, container, bare metal) via Tailscale networking. This supports the core vision of USB boot to connect to your Neovim IDE in the BAUX-MESH in 5 seconds from ANY system for fast recovery and development.
 
 ### Phase 1: Core Cloning Foundation (Week 1-2)
 **Goal:** Bootable USB with instant workstation restoration

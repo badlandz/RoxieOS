@@ -1,6 +1,8 @@
 # BAUX Session Management
 **Understanding Immortal Sessions & Resurrection**
 
+This session management supports the core vision of persistent Neovim IDE access across reboots and devices.
+
 ## Core Concepts
 
 ### Session Immortality

@@ -1,6 +1,8 @@
 # BAUX Mesh Architecture
 **Distributed Session Management with Headscale**
 
+This mesh architecture supports the core vision of connecting to your IDE from ANY system via BAUX-MESH for distributed development.
+
 ## Overview
 
 BAUX Mesh transforms workstation cloning from local USB-based recovery into a distributed, always-available session ecosystem. Using Headscale (self-hosted Tailscale control server), BAUX creates a secure mesh network where sessions persist across devices and locations.
