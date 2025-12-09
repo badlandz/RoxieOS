@@ -162,6 +162,56 @@ do-build:
 - Instant restoration on any keypress
 - Non-disruptive idle operation
 
+## Advanced AI Features (Post-v0.1)
+
+### AI Shepherding Implementation
+**Status:** Planned for v0.2
+**Features:**
+- **Query Analysis**: Local AI determines best model (Ollama for code, Grok for docs, Gemini for research)
+- **Automatic Switching**: Seamless backend selection based on query type
+- **Performance Optimization**: Route simple queries to fast local models, complex to cloud
+- **User Preferences**: Configurable defaults in `~/.baux-bot/config`
+
+### Interactive AI Tutors
+**Status:** Planned for v0.2
+**Features:**
+- **VIM Tutor**: AI-guided vim command learning with real-time feedback
+- **TMUX Tutor**: Interactive tmux session management tutorials
+- **BAUX Keymap Training**: Muscle memory building for unified bindings
+- **Progress Tracking**: Session-based learning with persistent state
+
+### RTFM Documentation Bot
+**Status:** Planned for v0.2
+**Features:**
+- **Codebase Search**: AI-powered documentation lookup across all BAUX components
+- **Context-Aware Help**: Query understanding with relevant code examples
+- **Cross-Reference Generation**: Automatic linking between docs and code
+- **Offline Capability**: Cached documentation for disconnected work
+
+### Memory and Continuity Features
+**Status:** Planned for v0.2
+**Features:**
+- **Session Memory**: Chat logs persist across reboots via SeaweedFS
+- **Context Carryover**: Previous conversations inform new queries
+- **Project Memory**: Codebase changes tracked for evolving assistance
+- **User Learning**: AI adapts to user preferences and corrections
+
+### Daemon Mode and Notifications
+**Status:** Planned for v0.3
+**Features:**
+- **Background Monitoring**: AI watches for development patterns/errors
+- **TMUX Popups**: Non-intrusive notifications for suggestions
+- **Idle Assistance**: Context-aware help during coding pauses
+- **Proactive Suggestions**: Code improvements based on usage patterns
+
+### Multi-Modal AI Integration
+**Status:** Planned for v0.3
+**Features:**
+- **Screenshot Analysis**: TMUX layout feedback and UI improvement suggestions
+- **Code Review**: Visual diff analysis with AI commentary
+- **Error Screenshot Help**: Debug assistance from error messages/images
+- **Workflow Optimization**: AI suggestions for tmux/neovim layouts
+
 ## BAUX Mesh Infrastructure
 
 ### Headscale Integration

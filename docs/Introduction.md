@@ -61,7 +61,7 @@ This is not a traditional distribution. This is a loaded USB stick that contains
 
 - **bview** - Image viewer (sxiv-based)
 - **bmedia** - Media player (mpv wrapper)
-- **bbot** - AI assistant with local models
+- **baux-bot** - AI assistant with Ollama/Grok/Gemini integration
 - **bdrop** - Full SeaweedFS session persistence
 
 ## FreeBSD Implementation
@@ -134,6 +134,14 @@ baux revive --all  # Restore exact state on any machine
 - **neovim:** Gruvbox plugin
 - **tmux:** Gruvbox status line
 - **Terminal:** Gruvbox color palette
+
+### AI-Powered Development Environment
+**BAUX Bot Integration**: Seamless AI assistance across all layers:
+- **Local AI**: Ollama models for privacy-focused development
+- **Cloud AI**: xAI Grok and Google Gemini for advanced queries
+- **Context Awareness**: Real-time codebase understanding via RAG
+- **Keybindings**: Alt+b (tmux) and <leader>b (neovim) for instant AI help
+- **Multi-Modal**: Code generation, debugging, documentation search
 
 ## Installation Strategy
 

@@ -21,7 +21,7 @@ bauxbsd/ports/
 ├── bvi/             # Editor
 ├── bweb/            # Browser
 ├── chaos/           # Screensaver
-└── baux-bot/        # AI assistant
+├── baux-bot/        # AI assistant
 ```
 
 ### Optional Packages (-dev tier)
@@ -29,7 +29,7 @@ bauxbsd/ports/
 ```
 ├── bview/           # Image viewer
 ├── bmedia/          # Media player
-├── bbot/            # AI assistant
+├── baux-bot/        # AI assistant (duplicate, see core)
 └── bdrop/           # Session persistence
 ```
 
@@ -81,10 +81,9 @@ do-install:
 | bvi | neovim (lite/dev variants) | 15MB/50MB |
 | bweb | qutebrowser | 40MB |
 | chaos | tmux | 1MB |
-| baux-bot | ollama | 4GB |
+| baux-bot | ollama, jq | 4GB |
 | bview | sxiv | 2MB |
 | bmedia | mpv | 15MB |
-| bbot | ollama | 4GB |
 | bdrop | seaweedfs | 50MB |
 
 ## Installation Order
@@ -97,7 +96,7 @@ do-install:
 5. **bvi** - Editor (lite/dev variants) - *pending baux completion*
 6. **bweb** - Browser - *not implemented*
 7. **chaos** - Screensaver - *pending baux completion*
-8. **baux-bot** - AI assistant (optional, requires Ollama) - *pending baux completion*
+8. **baux-bot** - AI assistant (optional, requires Ollama) - *✅ implemented with multi-model support*
 
 ### Configuration Management
 

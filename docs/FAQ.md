@@ -44,13 +44,13 @@ Yes, BAUXBSD packages are designed to work on standard FreeBSD installations.
 See Configuration.md for complete reference.
 
 ### How do I get AI assistance?
-BAUXBSD includes AI tools for development help:
-- `dev-assist "your question"`: Get BAUXBSD/FreeBSD development advice from xAI's Grok.
-- `xai-chat "message"`: General chat with Grok.
-- `dev-gemini "your question"`: Get BAUXBSD/FreeBSD development advice from Google's Gemini (requires paid API quota).
-- `gemini-chat "message"`: General chat with Gemini (requires paid API quota).
-- Set `GROK_API_KEY` and `GEMINI_API_KEY` in your shell (e.g., `~/.bashrc`).
-- For local AI: `baux-bot` provides Ollama-based assistance with repo context.
+BAUXBSD provides multi-model AI assistance for development:
+- **Local AI (Ollama)**: `baux-bot` - Context-aware chat with real-time repo monitoring
+- **Cloud AI (xAI Grok)**: `dev-assist`, `xai-chat`, `grok-workshop` - Development and general chat
+- **Cloud AI (Google Gemini)**: `dev-gemini`, `gemini-chat` - Alternative cloud assistance (paid quota required)
+- **Keybindings**: Alt+b (tmux) launches baux-bot; <leader>b (neovim) for AI help
+- **Setup**: Set `GROK_API_KEY`, `GEMINI_API_KEY` in `~/.bashrc`; Ollama auto-configured
+- **Model Switching**: `baux-bot` supports dynamic Ollama ↔ Grok switching
 
 ## Troubleshooting
 
