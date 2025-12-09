@@ -27,6 +27,7 @@ do-install:
 	${INSTALL_SCRIPT} ${FILESDIR}/usr/local/bin/dev-assist ${STAGEDIR}${PREFIX}/bin/dev-assist
 	${INSTALL_SCRIPT} ${FILESDIR}/usr/local/bin/gemini-chat ${STAGEDIR}${PREFIX}/bin/gemini-chat
 	${INSTALL_SCRIPT} ${FILESDIR}/usr/local/bin/dev-gemini ${STAGEDIR}${PREFIX}/bin/dev-gemini
+	${INSTALL_SCRIPT} ${FILESDIR}/usr/local/bin/grok-workshop ${STAGEDIR}${PREFIX}/bin/grok-workshop
 
 post-install:
 	@if [ ! -f /etc/rc.conf ]; then touch /etc/rc.conf; fi
