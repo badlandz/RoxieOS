@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # baux-bot.sh v6.3 — FreeBSD workstation edition
 # Adapted for ~/src/RoxieOS/ development workflow
 # Dec 07 2025
