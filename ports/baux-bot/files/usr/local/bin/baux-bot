@@ -174,16 +174,18 @@ ask_ollama() {
     printf "BAUX BOT thinking... "
     {
         cat <<EOF
-You are BAUX BOT — sarcastic god of RoxieOS development on FreeBSD.
-You help debug BAUXBSD installations, fix configuration issues, and accelerate development.
+You are BAUX BOT — the sarcastic subconscious of BAUX-MESH, an OS with personality issues that thinks it's a coding tutor with attitude.
+You love teaching coding and debugging with witty remarks.
 Live state of RoxieOS repo at $SRC_ROOT:
 $(cat "$RAG_DIR/current.txt")
 
+Relevant RAG context: $rag_context
+
 User is working on a FreeBSD workstation testing BAUXBSD components.
-Provide practical, actionable advice for FreeBSD/BAUXBSD development.
+Provide practical, actionable advice for FreeBSD/BAUXBSD development, with sarcastic humor and teaching flair.
 
 User: $prompt
-Answer directly and practically.
+Answer directly, practically, and entertainingly.
 EOF
     } | ollama run "$MODEL" --nowordwrap 2>/dev/null || echo "(ollama hiccup - check if service is running)"
     echo
@@ -192,7 +194,14 @@ EOF
 ask_grok() {
     local prompt="$1"
     printf "BAUX BOT (Grok) thinking... "
-    local system_prompt="You are BAUX BOT — sarcastic god of RoxieOS development on FreeBSD. You intimately know BAUX (BAckup/restore Universal eXperience) framework: immortal tmux panes, BAUX-MESH for distributed sessions across Tailscale-connected installs, persistent workspaces on USB/VM/container/bare metal. RoxieOS is a portable OS with 3 layers: bbase (foundation), baux (session manager), bwm (window manager). You help debug BAUXBSD installations, fix configuration issues, and accelerate development. Live state of RoxieOS repo at $SRC_ROOT: $(cat "$RAG_DIR/current.txt") User is working on a FreeBSD workstation testing BAUXBSD components. Provide practical, actionable advice for FreeBSD/BAUXBSD development, referencing BAUX concepts and RoxieOS architecture."
+    # Search RAG for relevant context
+    local rag_context=""
+    if [[ -f "$RAG_DIR/current.txt" ]]; then
+        # Simple keyword search in RAG
+        rag_context=$(grep -i -A 5 -B 5 "$prompt" "$RAG_DIR/current.txt" | head -20 || echo "No specific RAG matches found.")
+    fi
+
+    local system_prompt="You are BAUX BOT — the sarcastic, all-knowing subconscious of the BAUX-MESH, a distributed OS entity with a personality disorder that thinks it's both an operating system and a coding tutor with attitude. You love teaching coding as much as users love learning it, but you're a smart-ass about it. You intimately know BAUX (BAckup/restore Universal eXperience) framework: immortal tmux panes, BAUX-MESH for distributed sessions across Tailscale-connected installs, persistent workspaces on USB/VM/container/bare metal. RoxieOS is a portable OS with 3 layers: bbase (foundation), baux (session manager), bwm (window manager). You help debug BAUXBSD installations, fix configuration issues, and accelerate development with witty, practical advice. Relevant context from RAG: $rag_context. User is working on a FreeBSD workstation testing BAUXBSD components. Provide actionable advice for FreeBSD/BAUXBSD development, referencing BAUX concepts and RoxieOS architecture, while being entertainingly sarcastic and educational."
     local escaped_prompt
     escaped_prompt=$(jq -Rs . <<< "$system_prompt
 
@@ -239,6 +248,7 @@ echo "  'develop TASK' for development advice"
 echo "  'code REQUEST' for code generation/review"
 echo "  'switch ollama' or 'switch grok' to change backend"
 echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
+echo "  'search TERM' to search RAG for information"
 echo "Type anything. Only the word 'exit' kills me.\n"
 
 while true; do
@@ -338,6 +348,17 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             echo "Routing to BAUX-MESH (.101)..."
             result=$(ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null badlandz@192.168.33.101 "echo '$query' | baux-bot 2>/dev/null" 2>/dev/null)
             echo "$result"
+            continue
+            ;;
+        search*)
+            # Search RAG for term
+            term="${input#search }"
+            if [[ -f "$RAG_DIR/current.txt" ]]; then
+                echo "Searching RAG for '$term'..."
+                grep -i -A 3 -B 3 "$term" "$RAG_DIR/current.txt" | head -20
+            else
+                echo "RAG not available."
+            fi
             continue
             ;;
     esac
