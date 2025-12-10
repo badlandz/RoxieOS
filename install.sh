@@ -135,10 +135,10 @@ install_port() {
     fi
 
     # Check if already installed (basic check)
-    if [[ -f "/usr/local/bin/$port_name" ]] || [[ -f "/usr/local/etc/rc.d/$port_name" ]]; then
-        log "$port_name already appears to be installed, checking version..."
-        # For now, assume it's up to date if installed
-        log "$port_name already installed, skipping"
+    local force_install="${BAUX_FORCE_INSTALL:-false}"
+    if [[ "$force_install" != "true" ]] && ([[ -f "/usr/local/bin/$port_name" ]] || [[ -f "/usr/local/etc/rc.d/$port_name" ]]); then
+        log "$port_name already appears to be installed"
+        log "Use BAUX_FORCE_INSTALL=true to force reinstall"
         return 0
     fi
 
@@ -305,6 +305,7 @@ usage() {
     echo ""
     echo "Options:"
     echo "  -t TYPE    Force deployment type (workstation|headless|kiosk|special)"
+    echo "  -f         Force reinstall of all components"
     echo "  -h         Show this help"
     echo ""
     echo "Deployment Types:"
@@ -316,14 +317,19 @@ usage() {
     echo "Examples:"
     echo "  $0                    # Auto-detect deployment type"
     echo "  $0 -t headless       # Force headless installation"
+    echo "  $0 -f                 # Force reinstall all components"
+    echo "  $0 -t workstation -f # Force workstation reinstall"
     echo "  BAUX_DEPLOYMENT_TYPE=headless $0  # Alternative override"
 }
 
 # Parse command line arguments
-while getopts "t:h" opt; do
+while getopts "t:fh" opt; do
     case $opt in
         t)
             BAUX_DEPLOYMENT_TYPE="$OPTARG"
+            ;;
+        f)
+            BAUX_FORCE_INSTALL="true"
             ;;
         h)
             usage
