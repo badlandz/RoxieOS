@@ -5,16 +5,32 @@ tmux starts but loads default config instead of BAUX config (status bar bottom, 
 
 ## Root Cause
 - tmux.conf file may not exist on system or plugins causing load failure
-- Temporarily disabled plugins in config to restore basic functionality
+- Need to install tmux plugins (TPM, resurrect, continuum) for full functionality
+
+## Rollback Point Created
+✅ **SAFE ROLLBACK AVAILABLE**: Commit b2c85866 has working mesh infrastructure and session persistence. If debugging breaks anything, can rollback to this point.
 
 ## Changes Made
 1. **~/baux script**: Fixed BAUX_HOME path to `/usr/local/share`
-2. **tmux/baux.conf**: Commented out all plugin references to prevent load failures
+2. **baux-pull script**: Created for remote session access
 3. **Documentation**: Updated status and troubleshooting
+4. **Plugins**: Re-enabled in tmux.conf (need to be installed on system)
 
 ## Test Plan - Execute in Order
 
-### Phase 1: Deploy Updated Config
+### Phase 1: Install Tmux Plugins (Required)
+```bash
+# Install TPM (Tmux Plugin Manager)
+git clone https://github.com/tmux-plugins/tpm /usr/local/share/tmux-plugins/tpm
+
+# Install tmux-resurrect
+git clone https://github.com/tmux-plugins/tmux-resurrect /usr/local/share/tmux-plugins/tmux-resurrect
+
+# Install tmux-continuum
+git clone https://github.com/tmux-plugins/tmux-continuum /usr/local/share/tmux-plugins/tmux-continuum
+```
+
+### Phase 2: Deploy Updated Config
 **Option A: Rebuild Port (Recommended)**
 ```bash
 cd /src/RoxieOS/ports/baux
