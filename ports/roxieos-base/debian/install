@@ -1,0 +1,7 @@
+usr/local/share/roxieos/os-release etc/os-release
+usr/local/share/roxieos/os-release usr/local/share/roxieos/
+usr/local/etc/roxieos/setup-autologin usr/local/etc/roxieos/
+usr/local/etc/roxieos/setup-keymap usr/local/etc/roxieos/
+usr/local/etc/roxieos/setup-x11 usr/local/etc/roxieos/
+usr/local/share/roxieos/xinitrc usr/local/share/roxieos/
+usr/local/share/roxieos/xmodmap.rc usr/local/share/roxieos/

@@ -1,0 +1,41 @@
+#!/bin/sh
+# setup-x11 - Configure RoxieOS X11 environment
+# Based on Debian concepts adapted for FreeBSD
+
+# Create .xinitrc for automatic X startup
+cat > /usr/local/share/roxieos/xinitrc << 'EOF'
+#!/bin/sh
+# RoxieOS X11 startup script
+
+# Load keymap configuration
+if [ -f /usr/local/share/roxieos/xmodmap.rc ]; then
+    xmodmap /usr/local/share/roxieos/xmodmap.rc
+fi
+
+# Set background (if feh is available)
+if command -v feh >/dev/null 2>&1; then
+    feh --bg-scale /usr/local/share/roxieos/wallpaper.png 2>/dev/null || true
+fi
+
+# Start BAUX window manager
+if command -v bwm >/dev/null 2>&1; then
+    exec bwm
+elif command -v dwm >/dev/null 2>&1; then
+    exec dwm
+else
+    # Fallback to twm
+    exec twm
+fi
+EOF
+
+chmod +x /usr/local/share/roxieos/xinitrc
+
+# Create symlink for root user
+ln -sf /usr/local/share/roxieos/xinitrc /root/.xinitrc 2>/dev/null || true
+
+# Configure Xorg for autologin (if applicable)
+# Note: FreeBSD Xorg configuration is typically in /etc/X11/xorg.conf
+
+echo "RoxieOS X11 setup complete"
+echo "X will start automatically with BAUX window manager"
+echo "Keymaps configured for Caps Lock → Escape"

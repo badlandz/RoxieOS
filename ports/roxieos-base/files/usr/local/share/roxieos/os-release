@@ -1,0 +1,7 @@
+NAME="RoxieOS"
+VERSION="1.0.0"
+ID=roxieos
+VERSION_ID="1.0.0"
+PRETTY_NAME="RoxieOS GrokSxanne (v1.0.0)"
+ANSI_COLOR="0;32"
+BUG_REPORT_URL="https://github.com/badlandz/RoxieOS/issues"

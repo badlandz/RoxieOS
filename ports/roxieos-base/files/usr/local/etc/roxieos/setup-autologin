@@ -1,0 +1,30 @@
+#!/bin/sh
+# setup-autologin - Configure root autologin for RoxieOS
+# Based on Debian concepts adapted for FreeBSD
+
+# Configure getty for autologin on ttyv0 (console)
+if [ -f /etc/gettytab ]; then
+    # Add autologin entry to gettytab if not present
+    if ! grep -q "autologin" /etc/gettytab; then
+        cat >> /etc/gettytab << 'EOF'
+
+# RoxieOS autologin configuration
+autologin:k8:r8:al=root:tc=std.115200:
+EOF
+        echo "Added autologin entry to gettytab"
+    fi
+fi
+
+# Configure ttys for autologin on console
+if [ -f /etc/ttys ]; then
+    # Backup original ttys
+    cp /etc/ttys /etc/ttys.backup 2>/dev/null || true
+
+    # Modify console line for autologin
+    sed -i '' 's|^ttyv0.*getty.*std\..*|ttyv0   "/usr/libexec/getty autologin"   xterm   on  secure|' /etc/ttys
+
+    echo "Configured ttyv0 for root autologin"
+    echo "NOTE: Run 'kill -HUP 1' to reload ttys configuration"
+fi
+
+echo "RoxieOS autologin setup complete"

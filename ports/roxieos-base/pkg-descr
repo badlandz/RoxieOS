@@ -1,0 +1,12 @@
+RoxieOS base system configuration and setup utilities.
+
+This package provides essential system configuration for RoxieOS,
+including:
+
+- OS release identification (/usr/local/share/roxieos/os-release)
+- Autologin setup for tty1
+- Keyboard mapping (Caps Lock → Escape)
+- X11 autostart configuration
+- System integration scripts
+
+WWW: https://roxieos.org

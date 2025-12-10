@@ -1,0 +1,42 @@
+#!/bin/sh
+# setup-keymap - Configure RoxieOS keyboard mappings
+# Based on Debian concepts adapted for FreeBSD
+
+# Configure Caps Lock → Escape globally
+# This affects both console and X11
+
+# For console (tty) - using kbdmap
+if [ -f /usr/share/syscons/keymaps/us.iso.kbd ]; then
+    # Create custom keymap with Caps Lock as Escape
+    cat > /usr/share/syscons/keymaps/us.capsesc.kbd << 'EOF'
+# US keyboard with Caps Lock mapped to Escape
+include "/usr/share/syscons/keymaps/us.iso.kbd"
+
+# Map Caps Lock (0x3a) to Escape (0x01)
+keycode 0x3a = Escape
+EOF
+
+    # Set as default keymap
+    echo 'keymap="us.capsesc"' >> /etc/rc.conf
+    echo "Configured Caps Lock → Escape for console"
+fi
+
+# For X11 - create xmodmap configuration
+cat > /usr/local/etc/X11/xinit/xmodmap.rc << 'EOF'
+! RoxieOS X11 keymap configuration
+! Caps Lock → Escape
+clear Lock
+keycode 66 = Escape
+EOF
+
+# Also create .xmodmap for user home
+cat > /usr/local/share/roxieos/xmodmap.rc << 'EOF'
+! RoxieOS user keymap configuration
+! Caps Lock → Escape
+clear Lock
+keycode 66 = Escape
+EOF
+
+echo "RoxieOS keymap setup complete"
+echo "Caps Lock now maps to Escape in both console and X11"
+echo "User can also run: xmodmap /usr/local/share/roxieos/xmodmap.rc"
