@@ -1,0 +1,8 @@
+{
+  "port": 9999,
+  "mesh_auth": true,
+  "rate_limit": 100,
+  "allowed_peers": ["*"],
+  "log_level": "info",
+  "tmux_socket": "/tmp/tmux-$(id -u)/default"
+}

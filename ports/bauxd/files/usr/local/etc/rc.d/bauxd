@@ -1,0 +1,17 @@
+#!/bin/sh
+# PROVIDE: bauxd
+# REQUIRE: NETWORKING
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name="bauxd"
+rcvar="bauxd_enable"
+command="/usr/local/bin/${name}"
+command_args="start"
+pidfile="/var/run/${name}.pid"
+
+load_rc_config $name
+: ${bauxd_enable:=NO}
+
+run_rc_command "$1"
