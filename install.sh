@@ -7,7 +7,7 @@ set -euo pipefail
 # Configuration
 INSTALL_LOG="${HOME}/.baux/install.log"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BAUX_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+BAUX_ROOT="$SCRIPT_DIR"
 
 # Deployment types
 declare -A DEPLOYMENT_TYPES=(
