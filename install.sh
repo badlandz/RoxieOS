@@ -189,7 +189,8 @@ configure_deployment() {
     log "Configuring for $DEPLOYMENT_TYPE deployment"
 
     # Create deployment type marker
-    echo "$DEPLOYMENT_TYPE" > /usr/local/etc/baux-deployment-type
+    doas mkdir -p /usr/local/etc
+    echo "$DEPLOYMENT_TYPE" | doas tee /usr/local/etc/baux-deployment-type >/dev/null
 
     # Type-specific configuration
     case "$DEPLOYMENT_TYPE" in
