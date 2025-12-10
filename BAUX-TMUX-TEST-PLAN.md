@@ -30,17 +30,23 @@ git clone https://github.com/tmux-plugins/tmux-resurrect /usr/local/share/tmux-p
 git clone https://github.com/tmux-plugins/tmux-continuum /usr/local/share/tmux-plugins/tmux-continuum
 ```
 
-### Phase 2: Deploy Updated Config
-**Option A: Rebuild Port (Recommended)**
+### Phase 2: Deploy Complete BAUX System
+**Proper Development Deployment (Recommended)**
 ```bash
-cd /src/RoxieOS/ports/baux
-make clean install
+# On each test system (baux01, 01x300, baux-scale, etc.)
+cd /src/RoxieOS
+git pull origin main  # Get latest complete port
+cd ports/baux
+make clean install   # Full proper FreeBSD port installation
 ```
 
-**Option B: Manual Copy**
-```bash
-cp /src/RoxieOS/ports/baux/core/tmux/baux.conf /usr/local/share/tmux/baux.conf
-```
+**What make install does:**
+- Installs baux binary to `/usr/local/bin/baux`
+- Creates proper directory structure
+- Installs all scripts (baux-pull, baux-push, baux-switch, baux-hosts)
+- Installs tmux config to `/usr/local/share/tmux/baux.conf`
+- Installs complete neovim config to `/usr/local/share/baux/nvim/`
+- No conflicting legacy files (make clean ensures this)
 
 ### Phase 2: Verify Config File
 ```bash
