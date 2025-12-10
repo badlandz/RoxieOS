@@ -1,15 +1,26 @@
-#!/usr/local/bin/bash
+#!/bin/sh
 # bauxd - BAUX daemon service
 
 if [ "$1" = "test" ]; then
     echo "bauxd test: working"
-elif [ "$1" = "status" ]; then
+    exit 0
+fi
+
+if [ "$1" = "status" ]; then
     echo "bauxd status: ready"
-elif [ "$1" = "start" ]; then
+    exit 0
+fi
+
+if [ "$1" = "start" ]; then
     echo "bauxd start: not implemented"
-elif [ "$1" = "stop" ]; then
+    exit 0
+fi
+
+if [ "$1" = "stop" ]; then
     echo "bauxd stop: not implemented"
-else
-    echo "Usage: bauxd {start|stop|status|test}"
-fi</content>
+    exit 0
+fi
+
+echo "Usage: bauxd {start|stop|status|test}"
+exit 1</content>
 <parameter name="filePath">ports/bauxd/files/usr/local/bin/bauxd
