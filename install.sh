@@ -5,7 +5,7 @@
 set -euo pipefail
 
 # Configuration
-INSTALL_LOG="/var/log/baux-install.log"
+INSTALL_LOG="${HOME}/.baux/install.log"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BAUX_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -27,6 +27,7 @@ declare -A PORT_DEPENDENCIES=(
 
 # Logging
 log() {
+    mkdir -p "$(dirname "$INSTALL_LOG")"
     echo "$(date '+%Y-%m-%d %H:%M:%S') [INSTALL] $*" | tee -a "$INSTALL_LOG"
 }
 
@@ -59,8 +60,13 @@ detect_deployment_type() {
     local has_input=false
 
     # Check for display (X11 or Wayland)
-    if [[ -n "$DISPLAY" ]] || [[ -e "/tmp/.X11-unix" ]] || [[ -n "$WAYLAND_DISPLAY" ]]; then
+    if [[ -n "${DISPLAY:-}" ]] || [[ -e "/tmp/.X11-unix" ]]; then
         has_display=true
+    fi
+
+    # Check for input devices (keyboard/mouse)
+    if [[ -c "/dev/input/event0" ]] || [[ -e "/dev/input/mice" ]]; then
+        has_input=true
     fi
 
     # Check for input devices (keyboard/mouse)
