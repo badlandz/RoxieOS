@@ -1,0 +1,19 @@
+#!/bin/bash
+# baux-session-push - Push current tmux session to registry
+
+SESSION_NAME=
+if [ -z  ]; then
+    SESSION_NAME=roxie-builder-0
+fi
+
+HOST=roxie-builder
+USER=coyote
+TMUX_SESSION=0
+
+# Register session
+ssh badlandz@bs.coseismic.org baux-registry register $SESSION_NAME $HOST $USER $TMUX_SESSION
+
+# Export tmux session
+tmux run-shell ~/.tmux/plugins/tmux-resurrect/scripts/save.sh
+
+echo Session pushed to registry
