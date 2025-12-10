@@ -498,7 +498,7 @@ ask_claude() {
         -H "x-api-key: $CLAUDE_API_KEY" \
         -H "anthropic-version: 2023-06-01" \
         -d "{
-            \"model\": \"claude-sonnet-4-20250514\",
+            \"model\": \"claude-3-5-sonnet-20241022\",
             \"max_tokens\": 1024,
             \"messages\": [{
                 \"role\": \"user\",
@@ -686,11 +686,11 @@ ask_huggingface() {
             jq -r '.[0].generated_text' 2>/dev/null | sed "s/$prompt//" | head -1)
 
         if [[ -n "$response" && "$response" != "null" ]]; then
-            echo "🚀 Together AI says: $response"
-            update_rate_limit "together"
-            log_usage "together" "research"
+            echo "🤗 HuggingFace says: $response"
+            update_rate_limit "huggingface"
+            log_usage "huggingface" "creative"
         else
-            echo "Together AI API call failed - check key or try again"
+            echo "HuggingFace free API busy - try again later!"
             ask_ollama "$prompt"
         fi
     else

@@ -1,24 +1,51 @@
 # BAUX Bot API Setup Guide
 
 ## Overview
-BAUX Bot supports multiple AI backends for different types of queries:
+BAUX Bot supports **16+ AI backends** for different types of queries:
+
+### Always Available (No Setup Required)
 - **Ollama**: Local AI for RAG building and general assistance
 - **Grok**: xAI for coding and BAUX-specific development
 - **Gemini**: Google AI for research and general questions
 - **Claude**: Anthropic for complex reasoning and careful implementation
+- **Replicate**: Free creative AI models
+- **Together AI**: Fast research inference
+- **HuggingFace**: Free creative text generation
+- **ASCII Art**: Fun motivational text art
+- **Cheerleader**: Coding motivation and encouragement
+
+### Available With Tool Installation
+- **Aider**: AI pair programming (`pip install aider-chat`)
+- **Mods**: Terminal AI (`go install github.com/charmbracelet/mods@latest`)
+- **Fabric**: AI workflow framework (`pip install fabric-ai`)
+- **ShellGPT**: Command line GPT (`pip install shell-gpt`)
+- **Claude Code**: Advanced coding agent (subscription required)
+- **GitHub Copilot CLI**: Code completion (subscription required)
+- **OpenCode**: Open-source AI (`curl -fsSL https://opencode.ai/install | bash`)
+- **Keystroke Guru**: Interactive learning mode
 
 ## Current Setup
 
-### ✅ Configured Backends
-- **Ollama**: Local installation required
-- **Grok**: API key configured via `~/mnt/drop-baux/keys/api_keys.sh`
-- **Fabric**: AI workflow framework (`pip install fabric-ai`)
-- **Replicate**: Free AI models via API
-- **Together AI**: Free tier models via API
+### ✅ Fully Implemented & Working
+- **Ollama**: Local models (always available)
+- **Grok**: xAI API (key required via drop-baux)
+- **Gemini**: Google AI (key required via drop-baux)
+- **Claude**: Anthropic API (key required via drop-baux)
+- **Replicate**: Free models (key required via drop-baux)
+- **Together AI**: Fast inference (key required via drop-baux)
+- **HuggingFace**: Free inference (no key required)
+- **ASCII Art**: Built-in fun feature
+- **Cheerleader**: Built-in motivation feature
 
-### 🔄 Placeholder Backends (Need API Setup)
-- **Gemini**: Google AI Studio API
-- **Claude**: Anthropic API
+### 🔧 Tool-Based (Install Required)
+- **Aider**: `pip install aider-chat`
+- **Mods**: `go install github.com/charmbracelet/mods@latest`
+- **Fabric**: `pip install fabric-ai`
+- **ShellGPT**: `pip install shell-gpt`
+- **Claude Code**: Subscription required
+- **GitHub Copilot CLI**: Subscription required
+- **OpenCode**: `curl -fsSL https://opencode.ai/install | bash`
+- **Keystroke Guru**: Built-in learning mode
 
 ### 🆓 FREE TOOLS - No Registration Required
 - **Ollama**: Local AI models (already configured)

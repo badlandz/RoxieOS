@@ -16,8 +16,37 @@ Every key combination produces identical results across all BAUXBSD layers.
 |--------|------------|-------------------|------------------|----------------|
 | Console | Ctrl-Alt | Mod4+1-9 (F1-F9) | Alt+1-9 | Ctrl+... |
 | bwm | Mod4 | Mod4+1-9 | Alt+1-9 | Mod4+Enter/b |
-| tmux | Ctrl-b | Mod4+1-9 | Alt+1-9, hjkl | Ctrl+b |
+| tmux | **Ctrl-Space** | Ctrl-Space + s | Alt+hjkl, Alt+1-9 | Ctrl-Space + c/z |
 | bvi | Space | Space+1-9 | hjkl, Ctrl+... | Space+... |
+
+## tmux Keymaps (Ctrl-Space Prefix)
+
+### Session Management
+- `Ctrl-Space + s` → Session selector
+- `Ctrl-Space + $` → Rename session
+- `Ctrl-Space + (` → Previous session
+- `Ctrl-Space + )` → Next session
+
+### Window Management
+- `Alt + 1-9` → Switch to window 1-9
+- `Ctrl-Space + c` → New window
+- `Ctrl-Space + ,` → Rename window
+- `Ctrl-Space + n` → Next window
+- `Ctrl-Space + p` → Previous window
+
+### Pane Management
+- `Alt + h/j/k/l` → Navigate panes (vim-style)
+- `Alt + H/J/K/L` → Resize panes (5 units each)
+- `Alt + %` → Vertical split
+- `Alt + "` → Horizontal split
+- `Ctrl-Space + z` → Zoom pane toggle
+- `Enter` → Respawn dead panes (immortal!)
+
+### BAUX-Specific Features
+- `Alt + b` → Split with baux-bot
+- `Ctrl-Space + r` → Reload tmux config
+- `Ctrl-Space + Ctrl-s` → Manual save
+- `Ctrl-Space + Ctrl-r` → Manual restore
 
 ## Neovim High-Productivity Keymaps
 

@@ -62,13 +62,53 @@ dumpkeys | grep -i escape
 setxkbmap -print | grep baux
 ```
 
+### Session Management
+```bash
+# Interactive session selector (TUI)
+baux sessions
+
+# Switch to specific session
+baux switch session-name
+
+# Quick session switch (hostname-1, hostname-2, etc.)
+baux 1  # Switch to hostname-1
+baux 2  # Switch to hostname-2
+
+# Pull remote session
+baux pull remote-host session-name
+
+# Push current session to mesh
+baux push
+```
+
+### AI Assistant (baux-bot)
+```bash
+# Interactive AI chat
+baux-bot
+
+# Direct query
+echo "How do I list files in bash?" | baux-bot
+
+# Switch backends
+baux-bot
+> switch grok
+> switch gemini
+> switch ollama
+
+# Available backends: ollama, grok, gemini, claude, replicate, together, huggingface
+# Plus fun features: ascii-art, cheerleader, keystroke-guru
+```
+
 ### Session Problems
 ```bash
-# List sessions
-baux list
+# List all tmux sessions
+tmux list-sessions
 
 # Kill broken session
-baux kill session-name
+tmux kill-session -t session-name
+
+# Clean start (kill all tmux servers)
+tmux kill-server
 ```
 
 ## Examples
