@@ -474,25 +474,26 @@ ask_gemini() {
 
 ask_claude() {
     local prompt="$1"
-    printf "BAUX BOT (Claude) reasoning... "
+    printf "BAUX BOT (Claude) reasoning... " >&2
 
     # Check rate limit
     if ! check_rate_limit "claude"; then
-        echo "Rate limited - switching to Grok"
+        echo "Rate limited - switching to Grok" >&2
         ask_grok "$prompt"
         return
     fi
 
     # Check if API key is available
     if [[ -z "$CLAUDE_API_KEY" ]]; then
-        echo "Claude API key not found - add to ~/mnt/drop-baux/keys/api_keys.sh"
-        echo "Sign up at: https://console.anthropic.com/"
+        echo "Claude API key not found - add to ~/mnt/drop-baux/keys/api_keys.sh" >&2
+        echo "Sign up at: https://console.anthropic.com/" >&2
         ask_grok "$prompt"
         return
     fi
 
     # Claude API call for complex reasoning
     local response
+    local curl_exit_code
     response=$(curl -s -X POST "https://api.anthropic.com/v1/messages" \
         -H "Content-Type: application/json" \
         -H "x-api-key: $CLAUDE_API_KEY" \
@@ -504,14 +505,33 @@ ask_claude() {
                 \"role\": \"user\",
                 \"content\": \"$prompt\"
             }]
-        }" | jq -r '.content[0].text' 2>/dev/null)
+        }" 2>/dev/null)
+    curl_exit_code=$?
 
-    if [[ -n "$response" && "$response" != "null" ]]; then
-        echo "$response"
+    if [[ $curl_exit_code -ne 0 ]]; then
+        echo "Curl failed with exit code $curl_exit_code - falling back to Grok" >&2
+        ask_grok "$prompt"
+        return
+    fi
+
+    # Parse response
+    local parsed_response
+    parsed_response=$(echo "$response" | jq -r '.content[0].text' 2>/dev/null)
+    local jq_exit_code=$?
+
+    if [[ $jq_exit_code -ne 0 ]]; then
+        echo "JSON parsing failed (jq exit code $jq_exit_code) - response: $response" >&2
+        echo "Falling back to Grok" >&2
+        ask_grok "$prompt"
+        return
+    fi
+
+    if [[ -n "$parsed_response" && "$parsed_response" != "null" ]]; then
+        echo "$parsed_response"
         update_rate_limit "claude"
         log_usage "claude" "reasoning"
     else
-        echo "Claude API call failed - falling back to Grok"
+        echo "Empty or null response from Claude - falling back to Grok" >&2
         ask_grok "$prompt"
     fi
 }
