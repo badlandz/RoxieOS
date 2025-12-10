@@ -326,9 +326,9 @@ ask_gemini() {
         return
     fi
 
-    # Gemini API call for research questions
+    # Gemini API call for research questions (using latest flash model)
     local response
-    response=$(curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$GEMINI_API_KEY" \
+    response=$(curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=$GEMINI_API_KEY" \
         -H "Content-Type: application/json" \
         -d "{
             \"contents\": [{
@@ -341,7 +341,7 @@ ask_gemini() {
     if [[ -n "$response" && "$response" != "null" ]]; then
         echo "$response"
     else
-        echo "Gemini API call failed - falling back to Ollama"
+        echo "Gemini API quota exceeded or call failed - falling back to Ollama"
         ask_ollama "$prompt"
     fi
 }

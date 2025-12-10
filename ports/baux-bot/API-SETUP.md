@@ -35,6 +35,7 @@ BAUX Bot supports multiple AI backends for different types of queries:
   - Go to: https://makersuite.google.com/app/apikey
   - Create new API key
   - Copy the full key (not project ID)
+  - ⚠️ **Very limited free quota** - hits limits quickly, falls back to Ollama
 - **Claude**: Anthropic API (pay per use)
 
 ## API Setup Instructions
