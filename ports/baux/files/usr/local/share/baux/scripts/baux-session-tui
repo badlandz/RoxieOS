@@ -18,47 +18,73 @@ get_sessions() {
     tmux list-sessions 2>/dev/null | awk -F: '{print $1}' || echo ""
 }
 
-# Get remote hosts (from BAUX-MESH and known nodes)
+# Get remote hosts (BAUX-MESH aware detection)
 get_remote_hosts() {
     local hosts=""
 
-    # Method 1: Check BAUX-MESH nodes via tailscale
+    # Method 1: BAUX-MESH via Tailscale (primary method)
     if command -v tailscale >/dev/null 2>&1; then
-        # Get tailscale peers (excluding ourselves)
-        local current_ip
-        current_ip=$(tailscale ip -4 2>/dev/null || echo "")
-        local peers
-        peers=$(tailscale status 2>/dev/null | grep -E '^[a-zA-Z0-9_-]+\s+[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $1}' | grep -v "^$(hostname -s)$" || echo "")
+        # Get all tailscale peers with their info
+        local tailscale_output
+        tailscale_output=$(tailscale status 2>/dev/null || echo "")
 
-        # Convert peer names to hostnames if possible
-        for peer in $peers; do
-            case "$peer" in
-                "baux01") hosts="${hosts}baux01 " ;;
-                "01x300") hosts="${hosts}baux-133 " ;;  # .133 node
-                "baux-scale") hosts="${hosts}baux-scale " ;;
-            esac
-        done
+        if [[ -n "$tailscale_output" ]]; then
+            # Extract peer hostnames (excluding ourselves)
+            local current_hostname
+            current_hostname=$(hostname -s)
+
+            # Parse tailscale status for peer names
+            local peers
+            peers=$(echo "$tailscale_output" | awk '/^[a-zA-Z0-9_-]+\s+[0-9]+\./ {print $1}' | grep -v "^$current_hostname$" || echo "")
+
+            for peer in $peers; do
+                # Map peer names to BAUX hostnames
+                case "$peer" in
+                    "baux01") hosts="${hosts}baux01 " ;;
+                    "01x300") hosts="${hosts}baux-133 " ;;  # .133 node
+                    "baux-scale") hosts="${hosts}baux-scale " ;;
+                    *) hosts="${hosts}$peer " ;;  # Include unknown peers
+                esac
+            done
+
+            # If we have mesh peers, this is our primary method
+            if [[ -n "$hosts" ]]; then
+                echo "$hosts" | tr ' ' '\n' | grep -v '^$' | sort | uniq
+                return
+            fi
+        fi
     fi
 
-    # Method 2: Check known BAUX hostnames with improved ping
+    # Method 2: Direct network detection (fallback)
+    # Check known BAUX hostnames with multiple methods
     for host in baux01 baux02 baux03 baux-scale; do
-        # Try multiple ping methods
+        # Try multiple connectivity tests
         if ping -c 1 -W 2 "$host" >/dev/null 2>&1 || \
-           timeout 2 nc -z "$host" 22 >/dev/null 2>&1 || \
-           timeout 2 ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o PasswordAuthentication=no "$host" "echo" >/dev/null 2>&1; then
-            # Avoid duplicates
-            if [[ "$hosts" != *"$host"* ]]; then
-                hosts="${hosts}$host "
-            fi
+           timeout 2 nc -z "$host" 22 >/dev/null 2>&1 2>/dev/null || \
+           timeout 2 ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o ConnectTimeout=2 "$host" "echo 1" >/dev/null 2>&1; then
+            hosts="${hosts}$host "
         fi
     done
 
-    # Method 3: Check for BAUX-MESH headscale server
-    if [[ -n "${BAUX_HEADSCALE_SERVER:-}" ]]; then
-        hosts="${hosts}${BAUX_HEADSCALE_SERVER} "
+    # Method 3: Environment-based detection
+    if [[ -n "${BAUX_MESH_NODES:-}" ]]; then
+        # Space-separated list of known mesh nodes
+        for node in $BAUX_MESH_NODES; do
+            if [[ "$hosts" != *"$node"* ]]; then
+                hosts="${hosts}$node "
+            fi
+        done
     fi
 
-    echo "$hosts" | tr ' ' '\n' | grep -v '^$' || echo ""
+    # Method 4: Headscale server detection
+    if [[ -n "${BAUX_HEADSCALE_SERVER:-}" ]]; then
+        if [[ "$hosts" != *"$BAUX_HEADSCALE_SERVER"* ]]; then
+            hosts="${hosts}$BAUX_HEADSCALE_SERVER "
+        fi
+    fi
+
+    # Return unique, sorted list
+    echo "$hosts" | tr ' ' '\n' | grep -v '^$' | sort | uniq || echo ""
 }
 
 # Display header
@@ -178,36 +204,51 @@ kill_session() {
 connect_remote() {
     local hosts=$(get_remote_hosts)
     if [[ -z "$hosts" ]]; then
-        echo -e "${RED}No remote nodes available${NC}"
+        echo -e "${RED}No remote BAUX-MESH nodes detected${NC}"
+        echo -e "${YELLOW}Make sure Tailscale is running and connected to BAUX-MESH${NC}"
         return
     fi
 
-    echo "Available remote nodes:"
+    echo "Available BAUX-MESH nodes:"
     local count=1
-    echo "$hosts" | while read -r host; do
+    local host_array=()
+    while read -r host; do
+        host_array+=("$host")
         echo "  $count. $host"
         ((count++))
-    done
+    done <<< "$hosts"
 
-    echo -n "Select remote host: "
+    echo -n "Select remote node: "
     read -r host_choice
 
-    if ! [[ "$host_choice" =~ ^[0-9]+$ ]] || [[ "$host_choice" -lt 1 ]]; then
+    if ! [[ "$host_choice" =~ ^[0-9]+$ ]] || [[ "$host_choice" -lt 1 ]] || [[ "$host_choice" -ge "$count" ]]; then
         echo -e "${RED}Invalid choice${NC}"
         return
     fi
 
-    local host=$(echo "$hosts" | sed -n "${host_choice}p")
+    local host="${host_array[$((host_choice - 1))]}"
     if [[ -z "$host" ]]; then
-        echo -e "${RED}Invalid host choice${NC}"
+        echo -e "${RED}Invalid host selection${NC}"
         return
     fi
 
-    echo -n "Enter session name on $host (default: baux-$(hostname)): "
+    # Get available sessions on remote host
+    echo "Checking sessions on $host..."
+    local remote_sessions
+    remote_sessions=$(baux pull "$host" --list-sessions 2>/dev/null || echo "")
+
+    if [[ -n "$remote_sessions" ]]; then
+        echo "Available sessions on $host:"
+        echo "$remote_sessions"
+        echo -n "Enter session name (or press Enter for default): "
+    else
+        echo -n "Enter session name on $host (default: baux-$(hostname)): "
+    fi
+
     read -r session_name
     session_name="${session_name:-baux-$(hostname)}"
 
-    echo "Connecting to session '$session_name' on $host..."
+    echo -e "${GREEN}Connecting to session '$session_name' on $host via BAUX-MESH...${NC}"
     exec baux pull "$host" "$session_name"
 }
 
