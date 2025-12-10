@@ -29,6 +29,12 @@ BAUX Bot supports multiple AI backends for different types of queries:
 - **Claude Code**: $20/mo Claude Pro (`curl -fsSL https://claude.ai/install.sh | bash`)
 - **GitHub Copilot CLI**: $10/mo Copilot Individual (`npm install -g @github/copilot`)
 
+### 🎉 FUN & GAMIFICATION - Free Built-in Features
+- **ASCII Art**: Inspirational text art generation (`pkg install figlet`)
+- **Cheerleader**: Motivational coding encouragement and achievements
+- **Keystroke Guru**: Interactive BAUX keymap learning and gamification
+- **HuggingFace**: Free creative AI models via inference API
+
 ### 🔑 API KEYS - Free but Require Account
 - **Grok**: Already configured via xAI
 - **Gemini**: Google AI Studio API key (starts with "AIza", ~40 characters)

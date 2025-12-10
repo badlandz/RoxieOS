@@ -41,7 +41,7 @@ if [[ $# -gt 0 ]]; then
             echo "  'read FILE' to force file into RAG"
             echo "  'develop TASK' for development advice"
             echo "  'code REQUEST' for code generation/review"
-            echo "  'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode' to change backend (auto-routing available)"
+            echo "  'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode/ascii-art/cheerleader/keystroke-guru/huggingface' to change backend (auto-routing available)"
             echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
             echo "  'search TERM' to search RAG for information"
             echo "  'teach TOPIC' for interactive learning mode"
@@ -215,6 +215,27 @@ route_query() {
         echo "Query contains destructive keywords but no git safety checks."
         echo "Routing to CLAUDE for careful reasoning..."
         return 3  # Claude
+    fi
+
+    # Check for fun/gamification queries first
+    local is_motivational=$(echo "$query_lower" | grep -c "motivat\|cheer\|encourag\|inspir\|gamif\|achiev\|level\|score" || true)
+    local is_art_request=$(echo "$query_lower" | grep -c "art\|ascii\|draw\|pictur\|visual\|inspirational" || true)
+    local is_learning=$(echo "$query_lower" | grep -c "learn\|teach\|tutorial\|keystroke\|keymap\|shortcut\|how.*do" || true)
+    local is_creative=$(echo "$query_lower" | grep -c "creativ\|brainstorm\|idea\|fun\|entertain" || true)
+
+    # Route fun queries to specialized handlers
+    if [[ $is_motivational -gt 0 ]]; then
+        echo "🎉 MOTIVATIONAL QUERY - Routing to CHEERLEADER..."
+        return 12  # Cheerleader
+    elif [[ $is_art_request -gt 0 ]]; then
+        echo "🎨 ART REQUEST - Routing to ASCII ART generator..."
+        return 11  # ASCII Art
+    elif [[ $is_learning -gt 0 && $(echo "$query_lower" | grep -c "keystroke\|keymap\|shortcut" || true) -gt 0 ]]; then
+        echo "🎮 KEYSTROKE LEARNING - Routing to KEYSTROKE GURU..."
+        return 13  # Keystroke Guru
+    elif [[ $is_creative -gt 0 ]]; then
+        echo "🎭 CREATIVE QUERY - Routing to HUGGINGFACE free models..."
+        return 14  # HuggingFace
     fi
 
     # Route based on query type and available tools - Network Chuck Ultimate AI Stack
@@ -470,13 +491,94 @@ ask_copilot_cli() {
 ask_opencode() {
     local prompt="$1"
     printf "BAUX BOT (OpenCode) open-source AI... "
-    # OpenCode integration for local model support
+    # OpenCode integration for open-source AI flexibility
     if command -v opencode >/dev/null 2>&1; then
         echo "Using OpenCode for flexible AI assistance"
         echo "Command: opencode '$prompt'"
         echo "OpenCode supports local models and multiple providers"
     else
         echo "OpenCode not installed. Install from: https://opencode.ai/"
+        ask_ollama "$prompt"
+    fi
+}
+
+# Fun & Gamification Integrations
+ask_ascii_art() {
+    local prompt="$1"
+    printf "BAUX BOT (ASCII Art) generating inspiration... "
+    # ASCII art generation using figlet or similar
+    if command -v figlet >/dev/null 2>&1; then
+        echo "Creating ASCII art motivation!"
+        echo "$prompt" | figlet -f small | head -10
+        echo ""
+        echo "💪 Keep coding, BAUX warrior! 💪"
+    else
+        echo "Figlet not installed. Install with: pkg install figlet"
+        echo "Meanwhile, here's some text motivation: $prompt - You got this! 🚀"
+    fi
+}
+
+ask_cheerleader() {
+    local prompt="$1"
+    printf "BAUX BOT (Cheerleader) pumping you up... "
+    # Motivational coding cheerleader
+    local cheers=(
+        "🎉 You're crushing it! That code is looking AMAZING! 🎉"
+        "💪 BAUX developer extraordinaire! Keep owning that terminal! 💪"
+        "🚀 You're coding at LIGHTSPEED! The mesh believes in you! 🚀"
+        "🎯 Precision coding! You're a keystroke ninja master! 🎯"
+        "🌟 Shining star of the BAUX constellation! Keep reaching for the stars! 🌟"
+        "🔥 You're on FIRE! That resurrection logic is GENIUS! 🔥"
+        "⚡ Lightning-fast problem solving! You're unstoppable! ⚡"
+        "🎨 Code artist! Your tmux layouts are works of art! 🎨"
+        "🏆 Champion coder! The mesh is proud of your progress! 🏆"
+        "💎 Diamond in the rough code! You're polishing up beautifully! 💎"
+    )
+    local random_cheer=${cheers[$RANDOM % ${#cheers[@]}]}
+    echo "$random_cheer"
+    echo ""
+    echo "Current achievement: $prompt - LEVEL UP! 📈"
+}
+
+ask_keystroke_guru() {
+    local prompt="$1"
+    printf "BAUX BOT (Keystroke Guru) teaching moves... "
+    # Interactive keystroke learning and gamification
+    echo "🎮 BAUX Keystroke Training Mode Activated! 🎮"
+    echo ""
+    echo "Today's Power Moves:"
+    echo "• C-Space + c → New window (Window Warrior! 🏗️)"
+    echo "• C-Space + % → Vertical split (Pane Master! ✂️)"
+    echo "• C-Space + h/j/k/l → Vim navigation (Movement Legend! 🏃‍♂️)"
+    echo "• C-Space + d → Detach (Session Survivor! 🛡️)"
+    echo ""
+    echo "💡 Pro Tip: $prompt"
+    echo "🎯 Practice these moves and you'll be a BAUX ninja in no time!"
+    echo ""
+    echo "🏆 Achievement Unlocked: Keystroke Explorer! 🏆"
+}
+
+ask_huggingface() {
+    local prompt="$1"
+    printf "BAUX BOT (HuggingFace) free AI models... "
+    # HuggingFace free inference API
+    if command -v curl >/dev/null 2>&1; then
+        echo "Using HuggingFace free inference for creative assistance"
+        # Use a free text generation model
+        local response
+        response=$(curl -s -X POST "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium" \
+            -H "Content-Type: application/json" \
+            -d "{\"inputs\": \"$prompt\", \"parameters\": {\"max_length\": 100}}" 2>/dev/null | \
+            jq -r '.[0].generated_text' 2>/dev/null | sed "s/$prompt//" | head -1)
+
+        if [[ -n "$response" && "$response" != "null" ]]; then
+            echo "🤗 HuggingFace says: $response"
+        else
+            echo "HuggingFace free API busy - try again later!"
+            ask_ollama "$prompt"
+        fi
+    else
+        echo "Curl not available"
         ask_ollama "$prompt"
     fi
 }
@@ -642,13 +744,13 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
         switch*)
             backend="${input#switch }"
-            if [[ "$backend" == "ollama" || "$backend" == "grok" || "$backend" == "gemini" || "$backend" == "claude" || "$backend" == "aider" || "$backend" == "mods" || "$backend" == "fabric" || "$backend" == "sgpt" || "$backend" == "claude-code" || "$backend" == "copilot-cli" || "$backend" == "opencode" ]]; then
+            if [[ "$backend" == "ollama" || "$backend" == "grok" || "$backend" == "gemini" || "$backend" == "claude" || "$backend" == "aider" || "$backend" == "mods" || "$backend" == "fabric" || "$backend" == "sgpt" || "$backend" == "claude-code" || "$backend" == "copilot-cli" || "$backend" == "opencode" || "$backend" == "ascii-art" || "$backend" == "cheerleader" || "$backend" == "keystroke-guru" || "$backend" == "huggingface" ]]; then
                 CURRENT_BACKEND="$backend"
                 echo "CURRENT_BACKEND=\"$CURRENT_BACKEND\"" > "$CONFIG_FILE"
                 MODEL=$(select_model)
                 echo "Switched to $CURRENT_BACKEND backend — model: $MODEL"
             else
-                echo "Invalid backend. Use 'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode'."
+                echo "Invalid backend. Use 'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode/ascii-art/cheerleader/keystroke-guru/huggingface'."
             fi
             continue
             ;;
@@ -733,6 +835,18 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
         10) # OpenCode (open-source flexibility)
             response=$(ask_opencode "$input")
+            ;;
+        11) # ASCII Art (inspirational)
+            response=$(ask_ascii_art "$input")
+            ;;
+        12) # Cheerleader (gamification)
+            response=$(ask_cheerleader "$input")
+            ;;
+        13) # Keystroke Guru (learning)
+            response=$(ask_keystroke_guru "$input")
+            ;;
+        14) # HuggingFace (free models)
+            response=$(ask_huggingface "$input")
             ;;
         *)  # Default fallback
             if [[ "$CURRENT_BACKEND" == "grok" ]]; then
