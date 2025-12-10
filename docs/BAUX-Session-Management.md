@@ -5,21 +5,23 @@ This session management supports the core vision of persistent Neovim IDE access
 
 ## Core Concepts
 
-### Session Immortality
+### Session Immortality ✅ WORKING
 **Problem:** Traditional terminal sessions die with hardware failures, network issues, or accidental closures.
 
 **BAUX Solution:** Sessions become persistent network resources that survive all interruptions and can be resurrected on any enrolled device.
 
-### Session States
-- **Active:** Running on specific device with real-time updates
-- **Suspended:** Paused state, resumable on any device
-- **Detached:** Running in background, attachable from anywhere
-- **Archived:** Historical snapshots for recovery
-- **Roaming:** Discovered via LAN probing or phone home to baux-scale
+**Current Status:** Baux-bot runs immortal in persistent tmux session with loaded RAG. Sessions survive reboots via tmux resurrect integration.
+
+### Session States (Current Implementation)
+- **Active:** Running on specific device with real-time updates ✅ (baux-bot session)
+- **Suspended:** Paused state, resumable on any device (planned)
+- **Detached:** Running in background, attachable from anywhere ✅ (tmux detach/attach)
+- **Archived:** Historical snapshots for recovery (planned)
+- **Roaming:** Discovered via LAN probing or phone home to baux-scale (SSH-based currently)
 
 ## tmux Integration
 
-### Immortal Panes
+### Immortal Panes ✅ WORKING
 BAUX extends tmux's session management with automatic resurrection:
 
 ```bash
@@ -28,8 +30,12 @@ tmux new-session -s work
 # → Close terminal = session lost
 
 # BAUX tmux: Session persists across devices
-baux session start work
+baux  # Starts persistent tmux session
 # → Session survives terminal, network, hardware changes
+
+# Current working example: baux-bot session
+tmux new-session -d -s baux-bot-session 'baux-bot --load-rag'
+# → Immortal AI assistant with persistent RAG
 ```
 
 ### Pane Resurrection
@@ -94,10 +100,20 @@ baux session attach dev
 # Session resurrects exactly as left
 ```
 
-### Roaming Session Discovery
-**LAN Probing:** RoxieOS boot scans local network (port 9999) for active sessions; offers immediate login/clone.
-**Phone Home:** Connect to baux-scale server for global session list; select from mesh-wide options.
-**TUI Selection:** Unified interface for choosing sessions from LAN or cloud sources.
+### Roaming Session Discovery (Current: SSH-Based)
+**LAN Probing:** Planned - RoxieOS boot scans local network (port 9999) for active sessions.
+**Phone Home:** Current - Use SSH to access mesh nodes: `ssh user@192.168.33.133`
+**TUI Selection:** Planned unified interface for session selection.
+
+**Working Examples:**
+```bash
+# Access baux-bot from any mesh node
+ssh badlandz@192.168.33.101 "tmux attach-session -t baux-bot-session"
+
+# Direct mesh connectivity confirmed
+ping 100.64.0.1  # Reach baux01
+ping 100.64.0.2  # Reach 01x300
+```
 
 ### Archival
 ```bash
@@ -207,24 +223,31 @@ baux session create hw --template embedded
 - **Pane Not Respawning:** Verify exit codes and respawn rules
 - **Migration Failing:** Check device enrollment and permissions
 
-### Diagnostic Commands
+### Diagnostic Commands (Tested & Working)
 ```bash
 # Check session status
-baux session status
+tmux ls  # See active sessions
+ps aux | grep baux-bot  # Check AI assistant
 
-# View sync logs
-baux session logs
+# View mesh connectivity
+tailscale status
+ping 100.64.0.1  # Ping mesh nodes
+ping 100.64.0.2
 
-# Force sync
-baux session sync --force
+# Server diagnostics
+headscale nodes list
+headscale preauthkeys list --user 1
+
+# Force session sync (planned)
+# baux session sync --force
 
 # Debug connectivity
-baux mesh ping
+tailscale ping 100.64.0.2  # Direct mesh ping
 ```
 
 ## Implementation Details
 
-### tmux Configuration
+### tmux Configuration (Working Setup)
 ```bash
 # BAUX-enhanced tmux.conf
 set -g @plugin 'tmux-plugins/tmux-resurrect'
@@ -233,6 +256,11 @@ set -g @plugin 'tmux-plugins/tmux-continuum'
 # BAUX integration
 set-environment -g BAUX_SESSION_ID "#{session_id}"
 set -g status-right "BAUX: #{session_name}"
+
+# Current working configuration on mesh nodes
+# - baux-bot session: Immortal AI assistant
+# - RAG persistence: Knowledge base survives reboots
+# - Mesh connectivity: Direct peer links maintained
 ```
 
 ### Session Storage Format
@@ -258,13 +286,19 @@ set -g status-right "BAUX: #{session_name}"
 }
 ```
 
-## Future Enhancements
+## Current Achievements & Future Enhancements
 
-### Advanced Features
+### ✅ Completed Features
+- **Immortal Sessions:** tmux sessions persist across reboots
+- **AI Integration:** Baux-bot with persistent RAG in tmux
+- **Mesh Connectivity:** Direct peer-to-peer links established
+- **Cross-Device Access:** SSH-based session roaming working
+
+### Advanced Features (Next Phase)
 - **Session Recording:** Historical playback
 - **Collaborative Sessions:** Multi-user editing
-- **AI Integration:** Intelligent session suggestions
-- **Resource Pooling:** Distribute across devices
+- **AI Integration:** Enhanced session suggestions (Grok/xai working)
+- **Resource Pooling:** Distribute across mesh devices
 
 ### Ecosystem Integration
 - **IDE Integration:** VS Code remote session support

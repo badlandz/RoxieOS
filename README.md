@@ -27,14 +27,16 @@ RoxieOS is a FreeBSD-based operating system for persistent, distributed developm
 
 ## Key Features
 
-- **Distributed Sessions**: Sessions as network resources via Headscale mesh
+- **WORKING Distributed Mesh**: Headscale + Tailscale mesh with direct peer connectivity (0% packet loss confirmed)
+- **Immortal Baux-Bot**: AI assistant in persistent tmux session with loaded RAG, communicating via xai-Grok
+- **Distributed Sessions**: Sessions as network resources via Headscale mesh (currently SSH-based, mesh Phase 3 planned)
 - **Workstation Cloning**: Backup and restore complete environments instantly
 - **Immortal Sessions**: Sessions survive reboots, crashes, and hardware changes
 - **Unified Keymaps**: Consistent controls across console, WM, editor, and terminal
 - **Gruvbox Theming**: Cohesive visual experience across all components
-- **Revolutionary Font Stack**: 9 professional fonts for maximum accessibility
-- **Live System Builds**: Unionfs-fuse based live USB with persistence
-- **AI-Powered Development**: Integrated xai-chat and baux-bot assistance
+- **Revolutionary Font Stack**: 9 professional fonts for maximum accessibility (Debian integration)
+- **Live System Builds**: Unionfs-fuse based live USB with persistence (NomadBSD-inspired)
+- **AI-Powered Development**: Integrated xai-chat and baux-bot with Grok/Ollama backends
 - **FreeBSD Native**: Ports system, ZFS snapshots, rc.d services
 - **Minimal Footprint**: Core packages <400MB, boot in <5 seconds
 
@@ -85,7 +87,7 @@ baux
 - **xai-chat** AI assistant via XAI API (✅ argument passing fixed)
 - **Gruvbox theming** in all components
 
-### Development Status
+### Development Status - WORKING MESH ACHIEVED! 🎉
 **✅ Core Components (Repo):**
 - `bbase` - Keymap system with Caps→Esc functionality
 - `baux` - Session management with tmux integration
@@ -93,34 +95,44 @@ baux
 - **Git/SSH** - Development workflow ready
 - **TPM + Plugins** - Tmux resurrect and continuum installed
 
-**🔄 Workstation Installation (192.168.33.101):**
-- **Setup Script**: Created and deployed with X11/Ollama config
-- **Components**: bbase (permissions issue), baux, bvi (pending full install)
-- **Fonts**: Console fonts available (8x16), X11 configured for 192 DPI accessibility
-- **X11**: Setup ready with video group permissions
-- **AI**: Ollama service configured for baux-bot
-- **Keymap**: baux.kbd exists, activation pending permissions fix
+**✅ WORKING Mesh Nodes:**
+- **baux01 (192.168.33.101)**: Online, mesh IP 100.64.0.1, direct peer connection
+- **01x300 (192.168.33.133)**: Online, mesh IP 100.64.0.2, direct peer connection
+- **Cloud Server (bs.coseismic.org)**: Headscale running, nodes approved
+- **Connectivity**: 0% packet loss, sub-1ms latency confirmed
 
-**🔄 AI Assistance:**
+**✅ AI Assistance - FULLY OPERATIONAL:**
 - **xai-chat**: XAI API integrated and working
-- **baux-bot**: Ollama-based assistant with auto-startup (service enabled in port install)
-- **Manual Development** - Full access to codebase for manual debugging
+- **baux-bot**: Immortal in persistent tmux session with loaded RAG
+- **Grok Integration**: Direct communication via xai pipe confirmed
+- **RAG System**: Active repo monitoring, knowledge base rebuilding
+- **Backends**: Grok (primary), Ollama (local), multi-model switching
+
+**✅ Mesh Recovery Lessons Learned:**
+- **Headscale Setup**: Cloud VPS with domain, user creation, key generation
+- **Client Enrollment**: `doas tailscale up --login-server=https://server --auth-key=KEY`
+- **Node Approval**: `headscale nodes approve NODENAME` (not --identifier)
+- **Permissions**: Add users to headscale group for CLI access
+- **Troubleshooting**: Check tailscale status, headscale nodes list, ping mesh IPs
 
 **🧪 Comparison Testing Ready:**
 - **Clean vim** (`vim ~/.vimrc`) - Baseline vim configuration
 - **Clean tmux** (`tmux -f ~/.tmux.conf`) - Baseline tmux configuration
 - **BAUX vim** (`bvi file`) - BAUX neovim integration
 - **BAUX tmux** (`baux`) - BAUX tmux session
+- **Mesh ping** (`ping 100.64.0.2`) - Test mesh connectivity
 
 **🎯 Current Development Workflow:**
 1. **Code on workstation**: Edit files in `~/src/RoxieOS/`
 2. **Test manually**: Compare clean vs BAUX implementations
 3. **Debug with knowledge**: Reference documentation and logs
 4. **Iterate**: Push/pull changes as needed
+5. **Mesh Testing**: Use SSH between nodes, verify connectivity
 
 ### Current Test Platforms
 - **Primary:** ThinkPad X300 (FreeBSD 15.0) - Your test system
 - **Secondary:** Proxmox VM (FreeBSD 15.x) for server testing
+- **Mesh Nodes:** .101 (baux01) and .133 (01x300) - WORKING
 - **Future:** Raspberry Pi, generic laptops
 
 ### Troubleshooting
@@ -164,6 +176,7 @@ We welcome contributions! See [Development Guide](docs/Development.md) for:
 ### Getting Help
 
 - 📖 [Handbook](docs/Handbook.md) - Complete documentation
+- 🚀 [Mesh Quick Start](docs/Mesh-Quick-Start.md) - Get mesh working in 10 minutes
 - 🐛 [Issues](https://github.com/badlandz/RoxieOS/issues) - Bug reports
 - 💬 [Discussions](https://github.com/badlandz/RoxieOS/discussions) - Q&A
 

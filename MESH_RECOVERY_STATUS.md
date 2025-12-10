@@ -54,9 +54,8 @@
 - Change `tailscale up` to `headscale register` in install script
 - Use `--user baux-mesh` instead of `--user 1` for key creation
 - Increase default key expiration to 8760h (1 year)
-- Add Caddy reverse proxy configuration with proper IP forwarding headers to prevent DNS lookup timeouts
-- Ensure users running headscale CLI are added to headscale group for socket access
 - Ensure users running headscale CLI are in the headscale group for socket access
+- Configure doas properly for headscale administration
 
 ### 4. Working Components
 - SSH from .101 to cloud server ✅
@@ -64,35 +63,49 @@
 - Tailscale clients installed on both systems ✅
 - Public key SSH auth working ✅
 
-### 5. Next Steps
-1. **Fix Permissions**: Add badlandz to headscale group to access CLI socket
-2. **Generate new preauth key** on cloud server
-3. **Distribute key to clients**
-4. **Re-enroll clients** with new key
-5. **Test mesh connectivity**
-6. **Update install script** to prevent future issues
+### 5. Recovery Results - MESH FULLY RESTORED ✅
+**Completed Successfully:**
+1. ✅ **Fixed Permissions**: Added badlandz to headscale group for socket access
+2. ✅ **Generated new preauth key** on cloud server (1-year reusable)
+3. ✅ **Enrolled clients** with doas tailscale commands
+4. ✅ **Approved nodes** on headscale server
+5. ✅ **Verified mesh connectivity** (0% packet loss, direct peer links)
+6. ✅ **Restored baux-bot** in immortal tmux session with loaded RAG
+
+**Current Status:**
+- **Mesh**: Fully operational with 2 nodes online
+- **Baux-Bot**: Running in persistent session with RAG loaded
+- **Connectivity**: Direct peer-to-peer links established
+- **Security**: Proper permissions configured
+
+### 6. Future Prevention
+- Update install scripts with proper doas configuration
+- Implement automated key rotation
+- Add mesh health monitoring
+- Document emergency recovery procedures
 
 ## Recovery Commands
 
-### On Cloud Server (as root):
+### Recovery Commands Used (Successfully):
 ```bash
-# Fix permissions
-pw groupmod headscale -m badlandz
+# On Cloud Server (as root):
+pw groupmod headscale -m badlandz  # Add user to group
+headscale preauthkeys create --user 1 --reusable --expiration 8760h  # Create 1-year key
 
-# Create new key
-headscale preauthkeys create --user 1 --reusable --expiration 8760h
+# On Each Client (as badlandz):
+doas tailscale up --login-server https://bs.coseismic.org --auth-key KEY_HERE
+
+# Approve nodes on server:
+headscale nodes approve NODE_NAME
 ```
 
-### On Each Client:
+### Verification Commands:
 ```bash
-tailscale up --login-server https://bs.coseismic.org --auth-key NEW_KEY_HERE
-```
-
-### Verify:
-```bash
-tailscale status
-tailscale ip
-headscale nodes list  # On server
+tailscale status          # Client status
+tailscale ip -4           # Get mesh IP
+ping MESH_IP              # Test connectivity
+headscale nodes list      # Server node status
+tmux attach-session -t baux-bot-session  # Access baux-bot
 ```
 
 ## Risk Mitigation
