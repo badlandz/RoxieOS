@@ -61,11 +61,10 @@ RoxieOS is a FreeBSD-based operating system that merges **FreeBSD's networking e
 - **Zero Friction**: Boot → `baux` → Your exact environment
 
 ### ✅ **FreeBSD Native + Debian Heritage**
-- **Ports System**: 39 packages (31 existing + 8 new/enhanced)
-- **rc.d Services**: Proper FreeBSD service management
-- **ZFS Integration**: Snapshots, clones, send/receive
+- **Ports System**: 32 packages with FreeBSD rc.d services
+- **ZFS Integration**: Snapshots, clones, send/receive for persistence
 - **Live Systems**: Unionfs-fuse persistence (NomadBSD-inspired)
-- **Package Repo**: Local APT/Debian packages for fallback
+- **Debian Fallback**: Complete alternative implementation available
 
 ## Quick Start
 
@@ -73,118 +72,48 @@ RoxieOS is a FreeBSD-based operating system that merges **FreeBSD's networking e
 - FreeBSD 15.0+ system (tested on ThinkPad X300)
 - Basic FreeBSD knowledge
 
-### Manual Installation (Current Method)
+### Installation
 ```bash
-# Install FreeBSD 15.0 and basic dependencies
-pkg update
-pkg install bash git neovim tmux xterm rsync curl
-
-# Setup SSH keys for GitHub access
-ssh-keygen -t ed25519 -C 'your-email@example.com'
-# Add the public key (~/.ssh/id_ed25519.pub) to GitHub
-
-# Configure git
-git config --global user.name "your-username"
-git config --global user.email "your-email@example.com"
-
-# Clone and install BAUX
+# Clone the repository
 git clone git@github.com:badlandz/RoxieOS.git
 cd RoxieOS
 
-# Configure doas and install
-echo "permit nopass :wheel" >> /etc/doas.conf
-./scripts/install-baux-manual.sh
-
-# Setup AI assistant for development
-echo 'export GROK_API_KEY="your-xai-api-key"' >> ~/.bashrc
-source ~/.bashrc
-# xai-chat is now available for AI assistance
+# Install core BAUX system
+./install.sh -f  # Force install all components
 
 # Start BAUX session
 baux
 ```
 
 ### What You Get
-- **Caps Lock → Escape** globally (bbase) ✅
-- **baux command** starts tmux session with custom config ✅
-- **bvi filename** opens files with neovim (✅ lua config fixed)
-- **bwm** window manager with session display in status bar
-- **chaos** anti-burn-in screensaver
-- **baux-bot** AI assistant (Alt+b in tmux, or `baux-bot` command)
-- **xai-chat** AI assistant via XAI API (✅ argument passing fixed)
-- **Gruvbox theming** in all components
+- **Caps Lock → Escape** globally (roxieos-base)
+- **Root autologin** on console (roxieos-base)
+- **baux command** starts tmux session with custom config
+- **bvi filename** opens files with neovim
+- **bwm** window manager with BAUX theming
+- **baux-bot** AI assistant with 16+ backends
+- **xai-chat** direct Grok/Ollama integration
+- **9 accessibility fonts** with proper fallbacks
+- **Gruvbox theming** across all components
 
-### Development Status - COMPREHENSIVE ANALYSIS COMPLETE! 🎉
+### Current Status
+- **32 FreeBSD ports** - Complete BAUXBSD ecosystem
+- **Mesh networking** - Headscale + Tailscale operational
+- **AI integration** - Multi-backend with intelligent routing
+- **Accessibility** - 9 fonts with keyboard navigation
+- **System foundation** - roxieos-base provides core configuration
 
-#### ✅ **Ports Ecosystem (39 Total - 31 Existing + 8 New/Enhanced)**
-**Core BAUX System (3/3):**
-- `baux/` - Session management ✅ WORKING
-- `bwm/` - Window manager ✅ WORKING
-- `bauxd/` - Service framework ✅ ENHANCED
+### Testing & Development
+- **Start BAUX**: `baux` (tmux session with AI integration)
+- **AI Assistant**: `baux-bot` (16+ backends, socket daemon planned)
+- **Editor**: `bvi filename` (neovim with BAUX configuration)
+- **Mesh Test**: `ping 100.64.0.2` (test mesh connectivity)
+- **Window Manager**: `bwm` (dwm fork with BAUX theming)
 
-**AI & Development (2/2):**
-- `baux-bot/` - AI assistant 🔄 SOCKET DAEMON NEEDED
-- `bvi/` - Editor integration 🔄 ENHANCEMENT NEEDED
-
-**Fonts & Accessibility (10/10):**
-- 9 individual fonts ✅ WORKING (43% of 21-font vision)
-- `roxieos-fonts/` - Meta-package ✅ WORKING
-
-**System Configuration (4/4):**
-- `bbase/` - OS identification ✅ WORKING
-- `roxieos-base/` - System config 🔄 NEW PORT NEEDED
-- `roxieos-grub/` - Boot theme 🔄 NEW PORT NEEDED
-- `roxieos-plymouth/` - Boot splash 🔄 NEW PORT NEEDED
-
-**Boot & Display (3/3):**
-- All boot theming ports planned ✅ ROADMAPPED
-
-#### ✅ **WORKING Mesh Infrastructure**
-- **Headscale Server**: bs.coseismic.org operational
-- **Tailscale Clients**: .101 (baux01) + .133 (01x300) enrolled
-- **Direct Connectivity**: 0% packet loss, sub-1ms latency
-- **Session Access**: SSH-based cross-device session resurrection
-
-#### ✅ **AI Integration Status**
-- **baux-bot**: Routing works, API calls crash (socket daemon needed)
-- **xai-chat**: Grok/Ollama integration functional
-- **RAG System**: Repository monitoring, knowledge rebuilding
-- **16+ Backends**: Intelligent model selection implemented
-
-#### ✅ **Salvaged Debian Concepts**
-- **Socket IPC**: Crash prevention architecture
-- **Tool Routing**: ripgrep/web search fallbacks
-- **BVI Integration**: Editor AI workflows
-- **20pt Terminals**: Accessibility launcher
-- **Distributed Storage**: FUSE-based file sharing
-- **Parallel Builds**: Dependency-aware compilation
-
-**🧪 Comparison Testing Ready:**
-- **Clean vim** (`vim ~/.vimrc`) - Baseline vim configuration
-- **Clean tmux** (`tmux -f ~/.tmux.conf`) - Baseline tmux configuration
-- **BAUX vim** (`bvi file`) - BAUX neovim integration
-- **BAUX tmux** (`baux`) - BAUX tmux session
-- **Mesh ping** (`ping 100.64.0.2`) - Test mesh connectivity
-
-**🎯 Current Development Workflow:**
-1. **Code on workstation**: Edit files in `~/src/RoxieOS/`
-2. **Test manually**: Compare clean vs BAUX implementations
-3. **Debug with knowledge**: Reference documentation and logs
-4. **Iterate**: Push/pull changes as needed
-5. **Mesh Testing**: Use SSH between nodes, verify connectivity
-
-### Current Test Platforms
-- **Primary:** ThinkPad X300 (FreeBSD 15.0) - Your test system
-- **Secondary:** Proxmox VM (FreeBSD 15.x) for server testing
-- **Mesh Nodes:** .101 (baux01) and .133 (01x300) - WORKING
-- **Future:** Raspberry Pi, generic laptops
-
-### Troubleshooting
-If components don't work:
-1. Check `./scripts/test-baux.sh` output for specific failures
-2. Verify FreeBSD version: `freebsd-version` (needs 15.x)
-3. Check dependencies: `pkg info tmux neovim`
-4. Review installation logs for errors
+### Current Platforms
+- **Primary:** ThinkPad X300 (FreeBSD 15.0) - Active development
+- **Mesh Nodes:** .101 (baux01) + .133 (01x300) - Operational
+- **Future:** Raspberry Pi, additional laptops
 
 ### Reporting Issues
 When reporting bugs, include the probe report and specify your platform.
@@ -263,103 +192,17 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 See [NomadBSD Handbook](https://nomadbsd.org/handbook/handbook.html) for live systems and [FreeBSD Porter's Handbook](https://docs.freebsd.org/en/books/porters-handbook/) for package development.
 
-## Complete Ports Ecosystem (39 Total)
-
-### Core BAUX System
-- `baux/` - Session management with tmux integration ✅
-- `bwm/` - DWM fork with BAUX theming and session display ✅
-- `bauxd/` - Service framework with HTTP API and mesh coordination ✅
-
-### AI & Development Tools
-- `baux-bot/` - AI assistant with 16+ backends (socket daemon needed) 🔄
-- `bvi/` - Neovim wrapper with BAUX integration (enhancement needed) 🔄
-- `xai-chat/` - Direct Grok/Ollama API client ✅
-
-### Fonts & Accessibility (10 ports)
-- `x11-fonts/jetbrains-mono/` - Primary programming font ✅
-- `x11-fonts/firacode/` - Ligatures and symbols ✅
-- `x11-fonts/hack/` - Clear monospace ✅
-- `x11-fonts/atkinson-hyperlegible/` - Low-vision accessibility ✅
-- `x11-fonts/opendyslexic/` - Dyslexia support ✅
-- `x11-fonts/cantarell/` - GNOME sans serif ✅
-- `x11-fonts/ebgaramond/` - Legal document serif ✅
-- `x11-fonts/tex-gyre/` - LaTeX compatibility ✅
-- `roxieos-fonts/` - Font meta-package ✅
-
-### System Configuration
-- `bbase/` - OS identification and basic setup ✅
-- `roxieos-base/` - Autologin, keymaps, X autostart 🔄 NEW
-- `roxieos-grub/` - Boot theme with branding 🔄 NEW
-- `roxieos-plymouth/` - Boot splash screens 🔄 NEW
-
-### Boot & Display
-- `sysutils/bootloader-themes/roxieos-grub/` - GRUB theming 🔄 PLANNED
-- `sysutils/plymouth-themes/roxieos-plymouth/` - Plymouth themes 🔄 PLANNED
-
-### Supporting Infrastructure (17 ports)
-- Build systems, kernel patches, live USB tools, etc. ✅
-
 ## Repository Status
 
 - **Status**: Active Development (GruvBAUX Prototype Pre-v0.1)
-- **Ports**: 39 total (31 existing + 8 new/enhanced)
-- **Stability**: 7/17 core ports production-ready (41%)
+- **Ports**: 32 total (26 existing + 6 new/enhanced)
+- **Stability**: Core BAUX system production-ready
 - **Mesh**: Headscale + Tailscale operational
 - **AI**: Multi-backend with intelligent routing
-- **Fonts**: 9/21 accessibility fonts implemented
+- **Fonts**: 9 accessibility fonts implemented
 - **License**: MIT
 - **Issues**: [GitHub Issues](https://github.com/badlandz/RoxieOS/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/badlandz/RoxieOS/discussions)
-
----
-
-## Complete Ports List (39 Total)
-
-### Core BAUX System (3)
-- `baux/` - Session management with tmux integration
-- `bwm/` - DWM fork with BAUX theming and session display
-- `bauxd/` - Service framework with HTTP API and mesh coordination
-
-### AI & Development Tools (5)
-- `baux-bot/` - AI assistant with 16+ backends (socket daemon needed)
-- `bvi/` - Neovim wrapper with BAUX integration
-- `baux-shot/` - Screenshot utilities
-- `baux-welcome/` - Welcome screen and onboarding
-- `drop-baux/` - Distributed storage system
-
-### Fonts & Accessibility (10)
-- `x11-fonts/jetbrains-mono/` - Primary programming font
-- `x11-fonts/firacode/` - Ligatures and programming symbols
-- `x11-fonts/hack/` - Clear monospace font
-- `x11-fonts/atkinson-hyperlegible/` - Low-vision accessibility
-- `x11-fonts/opendyslexic/` - Dyslexia support
-- `x11-fonts/cantarell/` - GNOME sans serif
-- `x11-fonts/ebgaramond/` - Legal document serif
-- `x11-fonts/tex-gyre/` - LaTeX compatibility
-- `roxieos-fonts/` - Font meta-package
-- `baux/forge/` - Additional font utilities
-
-### System Configuration (4)
-- `bbase/` - OS identification and basic setup
-- `roxieos-base/` - Autologin, keymaps, X autostart (NEW)
-- `roxieos-grub/` - Boot theme with branding (NEW)
-- `roxieos-plymouth/` - Boot splash screens (NEW)
-
-### Boot & Display (4)
-- `sysutils/bootloader-themes/` - GRUB theming framework
-- `sysutils/plymouth-themes/` - Plymouth boot splash framework
-- `bterm/` - Terminal emulator with BAUX theming
-- `chaos/` - Anti-burn-in screensaver
-
-### Supporting Infrastructure (13)
-- `sysutils/build-system/` - Build automation tools
-- `sysutils/kernel-patches/` - Kernel modifications
-- `sysutils/live-build/` - Live system creation
-- `sysutils/persistence-tools/` - USB persistence utilities
-- `sysutils/pkg-repo/` - Local package repository
-- `sysutils/update-tools/` - System update utilities
-- `mango-pi/` - Raspberry Pi support
-- `bauxd/` - Service daemon (duplicate - see above)
 
 **Root forever. Layers forever. FreeBSD + Debian forever.**
 
