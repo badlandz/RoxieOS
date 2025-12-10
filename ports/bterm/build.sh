@@ -39,9 +39,10 @@ patch -p1 < st-font2-0.8.5.diff
 fetch https://st.suckless.org/patches/scrollback/st-scrollback-0.8.5.diff
 patch -p1 < st-scrollback-0.8.5.diff
 
-# Ligatures patch for programming fonts
-fetch https://st.suckless.org/patches/ligatures/st-ligatures-20230105-2c5833f.diff
-patch -p1 < st-ligatures-20230105-2c5833f.diff
+# Ligatures patch for programming fonts (optional - requires harfbuzz)
+echo "Note: Ligatures patch requires harfbuzz library - skipping for now"
+# fetch https://st.suckless.org/patches/ligatures/0.9/st-ligatures-20240105-0.9.diff
+# patch -p1 < st-ligatures-20240105-0.9.diff
 
 echo "Copying BAUX configuration..."
 cp "$(pwd)/../../files/usr/local/share/bterm/config.def.h" config.def.h
