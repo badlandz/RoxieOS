@@ -17,6 +17,12 @@ BAUX Bot supports multiple AI backends for different types of queries:
 - **Gemini**: Google AI Studio API
 - **Claude**: Anthropic API
 
+### 🆕 Network Chuck CLI Tools Integration
+- **Aider**: AI pair programming (install: `pip install aider-chat`)
+- **Mods**: Terminal AI (install: `go install github.com/charmbracelet/mods@latest`)
+- **Fabric**: AI workflow framework (install: `pip install fabric-ai`)
+- **ShellGPT**: Command line GPT (install: `pip install shell-gpt`)
+
 ## API Setup Instructions
 
 ### Google Gemini Setup
@@ -38,10 +44,11 @@ export CLAUDE_API_KEY="your-api-key-here"
 ## Implementation Notes
 
 ### Routing Logic
-BAUX Bot automatically routes queries based on content analysis:
-- **Research/General**: → Gemini
-- **BAUX Coding**: → Grok (with safety checks)
-- **Complex Reasoning**: → Claude
+BAUX Bot automatically routes queries based on content analysis and available tools:
+- **Research/General**: → Fabric (if available) → Gemini
+- **BAUX Coding**: → Aider (if available) → Grok (with safety checks)
+- **General Coding**: → Aider → Mods → Claude
+- **Quick Queries**: → ShellGPT → Mods → Grok
 - **Destructive Operations**: → Claude (requires git safety)
 
 ### Safety Features

@@ -41,7 +41,7 @@ if [[ $# -gt 0 ]]; then
             echo "  'read FILE' to force file into RAG"
             echo "  'develop TASK' for development advice"
             echo "  'code REQUEST' for code generation/review"
-            echo "  'switch ollama/grok/gemini/claude' to change backend (auto-routing available)"
+            echo "  'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt' to change backend (auto-routing available)"
             echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
             echo "  'search TERM' to search RAG for information"
             echo "  'teach TOPIC' for interactive learning mode"
@@ -217,23 +217,53 @@ route_query() {
         return 3  # Claude
     fi
 
-    # Route based on query type
+    # Route based on query type and available tools
     if [[ $is_research -gt $is_coding ]]; then
-        echo "🔍 RESEARCH QUERY - Routing to GEMINI..."
-        return 1  # Gemini
+        # Check for advanced research tools
+        if command -v fabric >/dev/null 2>&1; then
+            echo "🔬 ADVANCED RESEARCH - Routing to FABRIC workflow AI..."
+            return 6  # Fabric
+        else
+            echo "🔍 RESEARCH QUERY - Routing to GEMINI..."
+            return 1  # Gemini
+        fi
     elif [[ $is_coding -gt 0 ]]; then
         # Check if it's BAUX-specific coding
         local is_baux_specific=$(echo "$query_lower" | grep -c "baux\|roxieos\|tmux\|resurrect\|mesh" || true)
         if [[ $is_baux_specific -gt 0 ]]; then
-            echo "💻 BAUX CODING - Routing to GROK (with safety checks)..."
-            return 2  # Grok
+            # BAUX-specific - use best available tool
+            if command -v aider >/dev/null 2>&1; then
+                echo "🎯 BAUX ADVANCED CODING - Routing to AIDER pair programming..."
+                return 4  # Aider
+            else
+                echo "💻 BAUX CODING - Routing to GROK (with safety checks)..."
+                return 2  # Grok
+            fi
         else
-            echo "🤔 GENERAL CODING - Routing to CLAUDE for careful implementation..."
-            return 3  # Claude
+            # General coding - use sophisticated tools
+            if command -v aider >/dev/null 2>&1; then
+                echo "🚀 ADVANCED CODING - Routing to AIDER for implementation..."
+                return 4  # Aider
+            elif command -v mods >/dev/null 2>&1; then
+                echo "💻 GENERAL CODING - Routing to MODS terminal AI..."
+                return 5  # Mods
+            else
+                echo "🤔 GENERAL CODING - Routing to CLAUDE for careful implementation..."
+                return 3  # Claude
+            fi
         fi
     else
-        echo "🎲 GENERAL QUERY - Routing to GROK for witty response..."
-        return 2  # Grok
+        # General queries - use quick response tools
+        if command -v sgpt >/dev/null 2>&1; then
+            echo "⚡ QUICK QUERY - Routing to SHELLGPT..."
+            return 7  # ShellGPT
+        elif command -v mods >/dev/null 2>&1; then
+            echo "🎲 GENERAL QUERY - Routing to MODS for response..."
+            return 5  # Mods
+        else
+            echo "🎭 GENERAL QUERY - Routing to GROK for witty response..."
+            return 2  # Grok
+        fi
     fi
 }
 
@@ -273,6 +303,61 @@ ask_claude() {
     # TODO: Implement Claude API call for complex reasoning
     echo "Claude integration coming soon - falling back to Grok for now"
     ask_grok "$prompt"
+}
+
+# Network Chuck CLI Tools Integration
+ask_aider() {
+    local prompt="$1"
+    printf "BAUX BOT (Aider) pair programming... "
+    # Aider integration for advanced code editing
+    if command -v aider >/dev/null 2>&1; then
+        echo "Aider available - launching pair programming session"
+        echo "Run: aider --message '$prompt'"
+        echo "Aider will handle code editing directly"
+    else
+        echo "Aider not installed. Install with: pip install aider-chat"
+        ask_grok "$prompt"
+    fi
+}
+
+ask_mods() {
+    local prompt="$1"
+    printf "BAUX BOT (Mods) terminal AI... "
+    # Mods integration for terminal AI
+    if command -v mods >/dev/null 2>&1; then
+        echo "Using mods for terminal AI response"
+        mods -m gpt-4 "$prompt" 2>/dev/null || ask_grok "$prompt"
+    else
+        echo "Mods not installed. Install from: https://github.com/charmbracelet/mods"
+        ask_grok "$prompt"
+    fi
+}
+
+ask_fabric() {
+    local prompt="$1"
+    printf "BAUX BOT (Fabric) workflow AI... "
+    # Fabric integration for structured AI workflows
+    if command -v fabric >/dev/null 2>&1; then
+        echo "Using fabric for structured AI workflow"
+        # Use fabric patterns for coding tasks
+        fabric -p improve_code "$prompt" 2>/dev/null || ask_grok "$prompt"
+    else
+        echo "Fabric not installed. Install from: https://github.com/danielmiessler/fabric"
+        ask_grok "$prompt"
+    fi
+}
+
+ask_sgpt() {
+    local prompt="$1"
+    printf "BAUX BOT (ShellGPT) command line AI... "
+    # ShellGPT integration for quick queries
+    if command -v sgpt >/dev/null 2>&1; then
+        echo "Using ShellGPT for quick AI response"
+        sgpt "$prompt" 2>/dev/null || ask_grok "$prompt"
+    else
+        echo "ShellGPT not installed. Install with: pip install shell-gpt"
+        ask_grok "$prompt"
+    fi
 }
 
 ask_grok() {
@@ -436,13 +521,13 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
         switch*)
             backend="${input#switch }"
-            if [[ "$backend" == "ollama" || "$backend" == "grok" || "$backend" == "gemini" || "$backend" == "claude" ]]; then
+            if [[ "$backend" == "ollama" || "$backend" == "grok" || "$backend" == "gemini" || "$backend" == "claude" || "$backend" == "aider" || "$backend" == "mods" || "$backend" == "fabric" || "$backend" == "sgpt" ]]; then
                 CURRENT_BACKEND="$backend"
                 echo "CURRENT_BACKEND=\"$CURRENT_BACKEND\"" > "$CONFIG_FILE"
                 MODEL=$(select_model)
                 echo "Switched to $CURRENT_BACKEND backend — model: $MODEL"
             else
-                echo "Invalid backend. Use 'switch ollama', 'switch grok', 'switch gemini', or 'switch claude'."
+                echo "Invalid backend. Use 'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt'."
             fi
             continue
             ;;
@@ -506,6 +591,18 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
         3)  # Claude (complex reasoning)
             response=$(ask_claude "$input")
+            ;;
+        4)  # Aider (advanced code editing)
+            response=$(ask_aider "$input")
+            ;;
+        5)  # Mods (terminal AI)
+            response=$(ask_mods "$input")
+            ;;
+        6)  # Fabric (workflow AI)
+            response=$(ask_fabric "$input")
+            ;;
+        7)  # ShellGPT (quick queries)
+            response=$(ask_sgpt "$input")
             ;;
         *)  # Default fallback
             if [[ "$CURRENT_BACKEND" == "grok" ]]; then
