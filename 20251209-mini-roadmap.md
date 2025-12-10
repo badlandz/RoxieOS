@@ -173,11 +173,11 @@ Commands: [a]ttach [s]witch [p]ull [c]lone [d]elete [q]uit
 
 - **Week 1:** Session registry database and API ✅ COMPLETE
 - **Week 2:** Registry integration with baux commands ✅ COMPLETE
-- **Week 3:** Basic switching commands (switch/pull) 🔄 CURRENT
+- **Week 3:** Basic switching commands (switch/pull) ✅ COMPLETE
 - **Week 4:** TUI interface development
 - **Week 5:** TUI integration and testing
 - **Week 6:** Persistence polish and reliability testing
 
-**Progress:** Phase 1 complete in 1 week! Session registry fully functional with working baux integration.
+**Progress:** Phase 2 complete! Mesh session resurrection working across nodes. The BAUX heart is beating strong! 💓
 
 **Rationale:** This stabilizes the BAUX core before GUI/server expansion, ensuring the "heart" beats reliably across the mesh.
