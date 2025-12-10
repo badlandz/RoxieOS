@@ -17,14 +17,22 @@ BAUX Bot supports multiple AI backends for different types of queries:
 - **Gemini**: Google AI Studio API
 - **Claude**: Anthropic API
 
-### 🆕 Network Chuck Ultimate AI Stack Integration
-- **Aider**: AI pair programming (install: `pip install aider-chat`)
-- **Mods**: Terminal AI (install: `go install github.com/charmbracelet/mods@latest`)
-- **Fabric**: AI workflow framework (install: `pip install fabric-ai`)
-- **ShellGPT**: Command line GPT (install: `pip install shell-gpt`)
-- **Claude Code**: Ultimate terminal AI (install: `curl -fsSL https://claude.ai/install.sh | bash`)
-- **GitHub Copilot CLI**: ChatGPT in terminal (install: `npm install -g @github/copilot`)
-- **OpenCode**: Open-source flexibility (install: `curl -fsSL https://opencode.ai/install | bash`)
+### 🆓 FREE TOOLS - No Registration Required
+- **Ollama**: Local AI models (already configured)
+- **Aider**: AI pair programming (`pip install aider-chat`)
+- **Mods**: Terminal AI (`go install github.com/charmbracelet/mods@latest`)
+- **Fabric**: AI workflow framework (`pip install fabric-ai`)
+- **ShellGPT**: Command line GPT with local models (`pip install shell-gpt`)
+- **OpenCode**: Open-source AI (`curl -fsSL https://opencode.ai/install | bash`)
+
+### 💰 PAID TOOLS - Require Subscription
+- **Claude Code**: $20/mo Claude Pro (`curl -fsSL https://claude.ai/install.sh | bash`)
+- **GitHub Copilot CLI**: $10/mo Copilot Individual (`npm install -g @github/copilot`)
+
+### 🔑 API KEYS - Free but Require Account
+- **Grok**: Already configured via xAI
+- **Gemini**: Google AI Studio (free tier available)
+- **Claude**: Anthropic API (pay per use)
 
 ## API Setup Instructions
 
@@ -56,6 +64,36 @@ BAUX Bot automatically routes queries based on content analysis and available to
 - **Destructive Operations**: → Claude (requires git safety)
 
 **Network Chuck's Multi-AI Sync**: BAUX Bot maintains context across all tools, allowing seamless switching between different AIs working on the same project folder.
+
+## 🚀 QUICK START - Free Tools Only
+
+Install the free tools that work immediately:
+
+```bash
+# On any BAUX system (baux01, .133, etc.)
+
+# Aider - AI pair programming
+pip install aider-chat
+
+# Mods - Terminal AI
+go install github.com/charmbracelet/mods@latest
+
+# Fabric - AI workflows
+pip install fabric-ai
+
+# ShellGPT - with local Ollama models
+pip install shell-gpt
+
+# OpenCode - Open-source AI
+curl -fsSL https://opencode.ai/install | bash
+
+# Test BAUX Bot with new tools
+baux-bot
+> How do I implement a new BAUX command?
+# Should route to Aider for coding assistance
+```
+
+**Result**: BAUX Bot becomes significantly more powerful with 6 additional free AI tools!
 
 ### Safety Features
 - Destructive operations require git-related keywords
