@@ -133,13 +133,16 @@ baux session restore dev --from "pre-deployment"
 
 ### Detection Logic
 ```bash
-# Check if already in BAUX session
-if [ -n "$BAUX_SESSION_ID" ]; then
-    # Route to existing session instead of nesting
-    baux session switch $BAUX_SESSION_ID
-    exit
+# Check if this is a remote BAUX operation
+if [ -n "$BAUX_REMOTE" ]; then
+    # Remote operation (pull/switch) - provide clean shell
+    # Prevents tmux nesting when accessing remote sessions
+    export BAUX_INSIDE_REMOTE=1
+    exec bash --login
 fi
 ```
+
+**Key Fix:** Remote detection now only checks `BAUX_REMOTE` environment variable, not SSH connection variables. This allows SSH connections to properly start tmux sessions while preventing nesting during remote BAUX operations.
 
 ### Smart Routing
 - **Local Session:** Use existing local tmux
@@ -219,6 +222,7 @@ baux session create hw --template embedded
 ## Troubleshooting
 
 ### Common Issues
+- **SSH tmux Not Starting:** Fixed - remote detection now only checks `BAUX_REMOTE`, not SSH variables
 - **Session Not Syncing:** Check Headscale connectivity
 - **Pane Not Respawning:** Verify exit codes and respawn rules
 - **Migration Failing:** Check device enrollment and permissions
