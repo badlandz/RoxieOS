@@ -41,7 +41,7 @@ if [[ $# -gt 0 ]]; then
             echo "  'read FILE' to force file into RAG"
             echo "  'develop TASK' for development advice"
             echo "  'code REQUEST' for code generation/review"
-            echo "  'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt' to change backend (auto-routing available)"
+            echo "  'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode' to change backend (auto-routing available)"
             echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
             echo "  'search TERM' to search RAG for information"
             echo "  'teach TOPIC' for interactive learning mode"
@@ -217,9 +217,9 @@ route_query() {
         return 3  # Claude
     fi
 
-    # Route based on query type and available tools
+    # Route based on query type and available tools - Network Chuck Ultimate AI Stack
     if [[ $is_research -gt $is_coding ]]; then
-        # Check for advanced research tools
+        # Research queries - use best available research tool
         if command -v fabric >/dev/null 2>&1; then
             echo "🔬 ADVANCED RESEARCH - Routing to FABRIC workflow AI..."
             return 6  # Fabric
@@ -230,23 +230,46 @@ route_query() {
     elif [[ $is_coding -gt 0 ]]; then
         # Check if it's BAUX-specific coding
         local is_baux_specific=$(echo "$query_lower" | grep -c "baux\|roxieos\|tmux\|resurrect\|mesh" || true)
+        local is_complex_coding=$(echo "$query_lower" | grep -c "implement\|build\|create\|refactor\|architecture\|system\|complex" || true)
+
         if [[ $is_baux_specific -gt 0 ]]; then
             # BAUX-specific - use best available tool
             if command -v aider >/dev/null 2>&1; then
                 echo "🎯 BAUX ADVANCED CODING - Routing to AIDER pair programming..."
                 return 4  # Aider
+            elif command -v claude >/dev/null 2>&1; then
+                echo "🧠 BAUX INTELLIGENT CODING - Routing to CLAUDE CODE agent..."
+                return 8  # Claude Code
             else
                 echo "💻 BAUX CODING - Routing to GROK (with safety checks)..."
                 return 2  # Grok
             fi
+        elif [[ $is_complex_coding -gt 0 ]]; then
+            # Complex coding tasks - use ultimate tools
+            if command -v claude >/dev/null 2>&1; then
+                echo "🚀 COMPLEX CODING - Routing to CLAUDE CODE (ultimate terminal AI)..."
+                return 8  # Claude Code
+            elif command -v copilot >/dev/null 2>&1; then
+                echo "💡 ADVANCED CODING - Routing to GITHUB COPILOT CLI..."
+                return 9  # Copilot CLI
+            elif command -v aider >/dev/null 2>&1; then
+                echo "🔧 SOPHISTICATED CODING - Routing to AIDER..."
+                return 4  # Aider
+            else
+                echo "🤔 COMPLEX CODING - Routing to CLAUDE for careful implementation..."
+                return 3  # Claude
+            fi
         else
-            # General coding - use sophisticated tools
+            # General coding - use good available tools
             if command -v aider >/dev/null 2>&1; then
-                echo "🚀 ADVANCED CODING - Routing to AIDER for implementation..."
+                echo "🚀 GENERAL CODING - Routing to AIDER for implementation..."
                 return 4  # Aider
             elif command -v mods >/dev/null 2>&1; then
                 echo "💻 GENERAL CODING - Routing to MODS terminal AI..."
                 return 5  # Mods
+            elif command -v copilot >/dev/null 2>&1; then
+                echo "💻 GENERAL CODING - Routing to GITHUB COPILOT CLI..."
+                return 9  # Copilot CLI
             else
                 echo "🤔 GENERAL CODING - Routing to CLAUDE for careful implementation..."
                 return 3  # Claude
@@ -260,6 +283,9 @@ route_query() {
         elif command -v mods >/dev/null 2>&1; then
             echo "🎲 GENERAL QUERY - Routing to MODS for response..."
             return 5  # Mods
+        elif command -v opencode >/dev/null 2>&1; then
+            echo "🌟 GENERAL QUERY - Routing to OPENCODE (flexible AI)..."
+            return 10 # OpenCode
         else
             echo "🎭 GENERAL QUERY - Routing to GROK for witty response..."
             return 2  # Grok
@@ -357,6 +383,51 @@ ask_sgpt() {
     else
         echo "ShellGPT not installed. Install with: pip install shell-gpt"
         ask_grok "$prompt"
+    fi
+}
+
+# Network Chuck's Ultimate AI Tools Integration
+ask_claude_code() {
+    local prompt="$1"
+    printf "BAUX BOT (Claude Code) agentic coding... "
+    # Claude Code integration - the most powerful terminal AI
+    if command -v claude >/dev/null 2>&1; then
+        echo "Launching Claude Code for advanced coding tasks"
+        echo "Command: claude -p '$prompt'"
+        echo "Claude Code will handle complex implementation directly"
+        # Note: Claude Code runs interactively, so we provide the command
+    else
+        echo "Claude Code not installed. Install from: https://docs.anthropic.com/claude/docs/claude-code"
+        ask_claude "$prompt"
+    fi
+}
+
+ask_copilot_cli() {
+    local prompt="$1"
+    printf "BAUX BOT (GitHub Copilot CLI) coding agent... "
+    # GitHub Copilot CLI integration - ChatGPT in terminal
+    if command -v copilot >/dev/null 2>&1; then
+        echo "Launching GitHub Copilot CLI for coding assistance"
+        echo "Command: copilot"
+        echo "Then ask: $prompt"
+        echo "Copilot CLI will provide interactive coding help"
+    else
+        echo "GitHub Copilot CLI not installed. Install from: https://github.com/github/copilot-cli"
+        ask_grok "$prompt"
+    fi
+}
+
+ask_opencode() {
+    local prompt="$1"
+    printf "BAUX BOT (OpenCode) open-source AI... "
+    # OpenCode integration for local model support
+    if command -v opencode >/dev/null 2>&1; then
+        echo "Using OpenCode for flexible AI assistance"
+        echo "Command: opencode '$prompt'"
+        echo "OpenCode supports local models and multiple providers"
+    else
+        echo "OpenCode not installed. Install from: https://opencode.ai/"
+        ask_ollama "$prompt"
     fi
 }
 
@@ -521,13 +592,13 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
         switch*)
             backend="${input#switch }"
-            if [[ "$backend" == "ollama" || "$backend" == "grok" || "$backend" == "gemini" || "$backend" == "claude" || "$backend" == "aider" || "$backend" == "mods" || "$backend" == "fabric" || "$backend" == "sgpt" ]]; then
+            if [[ "$backend" == "ollama" || "$backend" == "grok" || "$backend" == "gemini" || "$backend" == "claude" || "$backend" == "aider" || "$backend" == "mods" || "$backend" == "fabric" || "$backend" == "sgpt" || "$backend" == "claude-code" || "$backend" == "copilot-cli" || "$backend" == "opencode" ]]; then
                 CURRENT_BACKEND="$backend"
                 echo "CURRENT_BACKEND=\"$CURRENT_BACKEND\"" > "$CONFIG_FILE"
                 MODEL=$(select_model)
                 echo "Switched to $CURRENT_BACKEND backend — model: $MODEL"
             else
-                echo "Invalid backend. Use 'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt'."
+                echo "Invalid backend. Use 'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode'."
             fi
             continue
             ;;
@@ -603,6 +674,15 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
         7)  # ShellGPT (quick queries)
             response=$(ask_sgpt "$input")
+            ;;
+        8)  # Claude Code (ultimate coding)
+            response=$(ask_claude_code "$input")
+            ;;
+        9)  # GitHub Copilot CLI (ChatGPT terminal)
+            response=$(ask_copilot_cli "$input")
+            ;;
+        10) # OpenCode (open-source flexibility)
+            response=$(ask_opencode "$input")
             ;;
         *)  # Default fallback
             if [[ "$CURRENT_BACKEND" == "grok" ]]; then
