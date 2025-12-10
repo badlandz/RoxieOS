@@ -18,7 +18,29 @@
 - **System Testing Results**: Comprehensive testing revealed partial BAUX functionality. baux-bot operational on <your-lan-ip-2> with Grok backend and active RAG. Local baux-bot (<your-lan-ip-1>) has Ollama autotune working but limited interactivity. Mesh infrastructure not active (no Headscale, no port 9999 listening). Session switching not functional due to missing mesh connectivity.
 - **baux-scale Server Deployment**: ✅ VM provisioned at <your-ip> (Vultr: 2 vCPU, 4GB RAM, 80GB storage, 3TB bandwidth, $20/mo). ✅ DNS configured as bs.<your-domain>. ✅ User accounts and SSH access established. ✅ Source code synchronized across all 4 systems.
 - **Infrastructure Status**: All systems have FreeBSD 15, Ollama, and baux-bot. SSH key coordination complete. Ready for mesh implementation.
-- **Next Steps**: Test cross-system session switching, integrate baux-bot in panes, develop TUI session manager, verify resurrection persistence.
+- **Next Steps**: Debug resurrection timing, verify plugin auto-loading, test bterm scaling, begin TUI session selector development.
+
+### **🐛 KNOWN ISSUES & BUG NOTES:**
+- **Resurrection Not Working**: `baux` starts fresh sessions, doesn't restore previous state. May need longer wait for auto-save (10min) or manual trigger.
+- **UI Polish**: Status bar now shows "#S" (session name) instead of hardcoded "ROXANNE" ✅ FIXED
+- **Plugin Loading**: Second `baux` run shows plugins loaded - TPM may need restart to initialize
+- **Font Scaling**: bterm has Xresources scaling but needs testing on actual display
+- **Session Persistence**: Manual save works, auto-save timing needs verification
+
+### **✅ WORKING FEATURES:**
+- **BAUX Launch**: SSH connections properly start tmux (no shell fallback)
+- **UI Layout**: Tabs across top, time display perfect positioning
+- **Plugin Ecosystem**: tmux-resurrect/continuum installed and partially functional
+- **Terminal**: bterm with JetBrains Mono, Gruvbox colors, scaling support
+- **Cross-Node**: Sessions active on multiple systems simultaneously
+
+### **📋 NEXT SESSION PICKUP NOTES:**
+1. **Test Resurrection**: Wait 10+ min or manually save, then kill/restart tmux
+2. **Verify Auto-Save**: Check `/var/tmp/baux-resurrect/` for save files
+3. **Plugin Initialization**: May need TPM restart: `tmux source ~/.tmux/plugins/tpm/tpm`
+4. **Font Scaling**: Test `echo 'st.font: JetBrains Mono:size=16' | xrdb -merge`
+5. **Session Names**: Verify status bar shows actual session name, not "ROXANNE"
+6. **TUI Development**: Begin session selector interface with working terminal
 
 ### Major Changes
 - **FreeBSD Migration**: Complete restructure from Debian to FreeBSD ports/src model
