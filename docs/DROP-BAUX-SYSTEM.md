@@ -59,11 +59,34 @@ export TOGETHER_API_KEY="..."
 - **Ready for initialization** - Drop-baux enables first user creation
 
 ### User Creation Workflow
-1. **Boot Clean ISO** - No users, no keys, no configuration
-2. **Drop Keys** - Place `api_keys.sh` in `~/mnt/drop-baux/keys/`
-3. **Auto-Integration** - System detects and loads keys into environment
-4. **User Initialization** - Create user account with integrated keys
-5. **Immortal Session** - Populate session with user-specific AI assistants
+1. **Boot Clean ISO** - Root-only live environment, no users/keys
+2. **Create Persistence** - Drop-baux creates persistent storage on boot media
+3. **Drop Mesh Key** - Place minimal `api_keys.sh` with `MESH_LOGIN_KEY`
+4. **Auto User Creation** - System creates first user account
+5. **Clone RoxieOS** - Each user gets `~/src/RoxieOS` with their configuration
+6. **Mesh Connection** - Single key unlocks access to all other keys
+7. **Immortal Session** - User sessions persist with full AI integration
+
+### Live USB to Persistent Workflow
+```bash
+# 1. Boot clean ISO (root only)
+# 2. Mount drop-baux (USB partition or external drive)
+mount /dev/da0s3 /mnt/drop-baux  # or wherever keys are
+
+# 3. Place minimal keys for user creation
+cat > /mnt/drop-baux/keys/api_keys.sh << 'EOF'
+export MESH_LOGIN_KEY="tskey-auth-..."
+export BAUX_USERNAME="developer"
+EOF
+
+# 4. Run user creation
+baux-user-creation.sh
+
+# 5. Reboot and login as new user
+# 6. Full RoxieOS environment with mesh access
+# 7. Drop additional API keys for AI services
+# 8. Immortal sessions work immediately
+```
 
 ### Multi-User Support
 - **Per-user key isolation** - Each user has their own drop-baux
@@ -110,6 +133,37 @@ if [[ -f ~/mnt/drop-baux/keys/api_keys.sh ]]; then
     source ~/mnt/drop-baux/keys/api_keys.sh
     echo "🔑 BAUX keys loaded from drop-baux"
 fi
+```
+
+### Live ISO Integration
+```bash
+# Clean ISO boot sequence:
+# 1. Root-only environment
+# 2. Check for drop-baux mount
+# 3. If keys found → create persistence → create user
+# 4. If no keys → remain root-only for setup
+
+# User creation script (baux-user-creation.sh):
+# - Detects live environment
+# - Creates persistence partition on boot media
+# - Loads dropped keys
+# - Creates user with ~/src/RoxieOS clone
+# - Connects to BAUX mesh
+# - Sets up immortal session environment
+```
+
+### Per-User RoxieOS Cloning
+```bash
+# Each user gets their own development environment:
+~/src/RoxieOS/          # User's development repository
+~/mnt/drop-baux/        # Symlink to shared key storage
+~/.bashrc               # Auto-loads keys from drop-baux
+
+# Benefits:
+# - User-specific configurations
+# - Isolated development environments
+# - Shared key access without duplication
+# - Easy backup/restore per user
 ```
 
 ### Session Integration
@@ -171,9 +225,79 @@ fi
 - Backup exclusion rules
 - Audit logging setup
 
+## Workability Analysis
+
+### ✅ **Highly Workable - Addresses Key Requirements**
+
+#### **Clean ISO Concept:**
+- **Root-only boot**: Achievable with minimal FreeBSD live configuration
+- **No pre-configured users**: Security by design
+- **No embedded keys**: Clean security model
+
+#### **Drop-Baux as User Creator:**
+- **Single key unlock**: `MESH_LOGIN_KEY` as master key
+- **Automatic user creation**: Script detects keys and creates accounts
+- **Persistence creation**: Boot media becomes persistent storage
+- **Per-user environments**: Each user gets `~/src/RoxieOS`
+
+#### **Mesh Integration:**
+- **One key to rule them all**: Mesh login enables full environment
+- **Key cascading**: Mesh access allows retrieval of all other keys
+- **Secure distribution**: Keys follow users across devices
+
+### ⚠️ **Identified Issues & Solutions**
+
+#### **1. Persistence Location**
+**Issue**: Where to create persistent storage on live USB?
+**Solution**: Use boot device detection + partition 3 for persistence (like NomadBSD)
+
+#### **2. Root Access During Setup**
+**Issue**: User creation requires root privileges initially
+**Solution**: Dedicated `baux-user-creation.sh` script runs as root, then drops privileges
+
+#### **3. Key Precedence**
+**Issue**: Conflicts between dropped keys and existing user keys
+**Solution**: Drop-baux keys take precedence, user can override locally
+
+#### **4. Live vs Installed Detection**
+**Issue**: How to know if we're on live media needing persistence
+**Solution**: Check for live indicators (`/etc/live/config.conf`, mount sources)
+
+### 🚀 **Implementation Path**
+
+#### **Phase 1: Clean ISO Base**
+- Modify FreeBSD live image to boot root-only
+- Remove default user creation
+- Add drop-baux mount detection
+
+#### **Phase 2: User Creation Script**
+- Implement `baux-user-creation.sh`
+- Add persistence creation logic
+- Integrate with RoxieOS cloning
+
+#### **Phase 3: Key Management**
+- Mesh key as primary unlock
+- Cascading key retrieval
+- Per-user key isolation
+
+#### **Phase 4: Testing & Refinement**
+- Test live USB scenarios
+- Validate persistence creation
+- Verify multi-user workflows
+
+### 🎯 **Success Criteria**
+
+- **Boot clean ISO** → Root-only environment ✅
+- **Drop one key** → Full user environment created ✅
+- **Persistence works** → USB becomes persistent storage ✅
+- **Mesh connection** → Access to all services ✅
+- **Per-user RoxieOS** → Isolated development environments ✅
+
 ## Conclusion
 
 Drop-baux has evolved from a simple technical workaround into a fundamental component of the BAUX user experience. It enables secure, easy key management while supporting the vision of immortal, personalized development sessions across the BAUX ecosystem.
+
+**The clean ISO + drop-baux user creation concept is not only workable, but represents the ideal BAUX onboarding experience: one key drop, instant immortal development environment.**
 
 The system successfully balances **security**, **ease of use**, and **distributed functionality** - allowing users to "drop their keys" once and have fully functional AI-assisted development environments everywhere.</content>
 <parameter name="filePath">docs/DROP-BAUX-SYSTEM.md
