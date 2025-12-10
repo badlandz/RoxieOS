@@ -41,7 +41,7 @@ if [[ $# -gt 0 ]]; then
             echo "  'read FILE' to force file into RAG"
             echo "  'develop TASK' for development advice"
             echo "  'code REQUEST' for code generation/review"
-            echo "  'switch ollama' or 'switch grok' to change backend"
+            echo "  'switch ollama/grok/gemini/claude' to change backend (auto-routing available)"
             echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
             echo "  'search TERM' to search RAG for information"
             echo "  'teach TOPIC' for interactive learning mode"
@@ -198,9 +198,48 @@ build_rag() {
     done || true
 }
 
+# Intelligent AI routing based on query analysis
+route_query() {
+    local prompt="$1"
+    local query_lower=$(echo "$prompt" | tr '[:upper:]' '[:lower:]')
+
+    # Analyze query characteristics
+    local is_research=$(echo "$query_lower" | grep -c "research\|learn\|explain\|what is\|how does\|why" || true)
+    local is_coding=$(echo "$query_lower" | grep -c "code\|implement\|fix\|error\|debug\|function\|script" || true)
+    local is_destructive=$(echo "$query_lower" | grep -c "delete\|remove\|overwrite\|replace\|change" || true)
+    local mentions_git=$(echo "$query_lower" | grep -c "git\|commit\|backup" || true)
+
+    # Safety check for destructive operations
+    if [[ $is_destructive -gt 0 && $mentions_git -eq 0 ]]; then
+        echo "🚨 DESTRUCTIVE OPERATION DETECTED!"
+        echo "Query contains destructive keywords but no git safety checks."
+        echo "Routing to CLAUDE for careful reasoning..."
+        return 3  # Claude
+    fi
+
+    # Route based on query type
+    if [[ $is_research -gt $is_coding ]]; then
+        echo "🔍 RESEARCH QUERY - Routing to GEMINI..."
+        return 1  # Gemini
+    elif [[ $is_coding -gt 0 ]]; then
+        # Check if it's BAUX-specific coding
+        local is_baux_specific=$(echo "$query_lower" | grep -c "baux\|roxieos\|tmux\|resurrect\|mesh" || true)
+        if [[ $is_baux_specific -gt 0 ]]; then
+            echo "💻 BAUX CODING - Routing to GROK (with safety checks)..."
+            return 2  # Grok
+        else
+            echo "🤔 GENERAL CODING - Routing to CLAUDE for careful implementation..."
+            return 3  # Claude
+        fi
+    else
+        echo "🎲 GENERAL QUERY - Routing to GROK for witty response..."
+        return 2  # Grok
+    fi
+}
+
 ask_ollama() {
     local prompt="$1"
-    printf "BAUX BOT thinking... "
+    printf "BAUX BOT (Ollama) thinking... "
     {
         cat <<EOF
 You are BAUX BOT — the sarcastic subconscious of BAUX-MESH, an OS with personality issues that thinks it's a coding tutor with attitude.
@@ -218,6 +257,22 @@ Answer directly, practically, and entertainingly.
 EOF
     } | ollama run "$MODEL" --nowordwrap 2>/dev/null || echo "(ollama hiccup - check if service is running)"
     echo
+}
+
+ask_gemini() {
+    local prompt="$1"
+    printf "BAUX BOT (Gemini) researching... "
+    # TODO: Implement Gemini API call for research questions
+    echo "Gemini integration coming soon - falling back to Ollama for now"
+    ask_ollama "$prompt"
+}
+
+ask_claude() {
+    local prompt="$1"
+    printf "BAUX BOT (Claude) reasoning... "
+    # TODO: Implement Claude API call for complex reasoning
+    echo "Claude integration coming soon - falling back to Grok for now"
+    ask_grok "$prompt"
 }
 
 ask_grok() {
@@ -381,13 +436,13 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
         switch*)
             backend="${input#switch }"
-            if [[ "$backend" == "ollama" || "$backend" == "grok" ]]; then
+            if [[ "$backend" == "ollama" || "$backend" == "grok" || "$backend" == "gemini" || "$backend" == "claude" ]]; then
                 CURRENT_BACKEND="$backend"
                 echo "CURRENT_BACKEND=\"$CURRENT_BACKEND\"" > "$CONFIG_FILE"
                 MODEL=$(select_model)
                 echo "Switched to $CURRENT_BACKEND backend — model: $MODEL"
             else
-                echo "Invalid backend. Use 'switch ollama' or 'switch grok'."
+                echo "Invalid backend. Use 'switch ollama', 'switch grok', 'switch gemini', or 'switch claude'."
             fi
             continue
             ;;
@@ -438,11 +493,28 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
     esac
 
-    if [[ "$CURRENT_BACKEND" == "grok" ]]; then
-        response=$(ask_grok "$input")
-        echo -e "BAUX BOT: $response"
-    else
-        response=$(ask_ollama "$input")
-        echo -e "BAUX BOT: $response"
-    fi
+    # Intelligent routing based on query analysis
+    route_query "$input"
+    route_result=$?
+
+    case $route_result in
+        1)  # Gemini (research)
+            response=$(ask_gemini "$input")
+            ;;
+        2)  # Grok (coding with safety)
+            response=$(ask_grok "$input")
+            ;;
+        3)  # Claude (complex reasoning)
+            response=$(ask_claude "$input")
+            ;;
+        *)  # Default fallback
+            if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+                response=$(ask_grok "$input")
+            else
+                response=$(ask_ollama "$input")
+            fi
+            ;;
+    esac
+
+    echo -e "BAUX BOT: $response"
 done
