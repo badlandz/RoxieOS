@@ -192,7 +192,7 @@ case "${1:-}" in
         if [[ -f "$PID_FILE" ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
             echo "bauxd is running (PID: $(cat "$PID_FILE"))"
             # Quick health check
-            curl -s "http://localhost:$PORT/health" | jq .status 2>/dev/null || echo "Health check failed"
+            get_health | jq .status 2>/dev/null || echo "Health check: $(get_deployment_type)"
         else
             echo "bauxd is not running"
         fi
