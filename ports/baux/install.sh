@@ -20,7 +20,7 @@ fi
 
 # Install the main script
 echo "Copying baux to /usr/local/bin/..."
-doas cp core/baux /usr/local/bin/
+doas cp files/usr/local/bin/baux /usr/local/bin/
 doas chmod +x /usr/local/bin/baux
 
 # Verify copy succeeded
@@ -32,7 +32,7 @@ fi
 # Install tmux configuration
 echo "Installing tmux configuration..."
 doas mkdir -p /usr/local/share/tmux
-doas cp core/tmux/baux.conf /usr/local/share/tmux/
+doas cp files/usr/local/share/tmux/baux.conf /usr/local/share/tmux/
 
 # Verify copy succeeded
 if [ ! -f "/usr/local/share/tmux/baux.conf" ]; then
