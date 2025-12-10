@@ -1,0 +1,84 @@
+#!/usr/local/bin/bash
+# core/baux — BAUX entrypoint v0.3.0-pre (cluster-ready)
+# This is the single most important file in the entire OS.
+
+set -euo pipefail
+
+export BAUX_HOME="/usr/local/share/baux"
+export NVIM_INIT="$BAUX_HOME/nvim/init.lua"
+TMUX_CONF="/usr/local/share/tmux/baux.conf"
+# Default session naming: hostname-1 to hostname-9 for tty mapping
+# Users can create custom named sessions
+if [[ $# -gt 0 && "$1" =~ ^[0-9]$ ]]; then
+    SESSION="$(hostname)-$1"
+else
+    SESSION="baux-$(hostname)"
+fi
+
+# ──────────────────────────────────────────────────────────────
+# 1. Anti-nesting & remote detection (the tmux-in-tmux killer)
+# ──────────────────────────────────────────────────────────────
+if [[ -n "${BAUX_REMOTE:-}" || -n "${SSH_TTY:-}" || -n "${SSH_CONNECTION:-}" ]]; then
+  # We were reached via `baux pull` or plain SSH into a BAUX node
+  # → Do NOT start another tmux. Just give a clean shell.
+  export BAUX_INSIDE_REMOTE=1
+  exec bash --login
+fi
+
+# ──────────────────────────────────────────────────────────────
+# 2. Sub-command routing (baux vpn, baux hosts, etc.)
+# ──────────────────────────────────────────────────────────────
+if [[ $# -gt 0 ]]; then
+  case "$1" in
+   vpn | hosts |    pull | push | bot | drop | switch)
+     exec "$BAUX_HOME/scripts/baux-$1" "${@:2}"
+     ;;
+   [0-9])
+     # Quick session switch: baux 3 → switch to hostname-3
+     exec "$0" switch "$(hostname)-$1"
+     ;;
+   "" | default)
+     # Default: start session
+     ;;
+   *)
+     # Custom session name
+     SESSION="$1"
+     ;;
+   --version | -v)
+     echo "BAUX v0.3.0-pre (cluster-ready)"
+     exit 0
+     ;;
+   --help | -h)
+     cat <<'HELP'
+BAUX — the immortal terminal OS
+
+Usage: baux [command]
+
+Commands:
+  vpn      — manage WireGuard cluster (init / add / status)
+  hosts    — list all online BAUX nodes
+   pull — pull a remote session from BAUX-MESH
+   push — push current session to BAUX-MESH
+   switch — switch to local/remote session
+  bot      — manage BAUX BOT
+  drop     — manage DROP-BAUX storage (future)
+
+Just type "baux" to enter the workspace.
+HELP
+     exit 0
+     ;;
+   esac
+fi
+
+# ──────────────────────────────────────────────────────────────
+# 3. Normal local entry — start tmux with our config
+# ──────────────────────────────────────────────────────────────
+
+# Verify config exists before starting tmux
+if [ ! -f "$TMUX_CONF" ]; then
+    echo "ERROR: TMUX config not found: $TMUX_CONF"
+    echo "BAUX installation may be incomplete."
+    exit 1
+fi
+
+exec tmux -f "$TMUX_CONF" new-session -A -s "$SESSION"
