@@ -28,16 +28,37 @@ cd st-0.9
 echo "Downloading and applying patches..."
 
 # Xresources patch for scaling
-fetch https://st.suckless.org/patches/xresources/st-xresources-20230320-45a15676.diff
-patch -p1 < st-xresources-20230320-45a15676.diff
+echo "Applying Xresources patch..."
+fetch https://st.suckless.org/patches/xresources/st-xresources-20230320-45a15676.diff || {
+    echo "ERROR: Failed to download Xresources patch"
+    exit 1
+}
+patch -p1 < st-xresources-20230320-45a15676.diff || {
+    echo "ERROR: Failed to apply Xresources patch"
+    exit 1
+}
 
 # Font2 patch for multiple fonts
-fetch https://st.suckless.org/patches/font2/st-font2-0.8.5.diff
-patch -p1 < st-font2-0.8.5.diff
+echo "Applying Font2 patch..."
+fetch https://st.suckless.org/patches/font2/st-font2-0.8.5.diff || {
+    echo "ERROR: Failed to download Font2 patch"
+    exit 1
+}
+patch -p1 < st-font2-0.8.5.diff || {
+    echo "ERROR: Failed to apply Font2 patch"
+    exit 1
+}
 
 # Scrollback patch
-fetch https://st.suckless.org/patches/scrollback/st-scrollback-0.8.5.diff
-patch -p1 < st-scrollback-0.8.5.diff
+echo "Applying Scrollback patch..."
+fetch https://st.suckless.org/patches/scrollback/st-scrollback-0.8.5.diff || {
+    echo "ERROR: Failed to download Scrollback patch"
+    exit 1
+}
+patch -p1 < st-scrollback-0.8.5.diff || {
+    echo "ERROR: Failed to apply Scrollback patch"
+    exit 1
+}
 
 # Ligatures patch for programming fonts (optional - requires harfbuzz)
 echo "Note: Ligatures patch requires harfbuzz library - skipping for now"

@@ -36,6 +36,21 @@ ln -sf /usr/local/share/roxieos/xinitrc /root/.xinitrc 2>/dev/null || true
 # Configure Xorg for autologin (if applicable)
 # Note: FreeBSD Xorg configuration is typically in /etc/X11/xorg.conf
 
+# Ensure nerd fonts are available
+if ! fc-list | grep -qi "nerd"; then
+    echo "Installing nerd fonts..."
+    if command -v pkg >/dev/null 2>&1; then
+        pkg install -y nerd-fonts >/dev/null 2>&1 || echo "Warning: Could not install nerd-fonts package"
+    fi
+fi
+
+# Update font cache
+if command -v fc-cache >/dev/null 2>&1; then
+    echo "Updating font cache..."
+    fc-cache -f -v >/dev/null 2>&1 || echo "Warning: Font cache update failed"
+fi
+
 echo "RoxieOS X11 setup complete"
 echo "X will start automatically with BAUX window manager"
 echo "Keymaps configured for Caps Lock → Escape"
+echo "Nerd fonts installed and font cache updated"

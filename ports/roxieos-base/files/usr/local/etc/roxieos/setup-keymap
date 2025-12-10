@@ -17,8 +17,15 @@ keycode 0x3a = Escape
 EOF
 
     # Set as default keymap
-    echo 'keymap="us.capsesc"' >> /etc/rc.conf
+    sysrc keymap="us.capsesc" 2>/dev/null || echo 'keymap="us.capsesc"' >> /etc/rc.conf
     echo "Configured Caps Lock → Escape for console"
+fi
+
+# Set console font to prevent tiny dots issue
+if [ -f /usr/share/syscons/fonts/iso-8x16.fnt ]; then
+    sysrc font8x16="iso-8x16" 2>/dev/null || echo 'font8x16="iso-8x16"' >> /etc/rc.conf
+    sysrc font8x14="iso-8x14" 2>/dev/null || echo 'font8x14="iso-8x14"' >> /etc/rc.conf
+    echo "Set console fonts to prevent tiny dots"
 fi
 
 # For X11 - create xmodmap configuration

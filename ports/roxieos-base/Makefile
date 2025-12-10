@@ -17,6 +17,8 @@ LICENSE=	BSD2CLAUSE
 NO_BUILD=	yes
 NO_ARCH=	yes
 
+RUN_DEPENDS=	x11-fonts/nerd-fonts
+
 do-install:
 	# Create RoxieOS OS release identification
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/roxieos

@@ -921,17 +921,26 @@ echo "  'teach TOPIC' for interactive learning mode"
 echo "Type anything. Only the word 'exit' kills me.\n"
 
 while true; do
-    # Check for repo changes
-    find "$SRC_ROOT" -newer "$RAG_DIR/current.txt" -print -quit >/dev/null 2>&1 && {
-        log "$SRC_ROOT changed — rebuilding RAG"
-        build_rag
-        if [[ "$CURRENT_BACKEND" == "grok" ]]; then
-            summary=$(ask_grok "Summarize what just changed in the RoxieOS repo")
+    # Check for repo changes - but only rebuild if mesh RAG is stale
+    if [[ -f "$RAG_DIR/current.txt" ]]; then
+        # Mesh RAG exists - check if local repo is newer
+        if find "$SRC_ROOT" -newer "$RAG_DIR/current.txt" -print -quit >/dev/null 2>&1; then
+            log "$SRC_ROOT changed — rebuilding RAG"
+            build_rag
+            if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+                summary=$(ask_grok "Summarize what just changed in the RoxieOS repo")
+            else
+                summary=$(ask_ollama "Summarize what just changed in the RoxieOS repo")
+            fi
+            echo -e "\nBAUX BOT (auto): $summary"
         else
-            summary=$(ask_ollama "Summarize what just changed in the RoxieOS repo")
+            log "Using existing mesh RAG (up to date)"
         fi
-        echo -e "\nBAUX BOT (auto): $summary"
-    }
+    else
+        # No mesh RAG - build one
+        log "No mesh RAG found — building initial RAG"
+        build_rag
+    fi
 
     printf "you > "
     read -r input || {
