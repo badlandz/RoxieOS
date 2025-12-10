@@ -71,21 +71,21 @@ deploy_to_node() {
     log "Copying updated BAUX files to $node..."
 
     # Copy baux script
-    $ssh_cmd "sudo cp /usr/local/bin/baux /usr/local/bin/baux.backup.$(date +%s)"
+    $ssh_cmd "doas cp /usr/local/bin/baux /usr/local/bin/baux.backup.$(date +%s)"
     scp ports/baux/files/usr/local/bin/baux "$ssh_cmd:/tmp/baux.new"
-    $ssh_cmd "sudo mv /tmp/baux.new /usr/local/bin/baux && sudo chmod +x /usr/local/bin/baux"
+    $ssh_cmd "doas mv /tmp/baux.new /usr/local/bin/baux && doas chmod +x /usr/local/bin/baux"
 
     # Copy tmux config
     scp ports/baux/files/usr/local/share/tmux/baux.conf "$ssh_cmd:/tmp/baux.conf.new"
-    $ssh_cmd "sudo mv /tmp/baux.conf.new /usr/local/share/tmux/baux.conf"
+    $ssh_cmd "doas mv /tmp/baux.conf.new /usr/local/share/tmux/baux.conf"
 
     # Copy session-tui
     scp ports/baux/files/usr/local/share/baux/scripts/baux-session-tui "$ssh_cmd:/tmp/baux-session-tui.new"
-    $ssh_cmd "sudo mv /tmp/baux-session-tui.new /usr/local/share/baux/scripts/baux-session-tui && sudo chmod +x /usr/local/share/baux/scripts/baux-session-tui"
+    $ssh_cmd "doas mv /tmp/baux-session-tui.new /usr/local/share/baux/scripts/baux-session-tui && doas chmod +x /usr/local/share/baux/scripts/baux-session-tui"
 
     # Copy enhanced baux-bot
     scp ports/baux-bot/files/usr/local/bin/baux-bot "$ssh_cmd:/tmp/baux-bot.new"
-    $ssh_cmd "sudo mv /tmp/baux-bot.new /usr/local/bin/baux-bot && sudo chmod +x /usr/local/bin/baux-bot"
+    $ssh_cmd "doas mv /tmp/baux-bot.new /usr/local/bin/baux-bot && doas chmod +x /usr/local/bin/baux-bot"
 
     # Test deployment
     log "Testing deployment on $node..."

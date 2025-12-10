@@ -69,9 +69,9 @@ for node in "${TARGET_NODES[@]}"; do
     echo
 
     echo "# 2. Backup current files:"
-    echo "ssh $SSH_TARGET 'sudo cp /usr/local/bin/baux /usr/local/bin/baux.backup.$(date +%s)'"
-    echo "ssh $SSH_TARGET 'sudo cp /usr/local/share/tmux/baux.conf /usr/local/share/tmux/baux.conf.backup.$(date +%s)'"
-    echo "ssh $SSH_TARGET 'sudo cp /usr/local/bin/baux-bot /usr/local/bin/baux-bot.backup.$(date +%s)'"
+    echo "ssh $SSH_TARGET 'doas cp /usr/local/bin/baux /usr/local/bin/baux.backup.$(date +%s)'"
+    echo "ssh $SSH_TARGET 'doas cp /usr/local/share/tmux/baux.conf /usr/local/share/tmux/baux.conf.backup.$(date +%s)'"
+    echo "ssh $SSH_TARGET 'doas cp /usr/local/bin/baux-bot /usr/local/bin/baux-bot.backup.$(date +%s)'"
     echo
 
     echo "# 3. Copy new files:"
@@ -82,10 +82,10 @@ for node in "${TARGET_NODES[@]}"; do
     echo
 
     echo "# 4. Install new files:"
-    echo "ssh $SSH_TARGET 'sudo mv /tmp/baux.new /usr/local/bin/baux && sudo chmod +x /usr/local/bin/baux'"
-    echo "ssh $SSH_TARGET 'sudo mv /tmp/baux.conf.new /usr/local/share/tmux/baux.conf'"
-    echo "ssh $SSH_TARGET 'sudo mv /tmp/baux-session-tui.new /usr/local/share/baux/scripts/baux-session-tui && sudo chmod +x /usr/local/share/baux/scripts/baux-session-tui'"
-    echo "ssh $SSH_TARGET 'sudo mv /tmp/baux-bot.new /usr/local/bin/baux-bot && sudo chmod +x /usr/local/bin/baux-bot'"
+    echo "ssh $SSH_TARGET 'doas mv /tmp/baux.new /usr/local/bin/baux && doas chmod +x /usr/local/bin/baux'"
+    echo "ssh $SSH_TARGET 'doas mv /tmp/baux.conf.new /usr/local/share/tmux/baux.conf'"
+    echo "ssh $SSH_TARGET 'doas mv /tmp/baux-session-tui.new /usr/local/share/baux/scripts/baux-session-tui && doas chmod +x /usr/local/share/baux/scripts/baux-session-tui'"
+    echo "ssh $SSH_TARGET 'doas mv /tmp/baux-bot.new /usr/local/bin/baux-bot && doas chmod +x /usr/local/bin/baux-bot'"
     echo
 
     echo "# 5. Test deployment:"
