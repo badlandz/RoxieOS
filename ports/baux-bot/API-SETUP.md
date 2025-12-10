@@ -31,7 +31,10 @@ BAUX Bot supports multiple AI backends for different types of queries:
 
 ### 🔑 API KEYS - Free but Require Account
 - **Grok**: Already configured via xAI
-- **Gemini**: Google AI Studio (free tier available)
+- **Gemini**: Google AI Studio API key (starts with "AIza", ~40 characters)
+  - Go to: https://makersuite.google.com/app/apikey
+  - Create new API key
+  - Copy the full key (not project ID)
 - **Claude**: Anthropic API (pay per use)
 
 ## API Setup Instructions
