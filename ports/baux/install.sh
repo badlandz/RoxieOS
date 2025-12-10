@@ -60,7 +60,29 @@ else
     echo "Warning: BAUX scripts directory not found"
 fi
 
-echo "baux installed successfully!"
-echo "Run 'baux' to start your BAUX session"
-echo "Use Ctrl+Space as tmux prefix in BAUX sessions"
-echo "To install tmux plugins (resurrect/continuum), run tmux and press Ctrl+Space then I"
+# Create BAUX resurrect directory
+echo "Creating BAUX resurrect directory..."
+doas mkdir -p /var/tmp/baux-resurrect
+doas chmod 755 /var/tmp/baux-resurrect
+
+# Install tmux plugins to BAUX-managed location
+echo "Installing tmux plugins for session resurrection..."
+doas git clone https://github.com/tmux-plugins/tpm /usr/local/share/baux/tmux-plugins/tpm 2>/dev/null || echo "TPM already exists"
+doas git clone https://github.com/tmux-plugins/tmux-resurrect /usr/local/share/baux/tmux-plugins/tmux-resurrect 2>/dev/null || echo "tmux-resurrect already exists"
+doas git clone https://github.com/tmux-plugins/tmux-continuum /usr/local/share/baux/tmux-plugins/tmux-continuum 2>/dev/null || echo "tmux-continuum already exists"
+
+echo ""
+echo "✅ BAUX Session Manager installed successfully!"
+echo ""
+echo "Components installed:"
+echo "  - baux binary: /usr/local/bin/baux"
+echo "  - tmux config: /usr/local/share/tmux/baux.conf"
+echo "  - BAUX scripts: /usr/local/share/baux/scripts/"
+echo "  - neovim config: /usr/local/share/baux/nvim/"
+echo "  - tmux plugins: /usr/local/share/baux/tmux-plugins/"
+echo "  - resurrect dir: /var/tmp/baux-resurrect/"
+echo ""
+echo "Session restoration is now enabled!"
+echo "BAUX sessions will automatically save and restore across reboots."
+echo ""
+echo "To test: run 'baux'"

@@ -71,6 +71,25 @@ HELP
 fi
 
 # ──────────────────────────────────────────────────────────────
-# 3. Normal local entry — start tmux with our config
+# 3. Session restoration and tmux startup
 # ──────────────────────────────────────────────────────────────
-exec tmux -f "$TMUX_CONF" new-session -A -s "$SESSION"
+restore_session() {
+    local session_name="$1"
+    local resurrect_dir="/var/tmp/baux-resurrect/$(hostname -s)"
+    if [ -d "$resurrect_dir" ]; then
+        echo "Attempting to restore BAUX session $session_name"
+        tmux start-server
+        tmux run-shell "/usr/local/share/baux/tmux-plugins/tmux-resurrect/scripts/restore.sh" || echo "Session restore failed, continuing"
+    fi
+}
+
+# Start tmux session with restoration
+if tmux has-session -t "$SESSION" 2>/dev/null; then
+    echo "Attaching to existing BAUX session"
+    exec tmux attach-session -t "$SESSION"
+else
+    echo "Creating new BAUX session"
+    # Try to restore previous session first
+    restore_session "$SESSION"
+    exec tmux -f "$TMUX_CONF" new-session -A -s "$SESSION" -n "main" "bash --login"
+fi
