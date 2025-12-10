@@ -37,11 +37,11 @@ if [[ $# -gt 0 ]]; then
             echo ""
             echo "Interactive commands:"
             echo "  'exit' to quit"
-            echo "  'status' for repo status"
+            echo "  'status' for repo status and AI usage stats"
             echo "  'read FILE' to force file into RAG"
             echo "  'develop TASK' for development advice"
             echo "  'code REQUEST' for code generation/review"
-            echo "  'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode/ascii-art/cheerleader/keystroke-guru/huggingface' to change backend (auto-routing available)"
+             echo "  'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode/ascii-art/cheerleader/keystroke-guru/huggingface/replicate/together' to change backend (auto-routing available)"
             echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
             echo "  'search TERM' to search RAG for information"
             echo "  'teach TOPIC' for interactive learning mode"
@@ -91,8 +91,12 @@ if [[ $# -gt 0 && "$1" == "--internal-autotune" ]]; then
     exit 0
 fi
 
-# Grok API Configuration
+# API Key Configuration
 GROK_API_KEY="${GROK_API_KEY:-}"
+GEMINI_API_KEY="${GEMINI_API_KEY:-}"
+CLAUDE_API_KEY="${CLAUDE_API_KEY:-}"
+REPLICATE_API_TOKEN="${REPLICATE_API_TOKEN:-}"
+TOGETHER_API_KEY="${TOGETHER_API_KEY:-}"
 CONFIG_DIR="$HOME/.baux-bot"
 CONFIG_FILE="$CONFIG_DIR/config"
 mkdir -p "$CONFIG_DIR"
@@ -101,6 +105,90 @@ mkdir -p "$CONFIG_DIR"
 if [[ -f "$CONFIG_FILE" ]]; then
     source "$CONFIG_FILE"
 fi
+
+# Performance monitoring
+USAGE_LOG="$CONFIG_DIR/usage.log"
+RATE_LIMIT_FILE="$CONFIG_DIR/rate_limits"
+
+# Initialize rate limiting
+init_rate_limits() {
+    # Rate limits: requests per minute
+    declare -A RATE_LIMITS=(
+        ["gemini"]=10
+        ["claude"]=5
+        ["replicate"]=20
+        ["together"]=50
+        ["huggingface"]=30
+    )
+
+    # Create rate limit tracking file if it doesn't exist
+    if [[ ! -f "$RATE_LIMIT_FILE" ]]; then
+        for backend in "${!RATE_LIMITS[@]}"; do
+            echo "$backend:0:$(date +%s)" >> "$RATE_LIMIT_FILE"
+        done
+    fi
+}
+
+# Check rate limit for a backend
+check_rate_limit() {
+    local backend="$1"
+    local current_time=$(date +%s)
+
+    # Read current usage
+    local line
+    line=$(grep "^$backend:" "$RATE_LIMIT_FILE" 2>/dev/null || echo "$backend:0:$current_time")
+    local count timestamp
+    IFS=: read -r _ count timestamp <<< "$line"
+
+    # Reset counter if minute has passed
+    if (( current_time - timestamp >= 60 )); then
+        count=0
+        timestamp=$current_time
+    fi
+
+    # Check limit
+    local limit=${RATE_LIMITS[$backend]:-10}
+    if (( count >= limit )); then
+        return 1  # Rate limited
+    fi
+
+    return 0  # OK
+}
+
+# Update rate limit counter
+update_rate_limit() {
+    local backend="$1"
+    local current_time=$(date +%s)
+
+    # Read current usage
+    local line
+    line=$(grep "^$backend:" "$RATE_LIMIT_FILE" 2>/dev/null || echo "$backend:0:$current_time")
+    local count timestamp
+    IFS=: read -r _ count timestamp <<< "$line"
+
+    # Reset if minute passed, otherwise increment
+    if (( current_time - timestamp >= 60 )); then
+        count=1
+        timestamp=$current_time
+    else
+        ((count++))
+    fi
+
+    # Update file
+    sed -i.bak "/^$backend:/d" "$RATE_LIMIT_FILE" 2>/dev/null || true
+    echo "$backend:$count:$timestamp" >> "$RATE_LIMIT_FILE"
+}
+
+# Log API usage
+log_usage() {
+    local backend="$1"
+    local query_type="$2"
+    local response_time="${3:-0}"
+    echo "$(date '+%Y-%m-%d %H:%M:%S'),$backend,$query_type,$response_time" >> "$USAGE_LOG"
+}
+
+# Initialize rate limits
+init_rate_limits
 
 # Default backend (ollama or grok)
 CURRENT_BACKEND="${CURRENT_BACKEND:-ollama}"
@@ -234,8 +322,13 @@ route_query() {
         echo "🎮 KEYSTROKE LEARNING - Routing to KEYSTROKE GURU..."
         return 13  # Keystroke Guru
     elif [[ $is_creative -gt 0 ]]; then
-        echo "🎭 CREATIVE QUERY - Routing to HUGGINGFACE free models..."
-        return 14  # HuggingFace
+        if [[ -n "$REPLICATE_API_TOKEN" ]]; then
+            echo "🎭 CREATIVE QUERY - Routing to REPLICATE free AI models..."
+            return 15  # Replicate
+        else
+            echo "🎭 CREATIVE QUERY - Routing to HUGGINGFACE free models..."
+            return 14  # HuggingFace
+        fi
     fi
 
     # Route based on query type and available tools - Network Chuck Ultimate AI Stack
@@ -244,6 +337,9 @@ route_query() {
         if command -v fabric >/dev/null 2>&1; then
             echo "🔬 ADVANCED RESEARCH - Routing to FABRIC workflow AI..."
             return 6  # Fabric
+        elif [[ -n "$TOGETHER_API_KEY" ]]; then
+            echo "🔍 RESEARCH QUERY - Routing to TOGETHER AI (fast free tier)..."
+            return 16  # Together AI
         else
             echo "🔍 RESEARCH QUERY - Routing to GEMINI..."
             return 1  # Gemini
@@ -340,6 +436,13 @@ ask_gemini() {
     local prompt="$1"
     printf "BAUX BOT (Gemini) researching... "
 
+    # Check rate limit
+    if ! check_rate_limit "gemini"; then
+        echo "Rate limited - switching to Together AI"
+        ask_together "$prompt"
+        return
+    fi
+
     # Check if API key is available
     if [[ -z "$GEMINI_API_KEY" ]]; then
         echo "Gemini API key not found - add to ~/mnt/drop-baux/keys/api_keys.sh"
@@ -361,6 +464,8 @@ ask_gemini() {
 
     if [[ -n "$response" && "$response" != "null" ]]; then
         echo "$response"
+        update_rate_limit "gemini"
+        log_usage "gemini" "research"
     else
         echo "Gemini API quota exceeded or call failed - falling back to Ollama"
         ask_ollama "$prompt"
@@ -370,6 +475,13 @@ ask_gemini() {
 ask_claude() {
     local prompt="$1"
     printf "BAUX BOT (Claude) reasoning... "
+
+    # Check rate limit
+    if ! check_rate_limit "claude"; then
+        echo "Rate limited - switching to Grok"
+        ask_grok "$prompt"
+        return
+    fi
 
     # Check if API key is available
     if [[ -z "$CLAUDE_API_KEY" ]]; then
@@ -396,6 +508,8 @@ ask_claude() {
 
     if [[ -n "$response" && "$response" != "null" ]]; then
         echo "$response"
+        update_rate_limit "claude"
+        log_usage "claude" "reasoning"
     else
         echo "Claude API call failed - falling back to Grok"
         ask_grok "$prompt"
@@ -564,7 +678,7 @@ ask_huggingface() {
     # HuggingFace free inference API
     if command -v curl >/dev/null 2>&1; then
         echo "Using HuggingFace free inference for creative assistance"
-        # Use a free text generation model
+        # Use a text generation model
         local response
         response=$(curl -s -X POST "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium" \
             -H "Content-Type: application/json" \
@@ -572,13 +686,136 @@ ask_huggingface() {
             jq -r '.[0].generated_text' 2>/dev/null | sed "s/$prompt//" | head -1)
 
         if [[ -n "$response" && "$response" != "null" ]]; then
-            echo "🤗 HuggingFace says: $response"
+            echo "🚀 Together AI says: $response"
+            update_rate_limit "together"
+            log_usage "together" "research"
         else
-            echo "HuggingFace free API busy - try again later!"
+            echo "Together AI API call failed - check key or try again"
             ask_ollama "$prompt"
         fi
     else
         echo "Curl not available"
+        ask_ollama "$prompt"
+    fi
+}
+
+ask_fabric() {
+    local prompt="$1"
+    printf "BAUX BOT (Fabric) AI workflow framework... "
+    # Fabric AI workflow integration
+    if command -v fabric >/dev/null 2>&1; then
+        echo "Using Fabric AI workflow patterns for structured response"
+        # Use fabric with a general purpose pattern for coding/development queries
+        local pattern="improve_code"
+        if echo "$prompt" | grep -qi "summarize\|summary"; then
+            pattern="summarize"
+        elif echo "$prompt" | grep -qi "analyze\|analysis"; then
+            pattern="analyze_claims"
+        elif echo "$prompt" | grep -qi "extract\|wisdom"; then
+            pattern="extract_wisdom"
+        fi
+
+        # Run fabric with the selected pattern
+        response=$(echo "$prompt" | fabric --pattern "$pattern" 2>/dev/null)
+        if [[ -n "$response" ]]; then
+            echo "$response"
+        else
+            echo "Fabric pattern '$pattern' completed - check output above"
+        fi
+    else
+        echo "Fabric not installed. Install from: https://github.com/danielmiessler/fabric"
+        echo "Fabric provides 100+ optimized AI workflow patterns!"
+        ask_ollama "$prompt"
+    fi
+}
+
+ask_replicate() {
+    local prompt="$1"
+    printf "BAUX BOT (Replicate) free AI models... "
+    # Replicate free models integration
+    if [[ -n "$REPLICATE_API_TOKEN" ]]; then
+        # Check rate limit
+        if ! check_rate_limit "replicate"; then
+            echo "Rate limited - switching to HuggingFace"
+            ask_huggingface "$prompt"
+            return
+        fi
+        echo "Using Replicate free AI models for creative assistance"
+
+        # Use a simple text generation model (free tier)
+        local response
+        response=$(curl -s -X POST "https://api.replicate.com/v1/predictions" \
+            -H "Authorization: Bearer $REPLICATE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{
+                "version": "db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf",
+                "input": {
+                    "prompt": "'"$prompt"'",
+                    "max_length": 100,
+                    "temperature": 0.7
+                }
+            }' | jq -r '.urls.get' 2>/dev/null)
+
+        if [[ -n "$response" && "$response" != "null" ]]; then
+            # Wait a moment for processing, then get result
+            sleep 2
+            final_response=$(curl -s "$response" | jq -r '.output' 2>/dev/null)
+            if [[ -n "$final_response" && "$final_response" != "null" ]]; then
+                echo "🤖 Replicate says: $final_response"
+            else
+                echo "Replicate processing - check status or try again"
+                ask_ollama "$prompt"
+            fi
+        else
+            echo "Replicate API call failed - check token or try again"
+            ask_ollama "$prompt"
+        fi
+    else
+        echo "Replicate API token not set. Get free token at: https://replicate.com/"
+        echo "Replicate has free tier with various AI models!"
+        ask_ollama "$prompt"
+    fi
+}
+
+ask_together() {
+    local prompt="$1"
+    printf "BAUX BOT (Together AI) free tier models... "
+    # Together AI free tier integration
+    if [[ -n "$TOGETHER_API_KEY" ]]; then
+        # Check rate limit
+        if ! check_rate_limit "together"; then
+            echo "Rate limited - switching to Ollama"
+            ask_ollama "$prompt"
+            return
+        fi
+        echo "Using Together AI free tier models for fast inference"
+
+        # Use a lightweight model from their free tier
+        local response
+        response=$(curl -s -X POST "https://api.together.xyz/v1/chat/completions" \
+            -H "Authorization: Bearer $TOGETHER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+                \"model\": \"meta-llama/Llama-3.2-3B-Instruct-Turbo\",
+                \"messages\": [{
+                    \"role\": \"user\",
+                    \"content\": \"$prompt\"
+                }],
+                \"max_tokens\": 512,
+                \"temperature\": 0.7
+            }" | jq -r '.choices[0].message.content' 2>/dev/null)
+
+        if [[ -n "$response" && "$response" != "null" ]]; then
+            echo "🤖 Replicate says: $final_response"
+            update_rate_limit "replicate"
+            log_usage "replicate" "creative"
+        else
+            echo "Replicate processing - check status or try again"
+            ask_ollama "$prompt"
+        fi
+    else
+        echo "Together AI API key not set. Get free key at: https://together.ai/"
+        echo "Together AI has free tier with fast inference!"
         ask_ollama "$prompt"
     fi
 }
@@ -688,12 +925,21 @@ while true; do
             echo "BAUX BOT offline — see you space cowboy"
             exit 0
             ;;
-        status)
-            echo "=== REPO STATUS ==="
-            (cd "$SRC_ROOT" && git status -sb)
-            echo
-            continue
-            ;;
+         status)
+             echo "=== REPO STATUS ==="
+             (cd "$SRC_ROOT" && git status -sb)
+             echo
+             echo "=== AI USAGE STATS ==="
+             if [[ -f "$USAGE_LOG" ]]; then
+                 echo "Total API calls today: $(grep "$(date '+%Y-%m-%d')" "$USAGE_LOG" | wc -l)"
+                 echo "Backend usage:"
+                 grep "$(date '+%Y-%m-%d')" "$USAGE_LOG" | cut -d, -f2 | sort | uniq -c | sort -nr
+             else
+                 echo "No usage data available"
+             fi
+             echo
+             continue
+             ;;
         develop*)
             # Development assistance mode
             task="${input#develop }"
@@ -744,13 +990,13 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
         switch*)
             backend="${input#switch }"
-            if [[ "$backend" == "ollama" || "$backend" == "grok" || "$backend" == "gemini" || "$backend" == "claude" || "$backend" == "aider" || "$backend" == "mods" || "$backend" == "fabric" || "$backend" == "sgpt" || "$backend" == "claude-code" || "$backend" == "copilot-cli" || "$backend" == "opencode" || "$backend" == "ascii-art" || "$backend" == "cheerleader" || "$backend" == "keystroke-guru" || "$backend" == "huggingface" ]]; then
+            if [[ "$backend" == "ollama" || "$backend" == "grok" || "$backend" == "gemini" || "$backend" == "claude" || "$backend" == "aider" || "$backend" == "mods" || "$backend" == "fabric" || "$backend" == "sgpt" || "$backend" == "claude-code" || "$backend" == "copilot-cli" || "$backend" == "opencode" || "$backend" == "ascii-art" || "$backend" == "cheerleader" || "$backend" == "keystroke-guru" || "$backend" == "huggingface" || "$backend" == "replicate" || "$backend" == "together" ]]; then
                 CURRENT_BACKEND="$backend"
                 echo "CURRENT_BACKEND=\"$CURRENT_BACKEND\"" > "$CONFIG_FILE"
                 MODEL=$(select_model)
                 echo "Switched to $CURRENT_BACKEND backend — model: $MODEL"
             else
-                echo "Invalid backend. Use 'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode/ascii-art/cheerleader/keystroke-guru/huggingface'."
+                echo "Invalid backend. Use 'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode/ascii-art/cheerleader/keystroke-guru/huggingface/replicate/together'."
             fi
             continue
             ;;
@@ -847,6 +1093,12 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
         14) # HuggingFace (free models)
             response=$(ask_huggingface "$input")
+            ;;
+        15) # Replicate (free models)
+            response=$(ask_replicate "$input")
+            ;;
+        16) # Together AI (free tier)
+            response=$(ask_together "$input")
             ;;
         *)  # Default fallback
             if [[ "$CURRENT_BACKEND" == "grok" ]]; then

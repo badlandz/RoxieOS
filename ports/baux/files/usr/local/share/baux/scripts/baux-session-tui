@@ -1,0 +1,264 @@
+#!/usr/bin/env bash
+# baux-session-tui — BAUX Session Selector TUI
+# Interactive session management interface
+set -euo pipefail
+
+# Colors for TUI
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+WHITE='\033[1;37m'
+NC='\033[0m' # No Color
+
+# Get available sessions
+get_sessions() {
+    tmux list-sessions 2>/dev/null | awk -F: '{print $1}' || echo ""
+}
+
+# Get remote hosts (from known BAUX nodes)
+get_remote_hosts() {
+    # Check for common BAUX hostnames
+    for host in baux01 baux02 baux03 baux-scale; do
+        if ping -c 1 -W 1 "$host" >/dev/null 2>&1; then
+            echo "$host"
+        fi
+    done
+}
+
+# Display header
+show_header() {
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${WHITE}                    BAUX SESSION SELECTOR${CYAN}                    ║${NC}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
+    echo
+}
+
+# Display local sessions
+show_local_sessions() {
+    echo -e "${YELLOW}LOCAL SESSIONS:${NC}"
+    local sessions=$(get_sessions)
+    if [[ -z "$sessions" ]]; then
+        echo -e "${RED}  No active sessions${NC}"
+        echo
+        return
+    fi
+
+    local count=1
+    echo "$sessions" | while read -r session; do
+        if [[ "$session" == "$(tmux display-message -p '#S' 2>/dev/null)" ]]; then
+            echo -e "${GREEN}  $count. $session ${WHITE}(current)${NC}"
+        else
+            echo -e "${WHITE}  $count. $session${NC}"
+        fi
+        ((count++))
+    done
+    echo
+}
+
+# Display remote hosts
+show_remote_hosts() {
+    echo -e "${YELLOW}REMOTE BAUX NODES:${NC}"
+    local hosts=$(get_remote_hosts)
+    if [[ -z "$hosts" ]]; then
+        echo -e "${RED}  No remote nodes detected${NC}"
+        echo
+        return
+    fi
+
+    local count=1
+    echo "$hosts" | while read -r host; do
+        echo -e "${BLUE}  $count. $host${NC}"
+        ((count++))
+    done
+    echo
+}
+
+# Main menu
+show_menu() {
+    echo -e "${MAGENTA}OPTIONS:${NC}"
+    echo -e "${WHITE}  l. List all sessions${NC}"
+    echo -e "${WHITE}  c. Create new session${NC}"
+    echo -e "${WHITE}  r. Connect to remote session${NC}"
+    echo -e "${WHITE}  k. Kill session${NC}"
+    echo -e "${WHITE}  p. Push current session to mesh${NC}"
+    echo -e "${WHITE}  h. Help${NC}"
+    echo -e "${WHITE}  q. Quit${NC}"
+    echo
+}
+
+# Create new session
+create_session() {
+    echo -n "Enter session name: "
+    read -r session_name
+    if [[ -z "$session_name" ]]; then
+        echo -e "${RED}Session name cannot be empty${NC}"
+        return
+    fi
+
+    if tmux has-session -t "$session_name" 2>/dev/null; then
+        echo -e "${RED}Session '$session_name' already exists${NC}"
+        return
+    fi
+
+    echo "Creating session '$session_name'..."
+    tmux new-session -d -s "$session_name"
+    tmux switch-client -t "$session_name"
+}
+
+# Kill session
+kill_session() {
+    local sessions=$(get_sessions)
+    if [[ -z "$sessions" ]]; then
+        echo -e "${RED}No sessions to kill${NC}"
+        return
+    fi
+
+    echo "Available sessions:"
+    local count=1
+    echo "$sessions" | while read -r session; do
+        echo "  $count. $session"
+        ((count++))
+    done
+
+    echo -n "Enter session number to kill: "
+    read -r choice
+
+    if ! [[ "$choice" =~ ^[0-9]+$ ]] || [[ "$choice" -lt 1 ]] || [[ "$choice" -gt "$count" ]]; then
+        echo -e "${RED}Invalid choice${NC}"
+        return
+    fi
+
+    local session=$(echo "$sessions" | sed -n "${choice}p")
+    echo -n "Really kill session '$session'? (y/N): "
+    read -r confirm
+
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        tmux kill-session -t "$session"
+        echo -e "${GREEN}Session '$session' killed${NC}"
+    fi
+}
+
+# Connect to remote session
+connect_remote() {
+    local hosts=$(get_remote_hosts)
+    if [[ -z "$hosts" ]]; then
+        echo -e "${RED}No remote nodes available${NC}"
+        return
+    fi
+
+    echo "Available remote nodes:"
+    local count=1
+    echo "$hosts" | while read -r host; do
+        echo "  $count. $host"
+        ((count++))
+    done
+
+    echo -n "Select remote host: "
+    read -r host_choice
+
+    if ! [[ "$host_choice" =~ ^[0-9]+$ ]] || [[ "$host_choice" -lt 1 ]]; then
+        echo -e "${RED}Invalid choice${NC}"
+        return
+    fi
+
+    local host=$(echo "$hosts" | sed -n "${host_choice}p")
+    if [[ -z "$host" ]]; then
+        echo -e "${RED}Invalid host choice${NC}"
+        return
+    fi
+
+    echo -n "Enter session name on $host (default: baux-$(hostname)): "
+    read -r session_name
+    session_name="${session_name:-baux-$(hostname)}"
+
+    echo "Connecting to session '$session_name' on $host..."
+    exec baux pull "$host" "$session_name"
+}
+
+# Push current session
+push_session() {
+    if [[ -z "${TMUX:-}" ]]; then
+        echo -e "${RED}Not in a tmux session${NC}"
+        return
+    fi
+
+    echo "Pushing current session to BAUX-MESH..."
+    exec baux push
+}
+
+# Main loop
+main() {
+    while true; do
+        clear
+        show_header
+        show_local_sessions
+        show_remote_hosts
+        show_menu
+
+        echo -n "Choose an option: "
+        read -r choice
+
+        case "$choice" in
+            l|L)
+                # List all sessions (already shown)
+                echo "Press Enter to continue..."
+                read -r
+                ;;
+            c|C)
+                create_session
+                echo "Press Enter to continue..."
+                read -r
+                ;;
+            r|R)
+                connect_remote
+                ;;
+            k|K)
+                kill_session
+                echo "Press Enter to continue..."
+                read -r
+                ;;
+            p|P)
+                push_session
+                ;;
+            h|H)
+                echo "BAUX Session Selector Help:"
+                echo "  l - List all local and remote sessions"
+                echo "  c - Create a new local session"
+                echo "  r - Connect to a remote BAUX session"
+                echo "  k - Kill a local session"
+                echo "  p - Push current session to BAUX-MESH"
+                echo "  q - Quit"
+                echo
+                echo "Press Enter to continue..."
+                read -r
+                ;;
+            q|Q)
+                echo "Goodbye!"
+                exit 0
+                ;;
+            *)
+                # Try to interpret as session number
+                local sessions=$(get_sessions)
+                if [[ "$choice" =~ ^[0-9]+$ ]] && [[ "$choice" -ge 1 ]]; then
+                    local session=$(echo "$sessions" | sed -n "${choice}p")
+                    if [[ -n "$session" ]]; then
+                        echo "Switching to session '$session'..."
+                        tmux switch-client -t "$session"
+                        exit 0
+                    fi
+                fi
+
+                echo -e "${RED}Invalid option. Press 'h' for help.${NC}"
+                echo "Press Enter to continue..."
+                read -r
+                ;;
+        esac
+    done
+}
+
+# Run main function
+main
+<parameter name="filePath">ports/baux/files/usr/local/share/baux/scripts/baux-session-tui

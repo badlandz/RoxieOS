@@ -12,6 +12,9 @@ BAUX Bot supports multiple AI backends for different types of queries:
 ### ✅ Configured Backends
 - **Ollama**: Local installation required
 - **Grok**: API key configured via `~/mnt/drop-baux/keys/api_keys.sh`
+- **Fabric**: AI workflow framework (`pip install fabric-ai`)
+- **Replicate**: Free AI models via API
+- **Together AI**: Free tier models via API
 
 ### 🔄 Placeholder Backends (Need API Setup)
 - **Gemini**: Google AI Studio API
@@ -66,11 +69,30 @@ export GEMINI_API_KEY="your-api-key-here"
 export CLAUDE_API_KEY="your-api-key-here"
 ```
 
+### Replicate Setup
+1. Go to [Replicate](https://replicate.com/)
+2. Sign up for free account
+3. Get API token from account settings
+4. Add to `~/mnt/drop-baux/keys/api_keys.sh`:
+```bash
+export REPLICATE_API_TOKEN="your-token-here"
+```
+
+### Together AI Setup
+1. Go to [Together AI](https://together.ai/)
+2. Sign up for free account
+3. Get API key from dashboard
+4. Add to `~/mnt/drop-baux/keys/api_keys.sh`:
+```bash
+export TOGETHER_API_KEY="your-api-key-here"
+```
+
 ## Implementation Notes
 
 ### Routing Logic - Network Chuck Ultimate AI Stack
 BAUX Bot automatically routes queries based on content analysis and available tools:
-- **Research/General**: → Fabric → Gemini
+- **Research/General**: → Fabric → Together AI → Gemini
+- **Creative/Art**: → Replicate → HuggingFace
 - **BAUX-Specific Coding**: → Aider → Claude Code → Grok (safety checks)
 - **Complex Coding**: → Claude Code → Copilot CLI → Aider
 - **General Coding**: → Aider → Mods → Copilot CLI → Claude

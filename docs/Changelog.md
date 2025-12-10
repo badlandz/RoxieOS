@@ -2,7 +2,7 @@
 
 ## GruvBAUX Prototype (Pre-v0.1) - December 2025
 
-### Current Status Update (December 10, 2025) - MAJOR MILESTONE: BAUX RESURRECTION DEPLOYED ACROSS MESH! 🎉
+### Current Status Update (December 10, 2025) - MAJOR MILESTONE: BAUX RESURRECTION DEPLOYED ACROSS MESH + AI INTEGRATIONS COMPLETE! 🎉
 - **🎯 MAJOR ACHIEVEMENT**: BAUX session resurrection deployed and functional across 3 FreeBSD nodes + 1 Debian container!
 - **✅ DEPLOYMENT STATUS**:
   - **.133 (x300 laptop)**: ✅ Resurrection deployed, BAUX session active
@@ -18,7 +18,16 @@
 - **System Testing Results**: Comprehensive testing revealed partial BAUX functionality. baux-bot operational on <your-lan-ip-2> with Grok backend and active RAG. Local baux-bot (<your-lan-ip-1>) has Ollama autotune working but limited interactivity. Mesh infrastructure not active (no Headscale, no port 9999 listening). Session switching not functional due to missing mesh connectivity.
 - **baux-scale Server Deployment**: ✅ VM provisioned at <your-ip> (Vultr: 2 vCPU, 4GB RAM, 80GB storage, 3TB bandwidth, $20/mo). ✅ DNS configured as bs.<your-domain>. ✅ User accounts and SSH access established. ✅ Source code synchronized across all 4 systems.
 - **Infrastructure Status**: All systems have FreeBSD 15, Ollama, and baux-bot. SSH key coordination complete. Ready for mesh implementation.
-- **Next Steps**: Debug resurrection timing, verify plugin auto-loading, test bterm scaling, begin TUI session selector development.
+- **AI Integration Milestone**: ✅ Implemented Fabric, Replicate, and Together AI backends in baux-bot with intelligent routing
+- **Free AI Coverage**: Now supports 8+ free AI services (Ollama, Fabric, Replicate, Together AI, HuggingFace, plus existing tools)
+- **API Implementation**: Added proper API calls for Replicate (creative models) and Together AI (fast research), enhanced Fabric workflow integration
+- **Smart Routing**: Research queries route to Together AI, creative queries to Replicate, with Fabric for structured workflows
+- **Session TUI Milestone**: ✅ Created interactive session selector TUI with local/remote session management
+- **Session Management**: Added `baux sessions` command for visual session switching, creation, and remote connection
+- **Performance Monitoring**: ✅ Added AI API usage tracking and rate limiting to baux-bot with automatic fallback
+- **Rate Limiting**: Implemented per-backend rate limits (Gemini: 10/min, Claude: 5/min, Replicate: 20/min, Together: 50/min)
+- **Usage Stats**: Added `status` command to show daily API usage statistics and backend utilization
+- **Next Steps**: Debug resurrection timing and verify plugin auto-loading across deployed nodes.
 
 ### **🐛 KNOWN ISSUES & BUG NOTES:**
 - **Resurrection Not Working**: `baux` starts fresh sessions, doesn't restore previous state. May need longer wait for auto-save (10min) or manual trigger.

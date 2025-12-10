@@ -29,10 +29,10 @@ fi
 # 2. Sub-command routing (baux vpn, baux hosts, etc.)
 # ──────────────────────────────────────────────────────────────
 if [[ $# -gt 0 ]]; then
-  case "$1" in
-   vpn | hosts |    pull | push | bot | drop | switch)
-     exec "$BAUX_HOME/scripts/baux-$1" "${@:2}"
-     ;;
+   case "$1" in
+    vpn | hosts | pull | push | bot | drop | switch | sessions | tui)
+      exec "$BAUX_HOME/scripts/baux-$1" "${@:2}"
+      ;;
    [0-9])
      # Quick session switch: baux 3 → switch to hostname-3
      exec "$0" switch "$(hostname)-$1"
@@ -55,13 +55,14 @@ BAUX — the immortal terminal OS
 Usage: baux [command]
 
 Commands:
-  vpn      — manage WireGuard cluster (init / add / status)
-  hosts    — list all online BAUX nodes
-   pull — pull a remote session from BAUX-MESH
-   push — push current session to BAUX-MESH
-   switch — switch to local/remote session
-  bot      — manage BAUX BOT
-  drop     — manage DROP-BAUX storage (future)
+   vpn      — manage WireGuard cluster (init / add / status)
+   hosts    — list all online BAUX nodes
+   pull     — pull a remote session from BAUX-MESH
+   push     — push current session to BAUX-MESH
+   switch   — switch to local/remote session
+   sessions — interactive session selector TUI
+   bot      — manage BAUX BOT
+   drop     — manage DROP-BAUX storage (future)
 
 Just type "baux" to enter the workspace.
 HELP
