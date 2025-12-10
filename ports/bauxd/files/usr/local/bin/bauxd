@@ -1,21 +1,15 @@
 #!/usr/local/bin/bash
-# bauxd - BAUX daemon service for mesh coordination
+# bauxd - BAUX daemon service
 
-case "$1" in
-    test)
-        echo "bauxd test: working"
-        ;;
-    status)
-        echo "bauxd status: ready"
-        ;;
-    start)
-        echo "bauxd start: not implemented"
-        ;;
-    stop)
-        echo "bauxd stop: not implemented"
-        ;;
-    *)
-        echo "Usage: bauxd {start|stop|status|test}"
-        ;;
-esac</content>
+if [ "$1" = "test" ]; then
+    echo "bauxd test: working"
+elif [ "$1" = "status" ]; then
+    echo "bauxd status: ready"
+elif [ "$1" = "start" ]; then
+    echo "bauxd start: not implemented"
+elif [ "$1" = "stop" ]; then
+    echo "bauxd stop: not implemented"
+else
+    echo "Usage: bauxd {start|stop|status|test}"
+fi</content>
 <parameter name="filePath">ports/bauxd/files/usr/local/bin/bauxd
