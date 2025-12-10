@@ -31,6 +31,8 @@ BAUX (BAckup/restore Universal eXperience) is a revolutionary distributed operat
 - bterm terminal with font scaling
 - BAUX Bot with intelligent AI routing (17+ backends)
 - Session TUI for management (deployment package ready)
+- **bauxd Service Framework**: CLI-based session discovery API
+- **TUI Service Integration**: API-first session discovery with SSH fallback
 - Cross-node session synchronization
 - Performance monitoring and rate limiting
 - Comprehensive documentation and deployment tools

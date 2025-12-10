@@ -1,26 +1,39 @@
-#!/bin/sh
+#!/bin/bash
 # bauxd - BAUX daemon service
 
-if [ "$1" = "test" ]; then
-    echo "bauxd test: working"
-    exit 0
-fi
+# Configuration
+PORT=${BAUXD_PORT:-9999}
 
-if [ "$1" = "status" ]; then
-    echo "bauxd status: ready"
-    exit 0
-fi
+# Get tmux sessions as JSON
+get_sessions_json() {
+    tmux list-sessions 2>/dev/null | while read -r line; do
+        name=$(echo "$line" | cut -d: -f1)
+        rest=$(echo "$line" | cut -d: -f2-)
+        windows=$(echo "$rest" | grep -o '[0-9]\+ windows' | grep -o '[0-9]\+')
+        created=$(echo "$rest" | sed 's/.*(created \(.*\))/\1/')
+        echo "{\"name\":\"$name\",\"windows\":$windows,\"created\":\"$created\"}"
+    done | tr '\n' ',' | sed 's/,$//' | sed 's/^/[/;s/$/]/' || echo "[]"
+}
 
-if [ "$1" = "start" ]; then
-    echo "bauxd start: not implemented"
-    exit 0
-fi
-
-if [ "$1" = "stop" ]; then
-    echo "bauxd stop: not implemented"
-    exit 0
-fi
-
-echo "Usage: bauxd {start|stop|status|test}"
-exit 1</content>
-<parameter name="filePath">ports/bauxd/files/usr/local/bin/bauxd
+# CLI commands
+case "$1" in
+    "test")
+        echo "bauxd test: working"
+        ;;
+    "status")
+        echo "bauxd status: ready (port $PORT)"
+        ;;
+    "start")
+        echo "bauxd start: HTTP server not implemented yet"
+        ;;
+    "stop")
+        echo "bauxd stop: HTTP server not implemented yet"
+        ;;
+    "sessions")
+        get_sessions_json
+        ;;
+    *)
+        echo "Usage: bauxd {start|stop|status|test|sessions}"
+        exit 1
+        ;;
+esac

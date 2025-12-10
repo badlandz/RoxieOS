@@ -28,6 +28,29 @@ fi
 - ✅ X11 integration
 - ✅ Full keymap support
 
+### 1.5. LITE (Console-Only Workstation)
+**Hardware**: Keyboard + No Monitor/Display
+**Use Case**: Console-focused development, remote servers, lightweight workstations
+**Components**: Full BAUX functionality without X11 overhead
+
+**Detection**:
+```bash
+# Has keyboard but no display capability
+if [[ -c "/dev/input/event*" && -z "$DISPLAY" ]]; then
+    DEPLOYMENT_TYPE="lite"
+fi
+```
+
+**Installed Components**:
+- ✅ baux (session management)
+- ✅ baux-bot (AI assistant)
+- ✅ bauxd (mesh coordination)
+- ✅ bterm (console-only mode)
+- ✅ Console keymaps and navigation
+- ❌ bwm (no window manager needed)
+- ❌ X11 integration (console only)
+- ✅ Full tmux/neovim integration
+
 ### 2. HEADLESS
 **Hardware**: No keyboard/mouse/monitor (server)
 **Use Case**: Cloud servers, remote build machines
@@ -166,15 +189,15 @@ configure_by_type() {
 
 ### Component Installation Matrix
 
-| Component | Workstation | Headless | Kiosk | Special |
-|-----------|-------------|----------|-------|---------|
-| baux | ✅ | ✅ | ✅ | ✅ |
-| baux-bot | ✅ | ✅ | ⚠️ (limited) | ✅ |
-| bauxd | ✅ | ✅ | ✅ | ✅ |
-| bwm | ✅ | ❌ | ❌ | ⚠️ |
-| bterm | ✅ (full) | ⚠️ (console) | ✅ (display) | ✅ |
-| X11 | ✅ | ❌ | ⚠️ (minimal) | ⚠️ |
-| Keymaps | ✅ (full) | ⚠️ (console) | ⚠️ (remote) | ✅ |
+| Component | Workstation | Lite | Headless | Kiosk | Special |
+|-----------|-------------|------|----------|-------|---------|
+| baux | ✅ | ✅ | ✅ | ✅ | ✅ |
+| baux-bot | ✅ | ✅ | ✅ | ⚠️ (limited) | ✅ |
+| bauxd | ✅ | ✅ | ✅ | ✅ | ✅ |
+| bwm | ✅ | ❌ | ❌ | ❌ | ⚠️ |
+| bterm | ✅ (full) | ✅ (console) | ⚠️ (console) | ✅ (display) | ✅ |
+| X11 | ✅ | ❌ | ❌ | ⚠️ (minimal) | ⚠️ |
+| Keymaps | ✅ (full) | ✅ (console) | ⚠️ (console) | ⚠️ (remote) | ✅ |
 
 ## Usage
 
@@ -207,6 +230,7 @@ baux components  # Shows what's installed based on type
 
 ### Hardware Optimization
 - **Workstation**: Full GUI environment for development
+- **Lite**: Console-only workstation with full BAUX functionality
 - **Headless**: Minimal resource usage for servers
 - **Kiosk**: Display-focused for remote sessions
 - **Special**: Custom configurations for unique needs

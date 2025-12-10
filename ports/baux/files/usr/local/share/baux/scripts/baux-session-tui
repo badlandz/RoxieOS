@@ -87,6 +87,22 @@ get_remote_hosts() {
     echo "$hosts" | tr ' ' '\n' | grep -v '^$' | sort | uniq || echo ""
 }
 
+# Query bauxd for sessions on a remote host
+get_remote_sessions() {
+    local host="$1"
+    local port="${2:-9999}"
+
+    # Try to query bauxd API
+    if command -v curl >/dev/null 2>&1; then
+        curl -s --max-time 5 "http://$host:$port/sessions" 2>/dev/null || echo "[]"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q -O - --timeout=5 "http://$host:$port/sessions" 2>/dev/null || echo "[]"
+    else
+        # Fallback to direct SSH if no HTTP client
+        ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no -o PasswordAuthentication=no "$host" "tmux list-sessions 2>/dev/null | awk -F: '{print \$1}' | jq -R . | jq -s 'map({name: .})'" 2>/dev/null || echo "[]"
+    fi
+}
+
 # Display header
 show_header() {
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
@@ -232,24 +248,52 @@ connect_remote() {
         return
     fi
 
-    # Get available sessions on remote host
-    echo "Checking sessions on $host..."
-    local remote_sessions
-    remote_sessions=$(baux pull "$host" --list-sessions 2>/dev/null || echo "")
+    # Get available sessions on remote host via bauxd API
+    echo "Checking sessions on $host via bauxd..."
+    local remote_sessions_json
+    remote_sessions_json=$(get_remote_sessions "$host")
 
-    if [[ -n "$remote_sessions" ]]; then
+    # Parse JSON and display sessions
+    if command -v jq >/dev/null 2>&1 && [[ "$remote_sessions_json" != "[]" ]]; then
         echo "Available sessions on $host:"
-        echo "$remote_sessions"
-        echo -n "Enter session name (or press Enter for default): "
+        local session_count=1
+        local session_array=()
+        echo "$remote_sessions_json" | jq -r '.[] | "\(.name) (\(.windows) windows)"' | while read -r session_info; do
+            local session_name=$(echo "$session_info" | awk '{print $1}')
+            session_array+=("$session_name")
+            echo "  $session_count. $session_info"
+            ((session_count++))
+        done
+
+        echo -n "Select session number (or press Enter for default): "
+        read -r session_choice
+
+        if [[ -z "$session_choice" ]]; then
+            session_name="baux-$(hostname)"
+        elif [[ "$session_choice" =~ ^[0-9]+$ ]] && [[ "$session_choice" -ge 1 ]] && [[ "$session_choice" -lt "$session_count" ]]; then
+            session_name="${session_array[$((session_choice - 1))]}"
+        else
+            echo -e "${RED}Invalid session choice${NC}"
+            return
+        fi
     else
+        # Fallback if no sessions found or jq not available
         echo -n "Enter session name on $host (default: baux-$(hostname)): "
+        read -r session_name
+        session_name="${session_name:-baux-$(hostname)}"
     fi
 
-    read -r session_name
-    session_name="${session_name:-baux-$(hostname)}"
-
     echo -e "${GREEN}Connecting to session '$session_name' on $host via BAUX-MESH...${NC}"
-    exec baux pull "$host" "$session_name"
+
+    # Try bauxd API first, fallback to baux pull
+    if curl -s --max-time 5 "http://$host:9999/sessions/$session_name" >/dev/null 2>&1; then
+        echo "Using bauxd API for connection..."
+        # For now, still use baux pull as the API isn't fully implemented
+        exec baux pull "$host" "$session_name"
+    else
+        echo "Falling back to direct connection..."
+        exec baux pull "$host" "$session_name"
+    fi
 }
 
 # Push current session

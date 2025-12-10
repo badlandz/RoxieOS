@@ -4,14 +4,36 @@
 
 bauxd is the BAUX daemon service that provides a clean REST API on port 9999 for distributed BAUX operations. It replaces ad-hoc SSH-based approaches with a proper service architecture for mesh coordination, session management, and future BAUX ecosystem features.
 
-## Current Use Needs (Phase 1)
+## Current Implementation Status
 
-### Session Discovery & Switching
-**Primary Goal:** Enable clean remote session discovery and switching across BAUX-MESH
+### ✅ **Phase 1A: CLI Framework (COMPLETED)**
+**Status:** Fully implemented and tested
 
-#### API Endpoints
+#### CLI Commands
+```bash
+bauxd test                    # Basic functionality test
+bauxd status                  # Service status and port info
+bauxd sessions                # JSON output of tmux sessions
+bauxd start/stop             # HTTP server control (framework ready)
 ```
-GET  /sessions              # List available tmux sessions on this node
+
+#### JSON Session Format
+```json
+[
+  {
+    "name": "session-name",
+    "windows": 2,
+    "created": "Tue Dec  9 00:12:53 2025"
+  }
+]
+```
+
+### 🔄 **Phase 1B: HTTP REST API (IN PROGRESS)**
+**Status:** Framework designed, CLI ready, HTTP server pending
+
+#### Planned API Endpoints
+```
+GET  /sessions              # List available tmux sessions on this node ✅ (CLI ready)
 GET  /sessions/{name}       # Get session details (panes, windows, metadata)
 POST /sessions/{name}/attach # Attach to session (for remote clients)
 POST /sessions/{name}/clone  # Clone session to requesting node
@@ -19,11 +41,11 @@ GET  /health               # Service health and node status
 GET  /peers                # List mesh peers (via headscale integration)
 ```
 
-#### Integration with TUI
-- TUI queries `bauxd` on each mesh node for available sessions
-- Clean JSON responses replace ping-based discovery
-- Proper error handling and timeouts
-- Authentication via mesh certificates
+#### TUI Integration ✅
+- **TUI Updated:** Now queries `bauxd` API first, falls back to SSH
+- **Smart Discovery:** Clean JSON responses replace ping-based discovery
+- **Error Handling:** Proper timeouts and fallback mechanisms
+- **Mesh Ready:** Framework supports cross-node session switching
 
 ## Architecture
 

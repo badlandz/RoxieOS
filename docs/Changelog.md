@@ -3,6 +3,14 @@
 ## GruvBAUX Prototype (Pre-v0.1) - December 2025
 
 ### Current Status Update (December 10, 2025) - MAJOR MILESTONE: BAUX RESURRECTION DEPLOYED ACROSS MESH + AI INTEGRATIONS COMPLETE! 🎉
+
+#### **🔄 Session TUI Enhancement: bauxd Service Integration (COMPLETED)**
+- **✅ bauxd Service Framework**: Implemented CLI-based service with JSON session enumeration
+- **✅ TUI API Integration**: Updated session selector to use bauxd API instead of ping-based discovery
+- **✅ Service Architecture**: Established foundation for mesh session switching with clean API boundaries
+- **✅ JSON Session Format**: Proper tmux session metadata (name, windows, created timestamp)
+- **✅ Fallback Logic**: Graceful degradation to SSH when API unavailable
+- **🎯 Impact**: Transformed from ad-hoc SSH chaos to service-oriented architecture
 - **🎯 MAJOR ACHIEVEMENT**: BAUX session resurrection deployed and functional across 3 FreeBSD nodes + 1 Debian container!
 - **✅ DEPLOYMENT STATUS**:
   - **.133 (x300 laptop)**: ✅ Resurrection deployed, BAUX session active

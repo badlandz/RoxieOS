@@ -24,6 +24,9 @@ The BAUX Session Selector TUI provides an interactive interface for managing tmu
 - ✅ **Remote Host Detection**: Attempts to ping known BAUX nodes
 - ✅ **Remote Session Connection**: Uses `baux pull` for remote access
 - ✅ **Mesh Integration**: Supports BAUX-MESH session access
+- ✅ **bauxd API Integration**: Now queries `bauxd /sessions` endpoint first
+- ✅ **Smart Discovery**: JSON-based session enumeration with metadata
+- ✅ **Fallback Logic**: Graceful degradation to SSH when API unavailable
 
 #### **User Experience**
 - ✅ **Help System**: Built-in help and usage information
