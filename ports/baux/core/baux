@@ -7,7 +7,13 @@ set -euo pipefail
 export BAUX_HOME="/usr/local/share/baux"
 export NVIM_INIT="$BAUX_HOME/nvim/init.lua"
 TMUX_CONF="/usr/local/share/tmux/baux.conf"
-SESSION="baux-$(hostname)"
+# Default session naming: hostname-1 to hostname-9 for tty mapping
+# Users can create custom named sessions
+if [[ $# -gt 0 && "$1" =~ ^[0-9]$ ]]; then
+    SESSION="$(hostname)-$1"
+else
+    SESSION="baux-$(hostname)"
+fi
 
 # ──────────────────────────────────────────────────────────────
 # 1. Anti-nesting & remote detection (the tmux-in-tmux killer)
@@ -24,15 +30,26 @@ fi
 # ──────────────────────────────────────────────────────────────
 if [[ $# -gt 0 ]]; then
   case "$1" in
-  vpn | hosts | pull | push | bot | drop)
-    exec "$BAUX_HOME/scripts/baux-$1" "${@:2}"
-    ;;
-  --version | -v)
-    echo "BAUX v0.3.0-pre (cluster-ready)"
-    exit 0
-    ;;
-  --help | -h)
-    cat <<'HELP'
+   vpn | hosts |    pull | push | bot | drop | switch)
+     exec "$BAUX_HOME/scripts/baux-$1" "${@:2}"
+     ;;
+   [0-9])
+     # Quick session switch: baux 3 → switch to hostname-3
+     exec "$0" switch "$(hostname)-$1"
+     ;;
+   "" | default)
+     # Default: start session
+     ;;
+   *)
+     # Custom session name
+     SESSION="$1"
+     ;;
+   --version | -v)
+     echo "BAUX v0.3.0-pre (cluster-ready)"
+     exit 0
+     ;;
+   --help | -h)
+     cat <<'HELP'
 BAUX — the immortal terminal OS
 
 Usage: baux [command]
@@ -40,34 +57,22 @@ Usage: baux [command]
 Commands:
   vpn      — manage WireGuard cluster (init / add / status)
   hosts    — list all online BAUX nodes
-  pull     — pull a remote pane (future)
-  push     — push current session (future)
+   pull — pull a remote session from BAUX-MESH
+   push — push current session to BAUX-MESH
+   switch — switch to local/remote session
   bot      — manage BAUX BOT
   drop     — manage DROP-BAUX storage (future)
 
 Just type "baux" to enter the workspace.
 HELP
-    exit 0
-    ;;
-  esac
+     exit 0
+     ;;
+   esac
 fi
 
 # ──────────────────────────────────────────────────────────────
-# 3. Console session mapping via tty switching
+# 3. Normal local entry — start tmux with our config
 # ──────────────────────────────────────────────────────────────
-
-# Handle tty-based session mapping
-if [[ $# -gt 0 && $1 =~ ^[0-9]+$ ]]; then
-    # User specified tty number - switch to it
-    chvt "$1" 2>/dev/null || echo "Warning: Could not switch to tty$1 (may require root)"
-    SESSION="$SESSION-$1"
-else
-    # Auto-detect current tty for session naming
-    CURRENT_TTY=$(tty 2>/dev/null | sed 's/.*tty//' | tr -d '\n' || echo "")
-    if [[ $CURRENT_TTY =~ ^[0-9]+$ ]]; then
-        SESSION="$SESSION-$CURRENT_TTY"
-    fi
-fi
 
 # Verify config exists before starting tmux
 if [ ! -f "$TMUX_CONF" ]; then

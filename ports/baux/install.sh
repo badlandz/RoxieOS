@@ -48,7 +48,17 @@ doas git clone https://github.com/tmux-plugins/tpm /usr/local/share/tmux/plugins
 # Create BAUX directories
 echo "Creating BAUX directories..."
 doas mkdir -p /usr/local/share/baux/tmux
+doas mkdir -p /usr/local/share/baux/scripts
 doas mkdir -p /usr/local/etc/baux
+
+# Install BAUX scripts
+echo "Installing BAUX scripts..."
+if [ -d "files/usr/local/share/baux/scripts" ]; then
+    doas cp files/usr/local/share/baux/scripts/* /usr/local/share/baux/scripts/
+    doas chmod +x /usr/local/share/baux/scripts/*
+else
+    echo "Warning: BAUX scripts directory not found"
+fi
 
 echo "baux installed successfully!"
 echo "Run 'baux' to start your BAUX session"
