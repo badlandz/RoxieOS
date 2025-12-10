@@ -67,11 +67,25 @@ get_peers() {
     fi
 }
 
+# Get deployment type
+get_deployment_type() {
+    if [[ -f "/usr/local/etc/baux-deployment-type" ]]; then
+        cat "/usr/local/etc/baux-deployment-type"
+    else
+        echo "unknown"
+    fi
+}
+
 # Health check
 get_health() {
+    local deployment_type
+    deployment_type=$(get_deployment_type)
+
     local health='{
         "status": "healthy",
         "timestamp": "'$(date -Iseconds)'",
+        "deployment_type": "'$deployment_type'",
+        "hostname": "'$(hostname)'",
         "services": {
             "tmux": "'$(tmux -V 2>/dev/null || echo "not available")'",
             "tailscale": "'$(tailscale version 2>/dev/null || echo "not available")'"
@@ -103,6 +117,9 @@ handle_request() {
             ;;
         "GET /peers")
             response=$(get_peers)
+            ;;
+        "GET /deployment-type")
+            response='{"deployment_type":"'$(get_deployment_type)'"}'
             ;;
         "POST /sessions/*/attach")
             local session_name="${path#/sessions/}"
