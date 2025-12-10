@@ -18,14 +18,47 @@ get_sessions() {
     tmux list-sessions 2>/dev/null | awk -F: '{print $1}' || echo ""
 }
 
-# Get remote hosts (from known BAUX nodes)
+# Get remote hosts (from BAUX-MESH and known nodes)
 get_remote_hosts() {
-    # Check for common BAUX hostnames
+    local hosts=""
+
+    # Method 1: Check BAUX-MESH nodes via tailscale
+    if command -v tailscale >/dev/null 2>&1; then
+        # Get tailscale peers (excluding ourselves)
+        local current_ip
+        current_ip=$(tailscale ip -4 2>/dev/null || echo "")
+        local peers
+        peers=$(tailscale status 2>/dev/null | grep -E '^[a-zA-Z0-9_-]+\s+[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $1}' | grep -v "^$(hostname -s)$" || echo "")
+
+        # Convert peer names to hostnames if possible
+        for peer in $peers; do
+            case "$peer" in
+                "baux01") hosts="${hosts}baux01 " ;;
+                "01x300") hosts="${hosts}baux-133 " ;;  # .133 node
+                "baux-scale") hosts="${hosts}baux-scale " ;;
+            esac
+        done
+    fi
+
+    # Method 2: Check known BAUX hostnames with improved ping
     for host in baux01 baux02 baux03 baux-scale; do
-        if ping -c 1 -W 1 "$host" >/dev/null 2>&1; then
-            echo "$host"
+        # Try multiple ping methods
+        if ping -c 1 -W 2 "$host" >/dev/null 2>&1 || \
+           timeout 2 nc -z "$host" 22 >/dev/null 2>&1 || \
+           timeout 2 ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o PasswordAuthentication=no "$host" "echo" >/dev/null 2>&1; then
+            # Avoid duplicates
+            if [[ "$hosts" != *"$host"* ]]; then
+                hosts="${hosts}$host "
+            fi
         fi
     done
+
+    # Method 3: Check for BAUX-MESH headscale server
+    if [[ -n "${BAUX_HEADSCALE_SERVER:-}" ]]; then
+        hosts="${hosts}${BAUX_HEADSCALE_SERVER} "
+    fi
+
+    echo "$hosts" | tr ' ' '\n' | grep -v '^$' || echo ""
 }
 
 # Display header
