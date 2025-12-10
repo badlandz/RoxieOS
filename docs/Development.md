@@ -29,9 +29,30 @@ See [NomadBSD Handbook](https://nomadbsd.org/handbook/handbook.html) and [GitHub
 RoxieOS/
 ├── src/          # FreeBSD src tree patches
 ├── ports/        # FreeBSD ports for BAUX packages
+│   ├── baux/     # Core BAUX shell environment
+│   ├── x11-fonts/  # Accessibility font stack (9 fonts)
+│   │   ├── jetbrains-mono/    # Primary monospace
+│   │   ├── firacode/          # Ligature-rich coding
+│   │   ├── hack/              # High readability
+│   │   ├── opendyslexic/      # Dyslexia support
+│   │   ├── atkinson-hyperlegible/  # Visual impairment
+│   │   ├── tex-gyre/          # Professional typography
+│   │   ├── cantarell/         # GNOME sans
+│   │   └── ebgaramond/        # Elegant serif
+│   └── sysutils/  # Live system & repository tools
+│       ├── live-build/        # ISO creation system
+│       ├── persistence-tools/ # USB overlay management
+│       ├── bootloader-themes/ # GRUB themes
+│       ├── plymouth-themes/   # Boot splash screens
+│       ├── kernel-patches/    # Accessibility kernel
+│       ├── pkg-repo/          # Local package repository
+│       ├── build-system/      # Automated building
+│       └── update-tools/      # Secure updates
 ├── patches/      # Live upstream patches
 ├── scripts/      # Build and install scripts
 ├── docs/         # Handbook-style documentation
+│   ├── Debian-Integration.md  # Cross-platform insights
+│   └── ROADMAP.md             # Development roadmap
 └── archive/      # Legacy Debian packages and docs
 ```
 
@@ -248,23 +269,51 @@ test_session_resurrection() {
 ```
 
 ### Manual Testing Checklist
-- [ ] Caps→Esc works in console
-- [ ] Caps→Esc works in X11
-- [ ] Mod4+1-9 switches sessions
-- [ ] Alt+1-9 switches tmux windows
-- [ ] hjkl navigation in vim/tmux/bwm
-- [ ] bwm bar shows session names
-- [ ] chaos screensaver activates
-- [ ] bshot captures screenshots
-- [ ] bweb launches with BAUX keybindings
+- [x] Caps→Esc works in console (bbase implemented)
+- [ ] Caps→Esc works in X11 (pending X11 setup)
+- [x] Mod4+1-9 switches sessions (baux tmux config)
+- [x] Alt+1-9 switches tmux windows (baux tmux config)
+- [x] hjkl navigation in vim/tmux/bwm (universal)
+- [ ] bwm bar shows session names (pending bwm)
+- [ ] chaos screensaver activates (pending chaos)
+- [ ] bshot captures screenshots (not implemented)
+- [ ] bweb launches with BAUX keybindings (not implemented)
+
+### Font Integration Testing
+- [ ] JetBrains Mono renders correctly with ligatures
+- [ ] FiraCode ligatures display properly
+- [ ] OpenDyslexic improves readability for dyslexia
+- [ ] Atkinson Hyperlegible passes accessibility standards
+- [ ] All fonts integrate with fontconfig properly
+- [ ] Console fonts (8x16, 12x24) support accessibility
+
+### Live System Testing
+- [ ] Live USB boots in <5 seconds
+- [ ] Persistence overlay works reliably
+- [ ] GRUB themes display correctly
+- [ ] Plymouth splash shows branding
+- [ ] Kernel accessibility features enabled
 
 ## Development Workflow
 
 ### Testing Infrastructure
-- **Primary Testbed:** ThinkPad X200 (FreeBSD 14.x)
-- **Server Testing:** Proxmox VM (FreeBSD 15.x) on LAN
-- **Probe Script:** `scripts/baux-probe.sh` for compatibility checking
-- **Build Environment:** Debian development machine for package creation
+- **Primary Testbed:** ThinkPad X300 (FreeBSD 15.0) - Your development workstation
+- **Server Testing:** Proxmox VM (FreeBSD 15.x) for mesh networking
+- **Cross-Platform Testing:** Debian fork validation for compatibility
+- **Probe Script:** `scripts/baux-probe.sh` for hardware compatibility
+- **Build Environment:** FreeBSD ports system with poudriere integration
+
+### Font Accessibility Testing
+- **Screen Reader Validation**: Orca/NVDA compatibility testing
+- **High Contrast Verification**: WCAG compliance checking
+- **Dyslexia Support**: Specialized font effectiveness testing
+- **Visual Impairment**: Low-vision user accessibility validation
+
+### Live System Testing
+- **Boot Time Optimization**: <5 second target achievement
+- **Persistence Reliability**: USB overlay corruption testing
+- **Hardware Compatibility**: Broad device support validation
+- **Update Mechanisms**: Secure offline update testing
 
 ### Local Development Setup
 ```bash

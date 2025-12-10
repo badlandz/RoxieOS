@@ -1,0 +1,7 @@
+FiraCode - Monospace font with programming ligatures
+
+FiraCode is a monospace font containing ligatures for common programming
+multi-character combinations. This is just a font rendering feature: underlying
+code remains ASCII-compatible. This helps to read and understand code faster.
+
+WWW: https://github.com/tonsky/FiraCode

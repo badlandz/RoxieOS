@@ -15,9 +15,13 @@ BAUX is a minimalist swiss army knife for makers: USB boot to connect to your Ne
 
 ## Overview
 
-RoxieOS is a FreeBSD-based operating system for persistent, distributed development environments. Boot from USB, resurrect your exact tmux/neovim sessions on any hardware, and access AI assistance across a BAUX-MESH network. Sessions persist across reboots, crashes, and device switches via Tailscale integration.
+RoxieOS is a FreeBSD-based operating system for persistent, distributed development environments. Boot from USB, resurrect your exact tmux/neovim sessions on any hardware, and access AI assistance across a BAUX-MESH network. Sessions persist across reboots, crashes, and device switches via Headscale integration.
+
+**Combined Innovation**: RoxieOS merges FreeBSD's networking excellence with Debian's accessibility and live system mastery, creating the most productive development environment available.
 
 **GruvBAUX Prototype**: This pre-v0.1 release features unified Gruvbox theming across console, dwm/bwm, neovim, tmux, and all BAUX components. Sessions become distributed network resources via Headscale mesh networking, accessible from any enrolled device.
+
+**Accessibility First**: Comprehensive font stack supports visual impairments and dyslexia. Live system builds enable instant productivity on any hardware.
 
 ![RoxieOS Screenshot](https://via.placeholder.com/800x400/000000/00FF00?text=RoxieOS+Screenshot+Coming+Soon)
 
@@ -28,6 +32,9 @@ RoxieOS is a FreeBSD-based operating system for persistent, distributed developm
 - **Immortal Sessions**: Sessions survive reboots, crashes, and hardware changes
 - **Unified Keymaps**: Consistent controls across console, WM, editor, and terminal
 - **Gruvbox Theming**: Cohesive visual experience across all components
+- **Revolutionary Font Stack**: 9 professional fonts for maximum accessibility
+- **Live System Builds**: Unionfs-fuse based live USB with persistence
+- **AI-Powered Development**: Integrated xai-chat and baux-bot assistance
 - **FreeBSD Native**: Ports system, ZFS snapshots, rc.d services
 - **Minimal Footprint**: Core packages <400MB, boot in <5 seconds
 
@@ -126,6 +133,20 @@ If components don't work:
 ### Reporting Issues
 When reporting bugs, include the probe report and specify your platform.
 
+## Combined Innovation from Debian & FreeBSD
+
+**Debian Heritage (Accessibility & Live Systems):**
+- Revolutionary 9-font accessibility stack (JetBrains Mono, FiraCode, OpenDyslexic, Atkinson Hyperlegible, etc.)
+- Production-ready live system builds with unionfs-fuse persistence
+- Complete local package repository infrastructure
+- Custom kernel builds with accessibility patches
+
+**FreeBSD Innovation (Networking & AI):**
+- Headscale mesh networking for distributed sessions
+- AI-powered development (xai-chat, baux-bot with Ollama/Grok integration)
+- Advanced session persistence with ZFS snapshots and SeaweedFS buffering
+- Production-ready ports system and rc.d services
+
 ## Contributing
 
 We welcome contributions! See [Development Guide](docs/Development.md) for:
@@ -134,6 +155,11 @@ We welcome contributions! See [Development Guide](docs/Development.md) for:
 - Package development
 - Testing guidelines
 - Code style
+
+### Integration Opportunities
+- **Font Stack Migration**: Port Debian's accessibility fonts to FreeBSD ports
+- **Live Build Enhancement**: Implement Debian's debootstrap approach in FreeBSD
+- **Cross-Platform Session Sync**: Enable session resurrection across FreeBSD/Debian systems
 
 ### Getting Help
 

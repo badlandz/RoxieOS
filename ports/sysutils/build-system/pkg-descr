@@ -1,0 +1,6 @@
+Build System - Automated package building infrastructure
+
+Tools for automated FreeBSD package building using poudriere,
+including build farm setup and continuous integration.
+
+WWW: https://roxieos.org/

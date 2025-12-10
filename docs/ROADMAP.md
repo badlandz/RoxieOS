@@ -188,10 +188,6 @@ make release
 # Cross-compilation setup
 pkg install riscv64-gcc riscv64-binutils
 export CROSS_COMPILE=riscv64-unknown-freebsd-
-
-# Build minimal BAUXBSD for RISC-V
-make TARGET=riscv64 buildworld buildkernel
-make TARGET=riscv64 packages
 ```
 
 #### 6.2 Mango Pi Hardware Integration
@@ -215,13 +211,110 @@ stty -F /dev/ttyU0 115200 raw
 - **Fast Recovery**: ZFS snapshots for firmware development
 - **Cross-Compilation**: Seamless x86_64 ↔ RISC-V development
 
+### Phase 7: Debian Integration & Font Accessibility (Month 5-6)
+**Goal:** Port Debian's accessibility innovations to FreeBSD for inclusive development
+
+#### 7.1 Font Stack Migration
+**Status:** Planning Phase - Create FreeBSD ports for Debian's 9-font accessibility suite
+
+**Implementation Roadmap:**
+1. **Package Analysis**: Study Debian font packages (fonts-jetbrains-mono, fonts-firacode, etc.)
+2. **FreeBSD Port Creation**: Convert .deb structure to FreeBSD ports format
+3. **Fontconfig Integration**: Ensure proper system font registration
+4. **Accessibility Testing**: Validate with screen readers and accessibility tools
+
+**Target Packages:**
+- `fonts-jetbrains-mono` → `x11-fonts/jetbrains-mono`
+- `fonts-firacode` → `x11-fonts/firacode`
+- `fonts-opendyslexic` → `x11-fonts/opendyslexic`
+- `fonts-atkinson-hyperlegible` → `x11-fonts/atkinson-hyperlegible`
+- Additional fonts: tex-gyre, cantarell, ebgaramond, hack
+
+#### 7.2 Live System Enhancement
+**Status:** Planning Phase - Implement Debian's live build excellence in FreeBSD
+
+**Implementation Roadmap:**
+1. **Unionfs Analysis**: Study NomadBSD's unionfs-fuse implementation
+2. **Debian Comparison**: Analyze Debian's debootstrap approach for improvements
+3. **Bootloader Integration**: Implement GRUB themes and Plymouth splash screens
+4. **Persistence Optimization**: Enhance USB persistence with better overlay management
+
+**Key Improvements:**
+- Faster boot times (<5 seconds target)
+- Better hardware detection and driver loading
+- Improved persistence layer reliability
+- Enhanced live environment features
+
+#### 7.3 Repository Infrastructure
+**Status:** Planning Phase - Build local package repository like Debian's apt repo
+
+**Implementation Roadmap:**
+1. **Pkg Repository Setup**: Configure local pkg repository
+2. **Build System**: Create automated package building pipeline
+3. **Dependency Management**: Implement sophisticated dependency resolution
+4. **Update Mechanism**: Design secure update distribution system
+
+**Features to Implement:**
+- Local mirror for offline development
+- Automated security updates
+- Package signing and verification
+- Multi-architecture support
+
+#### 7.4 Cross-Platform Session Sync
+**Status:** Research Phase - Enable session resurrection across FreeBSD/Debian systems
+
+**Implementation Roadmap:**
+1. **Protocol Design**: Define cross-platform session format
+2. **Headscale Extension**: Modify for multi-OS session handling
+3. **Migration Tools**: Create session export/import utilities
+4. **Testing Framework**: Validate sync across different OS versions
+
+**Technical Challenges:**
+- Path differences between FreeBSD/Debian
+- Package availability variations
+- Configuration file format differences
+- User permission mapping
+
 ### Phase 7: AI Integration & Automation (Month 5-6)
 **Goal:** Complete AI-assisted development environment with BAUX-MESH distribution
 
-**Debian Porting (Completed ✅)**
-- Adapted FreeBSD ports to Debian .deb packages using salvaged packaging scripts
-- Successfully tested baux-bot on Debian VM with corrected shebangs and dependencies
-- Enabled BAUX-MESH across FreeBSD/Debian systems via SSH routing
+**Debian Integration (Completed ✅)**
+- Analyzed Debian fork for accessibility and live system innovations
+- Identified 9-font accessibility stack for FreeBSD migration
+- Documented live build system improvements
+- Planned cross-platform session synchronization
+
+#### 7.1 AI Integration (Completed ✅)
+- **Multi-Model Support**: Ollama (local), xAI Grok (cloud), Google Gemini (cloud)
+- **Context Awareness**: Real-time RAG system for codebase understanding
+- **Seamless Switching**: Dynamic backend selection (Ollama/Grok) in baux-bot
+- **TMUX/Neovim Integration**: Alt+b (tmux) and <leader>b (neovim) keybindings
+- **BAUX-MESH AI**: Distributed AI resources across RoxieOS installs via Headscale
+- **Performance Optimization**: Lightweight models prioritized for workstation efficiency
+
+#### 7.2 Advanced AI Features (Future Implementation)
+- **AI Shepherding**: Local AI suggests best AI for queries
+- **Interactive Tutors**: AI-guided vim/tmux tutorials with real-time feedback
+- **RTFM Bot**: AI-powered documentation search across entire codebase
+- **Memory Across Sessions**: Persistent chat logs for continuity
+- **Daemon Mode**: Background AI with tmux popup notifications
+- **Multi-Modal Analysis**: Screenshot/tmux layout feedback for UI improvements
+- **Self-Improvement**: Bot learns from user corrections and codebase changes
+
+#### 7.3 Development Automation
+- **Code Generation**: AI-assisted BAUX component creation
+- **Bug Analysis**: Automated issue detection and fixes
+- **Documentation**: AI-generated comprehensive docs
+- **Testing**: AI-driven test case generation
+
+#### 7.4 Current Status and Mitigations
+- **✅ Implemented**: Basic AI chat, model switching, RAG context, tmux/neovim integration
+- **Performance**: Lightweight models (llama3.2:3b, grok-3) prioritized for workstation efficiency
+- **FreeBSD Compatibility**: CPU-only Ollama mode; Vulkan GPU support monitored for future
+- **Session Persistence**: RAG rebuilds on changes; SeaweedFS integration planned for hot buffering
+- **Keymap Conflicts**: Alt+b tested; BAUX bindings verified consistent across layers
+- **Ollama Tuning**: `baux-bot --autotune-ollama` benchmarks models for optimal speed/quality per hardware
+- **BAUX-MESH Potential**: Distributed AI unlocks global session resurrection, mesh-wide tutoring, AI-optimized builds
 
 #### 7.1 AI Integration (Completed ✅)
 - **Multi-Model Support**: Ollama (local), xAI Grok (cloud), Google Gemini (cloud)
@@ -263,24 +356,45 @@ stty -F /dev/ttyU0 115200 raw
 ## Package Dependencies
 
 ### Core Package Matrix
-| Package | FreeBSD Dependencies | Size |
-|---------|-------------------|-------|
-| bbase | bash, tmux | 50MB |
-| baux | tmux, seaweedfs, rsync, git | 80MB |
-| bwm | dwm, picom | 25MB |
-| bterm | st, libXft | 5MB |
-| bvi | neovim | 90MB |
-| bweb | qutebrowser | 40MB |
-| chaos | tmux | 1MB |
-| baux-bot | ollama | 4GB |
+| Package | FreeBSD Dependencies | Size | Status |
+|---------|-------------------|-------|---------|
+| bbase | bash, tmux | 50MB | ✅ Implemented |
+| baux | tmux, seaweedfs, rsync, git | 80MB | ✅ Implemented |
+| bwm | dwm, picom | 25MB | 🔄 In Development |
+| bterm | st, libXft | 5MB | 🔄 In Development |
+| bvi | neovim | 90MB | ✅ Implemented |
+| bweb | qutebrowser | 40MB | 🧪 Planned |
+| chaos | tmux | 1MB | 🔄 In Development |
+| baux-bot | ollama | 4GB | ✅ Implemented |
 
 ### Optional Package Matrix
-| Package | Dependencies | Size |
-|---------|-------------|-------|
-| bview | sxiv | 2MB |
-| bmedia | mpv | 15MB |
-| bbot | ollama | 4GB |
-| bdrop | seaweedfs | 50MB |
+| Package | Dependencies | Size | Status |
+|---------|-------------|-------|---------|
+| bview | sxiv | 2MB | 🧪 Planned |
+| bmedia | mpv | 15MB | 🧪 Planned |
+| bbot | ollama | 4GB | ✅ Implemented |
+| bdrop | seaweedfs | 50MB | 🧪 Planned |
+
+### Debian-Inspired Font Packages (New Additions)
+| Package | Purpose | Debian Source | FreeBSD Status |
+|---------|---------|---------------|----------------|
+| jetbrains-mono | Primary monospace font | fonts-jetbrains-mono | 🧪 Planned |
+| firacode | Ligature-rich coding font | fonts-firacode | 🧪 Planned |
+| hack | Clean readable monospace | fonts-hack | 🧪 Planned |
+| opendyslexic | Dyslexia support font | fonts-opendyslexic | 🧪 Planned |
+| atkinson-hyperlegible | Maximum readability | fonts-atkinson-hyperlegible | 🧪 Planned |
+| tex-gyre | Professional typography | tex-gyre | 🧪 Planned |
+| cantarell | GNOME sans font | fonts-cantarell | 🧪 Planned |
+| ebgaramond | Elegant serif | fonts-ebgaramond | 🧪 Planned |
+
+### Live System Components (Debian-Inspired)
+| Component | Purpose | Debian Source | FreeBSD Status |
+|-----------|---------|---------------|----------------|
+| live-build | ISO creation system | live-build | 🧪 Planned |
+| persistence | USB overlay system | unionfs-fuse | 🔄 In Development |
+| bootloader-theme | GRUB themes | grub-theme-roxieos | 🧪 Planned |
+| plymouth-theme | Boot splash | plymouth-theme-roxieos | 🧪 Planned |
+| kernel-patches | Accessibility kernel | linux-image-roxanne | 🧪 Planned |
 
 ## Testing Strategy
 
