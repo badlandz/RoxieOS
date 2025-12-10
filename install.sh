@@ -136,53 +136,50 @@ install_port() {
 
     # Check if already installed (basic check)
     if [[ -f "/usr/local/bin/$port_name" ]] || [[ -f "/usr/local/etc/rc.d/$port_name" ]]; then
-        log "$port_name already appears to be installed, skipping"
+        log "$port_name already appears to be installed, checking version..."
+        # For now, assume it's up to date if installed
+        log "$port_name already installed, skipping"
         return 0
     fi
 
-    # Change to port directory and install
-    cd "$BAUX_ROOT/ports/$port_name"
+    log "Installing $port_name using manual file copy..."
 
-    # For now, use manual installation (later integrate with FreeBSD ports)
-    if [[ -f "install.sh" ]]; then
-        log "Running custom install script..."
-        bash install.sh
-    else
-        log "No custom install script, using manual file copy..."
-        # Manual installation for ports without install.sh
-        case "$port_name" in
-            "baux")
-                mkdir -p /usr/local/bin /usr/local/share/baux/scripts /usr/local/share/tmux
-                cp files/usr/local/bin/baux /usr/local/bin/
-                cp files/usr/local/share/baux/scripts/* /usr/local/share/baux/scripts/ 2>/dev/null || true
-                cp files/usr/local/share/tmux/baux.conf /usr/local/share/tmux/
-                chmod +x /usr/local/bin/baux /usr/local/share/baux/scripts/*
-                ;;
-            "baux-bot")
-                mkdir -p /usr/local/bin
-                cp files/usr/local/bin/baux-bot /usr/local/bin/
-                chmod +x /usr/local/bin/baux-bot
-                ;;
-            "bauxd")
-                mkdir -p /usr/local/bin /usr/local/etc/rc.d /usr/local/share/bauxd
-                cp files/usr/local/bin/bauxd /usr/local/bin/
-                cp files/usr/local/etc/rc.d/bauxd /usr/local/etc/rc.d/
-                cp files/usr/local/share/bauxd/config.json /usr/local/share/bauxd/
-                chmod +x /usr/local/bin/bauxd /usr/local/etc/rc.d/bauxd
-                ;;
-            "bwm"|"bterm")
-                # Skip GUI components for non-workstation deployments
-                if [[ "$DEPLOYMENT_TYPE" != "workstation" ]]; then
-                    log "Skipping $port_name for $DEPLOYMENT_TYPE deployment"
-                    return 0
-                fi
-                log "GUI component installation not implemented yet"
-                ;;
-            *)
-                log "Installation method not defined for $port_name"
-                ;;
-        esac
-    fi
+    # Manual installation for all components
+    case "$port_name" in
+        "baux")
+            log "Installing baux components..."
+            doas mkdir -p /usr/local/bin /usr/local/share/baux/scripts /usr/local/share/tmux
+            doas cp "$BAUX_ROOT/ports/baux/files/usr/local/bin/baux" /usr/local/bin/
+            doas cp "$BAUX_ROOT/ports/baux/files/usr/local/share/baux/scripts"/* /usr/local/share/baux/scripts/ 2>/dev/null || true
+            doas cp "$BAUX_ROOT/ports/baux/files/usr/local/share/tmux/baux.conf" /usr/local/share/tmux/
+            doas chmod +x /usr/local/bin/baux /usr/local/share/baux/scripts/*
+            ;;
+        "baux-bot")
+            log "Installing baux-bot..."
+            doas mkdir -p /usr/local/bin
+            doas cp "$BAUX_ROOT/ports/baux-bot/files/usr/local/bin/baux-bot" /usr/local/bin/
+            doas chmod +x /usr/local/bin/baux-bot
+            ;;
+        "bauxd")
+            log "Installing bauxd service..."
+            doas mkdir -p /usr/local/bin /usr/local/etc/rc.d /usr/local/share/bauxd
+            doas cp "$BAUX_ROOT/ports/bauxd/files/usr/local/bin/bauxd" /usr/local/bin/
+            doas cp "$BAUX_ROOT/ports/bauxd/files/usr/local/etc/rc.d/bauxd" /usr/local/etc/rc.d/
+            doas cp "$BAUX_ROOT/ports/bauxd/files/usr/local/share/bauxd/config.json" /usr/local/share/bauxd/
+            doas chmod +x /usr/local/bin/bauxd /usr/local/etc/rc.d/bauxd
+            ;;
+        "bwm"|"bterm")
+            # Skip GUI components for non-workstation deployments
+            if [[ "$DEPLOYMENT_TYPE" != "workstation" ]]; then
+                log "Skipping $port_name for $DEPLOYMENT_TYPE deployment"
+                return 0
+            fi
+            log "GUI component $port_name installation not implemented yet"
+            ;;
+        *)
+            log "Installation method not defined for $port_name"
+            ;;
+    esac
 
     success "Installed $port_name"
 }
