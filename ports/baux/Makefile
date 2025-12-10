@@ -29,6 +29,7 @@ do-install:
 	${MKDIR} ${STAGEDIR}${PREFIX}/bin
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/baux
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/baux/scripts
+	${MKDIR} ${STAGEDIR}${PREFIX}/share/baux/tmux-plugins
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/baux/nvim
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/baux/nvim/lua
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/baux/nvim/lua/config

@@ -18,17 +18,23 @@ tmux starts but loads default config instead of BAUX config (status bar bottom, 
 
 ## Test Plan - Execute in Order
 
-### Phase 1: Install Tmux Plugins (Required)
+### Phase 1: Install Tmux Plugins (BAUX-Managed Location)
 ```bash
-# Install TPM (Tmux Plugin Manager)
-git clone https://github.com/tmux-plugins/tpm /usr/local/share/tmux-plugins/tpm
+# Install TPM (Tmux Plugin Manager) - BAUX-managed for mesh consistency
+git clone https://github.com/tmux-plugins/tpm /usr/local/share/baux/tmux-plugins/tpm
 
-# Install tmux-resurrect
-git clone https://github.com/tmux-plugins/tmux-resurrect /usr/local/share/tmux-plugins/tmux-resurrect
+# Install tmux-resurrect - ensures session persistence across mesh nodes
+git clone https://github.com/tmux-plugins/tmux-resurrect /usr/local/share/baux/tmux-plugins/tmux-resurrect
 
-# Install tmux-continuum
-git clone https://github.com/tmux-plugins/tmux-continuum /usr/local/share/tmux-plugins/tmux-continuum
+# Install tmux-continuum - automatic saving for distributed sessions
+git clone https://github.com/tmux-plugins/tmux-continuum /usr/local/share/baux/tmux-plugins/tmux-continuum
 ```
+
+**Why BAUX-managed location?**
+- **Mesh Consistency**: All nodes have identical plugin versions
+- **Distributed Sessions**: Plugins travel with BAUX configuration
+- **Version Control**: BAUX port manages plugin deployment
+- **Future Sync**: Ready for drop-baux integration for plugin updates
 
 ### Phase 2: Deploy Complete BAUX System
 **Proper Development Deployment (Recommended)**
