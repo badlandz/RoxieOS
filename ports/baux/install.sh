@@ -7,6 +7,14 @@ set -e
 echo "Installing BAUX Session Manager..."
 echo "Current directory: $(pwd)"
 
+# Clean up potential configuration conflicts from previous installs
+echo "Cleaning up old BAUX configurations..."
+doas rm -rf /usr/local/share/baux 2>/dev/null || true  # Remove old BAUX_HOME location
+doas rm -f /usr/local/share/tmux-plugins/tpm 2>/dev/null || true  # Remove old plugin location
+doas rm -f /usr/local/share/tmux-plugins/tmux-resurrect 2>/dev/null || true
+doas rm -f /usr/local/share/tmux-plugins/tmux-continuum 2>/dev/null || true
+doas rm -rf /var/tmp/baux-resurrect 2>/dev/null || true  # Clean resurrect data
+
 # Check if source files exist
 if [ ! -f "core/baux" ]; then
     echo "ERROR: core/baux not found in $(pwd)"
@@ -84,5 +92,11 @@ echo "  - resurrect dir: /var/tmp/baux-resurrect/"
 echo ""
 echo "Session restoration is now enabled!"
 echo "BAUX sessions will automatically save and restore across reboots."
+echo ""
+echo "⚠️  IMPORTANT NOTES:"
+echo "  - If you have ~/.tmux.conf, it may override BAUX config"
+echo "  - Remove or backup ~/.tmux.conf if BAUX doesn't start properly"
+echo "  - BAUX uses C-Space as tmux prefix (not C-b)"
+echo "  - Kill existing tmux sessions if they use old configs: tmux kill-server"
 echo ""
 echo "To test: run 'baux'"
