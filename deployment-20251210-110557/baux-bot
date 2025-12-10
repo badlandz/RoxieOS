@@ -1,0 +1,1113 @@
+#!/usr/local/bin/bash
+# baux-bot.sh v6.3 — FreeBSD workstation edition
+# Adapted for ~/src/RoxieOS/ development workflow
+# Dec 07 2025
+
+set -euo pipefail
+
+# Source user environment
+if [[ -f ~/.bashrc ]]; then
+    source ~/.bashrc
+fi
+# Source mesh keys
+if [[ -f ~/mnt/drop-baux/keys/api_keys.sh ]]; then
+    source ~/mnt/drop-baux/keys/api_keys.sh
+fi
+
+# Force CPU mode for compatibility (disable Vulkan GPU)
+export OLLAMA_GPU_LAYERS=0
+
+# Handle command-line options
+if [[ $# -gt 0 ]]; then
+    case "$1" in
+        --autotune-ollama)
+            echo "BAUX BOT Ollama Auto-Tune starting..."
+            echo "This will test available models and optimize for your hardware."
+            echo "Results will be saved to ~/.baux-bot/tune.log"
+            exec "$0" --internal-autotune
+            ;;
+        --help|-h)
+            echo "BAUX BOT v6.4 — AI assistant for RoxieOS development"
+            echo "Usage: baux-bot [command]"
+            echo ""
+            echo "Commands:"
+            echo "  (no args)        Start interactive chat"
+            echo "  --autotune-ollama  Benchmark and optimize models"
+            echo "  --help           Show this help"
+            echo ""
+            echo "Interactive commands:"
+            echo "  'exit' to quit"
+            echo "  'status' for repo status and AI usage stats"
+            echo "  'read FILE' to force file into RAG"
+            echo "  'develop TASK' for development advice"
+            echo "  'code REQUEST' for code generation/review"
+             echo "  'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode/ascii-art/cheerleader/keystroke-guru/huggingface/replicate/together' to change backend (auto-routing available)"
+            echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
+            echo "  'search TERM' to search RAG for information"
+            echo "  'teach TOPIC' for interactive learning mode"
+            exit 0
+            ;;
+    esac
+fi
+
+if [[ $# -gt 0 && "$1" == "--internal-autotune" ]]; then
+    # Auto-tune Ollama models
+    CONFIG_DIR="$HOME/.baux-bot"
+    mkdir -p "$CONFIG_DIR"
+    TUNE_LOG="$CONFIG_DIR/tune.log"
+    echo "=== BAUX BOT Ollama Auto-Tune $(date) ===" > "$TUNE_LOG"
+    echo "Hardware: $(uname -m) $(nproc) cores" >> "$TUNE_LOG"
+
+    AVAILABLE_MODELS=$(ollama list 2>/dev/null | awk 'NR>1 {print $1}' | tr '\n' ' ')
+    echo "Available models: $AVAILABLE_MODELS" >> "$TUNE_LOG"
+
+    BEST_MODELS=()
+    for model in $AVAILABLE_MODELS; do
+        echo "Testing $model..." | tee -a "$TUNE_LOG"
+        START=$(date +%s)
+        RESPONSE=$(timeout 60 ollama run "$model" "Write a bash function to check if a file exists." 2>/dev/null || echo "TIMEOUT")
+        END=$(date +%s)
+        TIME=$((END - START))
+        LENGTH=${#RESPONSE}
+        # Basic quality check: contains bash-like syntax
+        QUALITY=0
+        if [[ "$RESPONSE" == *"if ["* || "$RESPONSE" == *"[ -f"* || "$RESPONSE" == *"test -f"* ]]; then
+            QUALITY=1
+        fi
+        echo "  Time: ${TIME}s, Length: $LENGTH, Quality: $QUALITY" | tee -a "$TUNE_LOG"
+        if [[ $TIME -lt 60 && $LENGTH -gt 20 && $QUALITY -eq 1 ]]; then
+            BEST_MODELS+=("$model:$TIME:$QUALITY")
+        fi
+    done
+
+    # Sort by speed, then quality
+    SORTED=$(printf '%s\n' "${BEST_MODELS[@]}" | sort -t: -k2 -n -k3 -nr | cut -d: -f1)
+    NEW_PREF=($SORTED)
+    echo "Optimized MODEL_PREF: ${NEW_PREF[*]}" >> "$TUNE_LOG"
+
+    # Save to config file
+    echo "MODEL_PREF=(${NEW_PREF[*]})" > "$CONFIG_DIR/models.conf"
+    echo "Auto-tune complete. Restart baux-bot to use optimized settings." | tee -a "$TUNE_LOG"
+    exit 0
+fi
+
+# API Key Configuration
+GROK_API_KEY="${GROK_API_KEY:-}"
+GEMINI_API_KEY="${GEMINI_API_KEY:-}"
+CLAUDE_API_KEY="${CLAUDE_API_KEY:-}"
+REPLICATE_API_TOKEN="${REPLICATE_API_TOKEN:-}"
+TOGETHER_API_KEY="${TOGETHER_API_KEY:-}"
+CONFIG_DIR="$HOME/.baux-bot"
+CONFIG_FILE="$CONFIG_DIR/config"
+mkdir -p "$CONFIG_DIR"
+
+# Load config if exists
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
+
+# Performance monitoring
+USAGE_LOG="$CONFIG_DIR/usage.log"
+RATE_LIMIT_FILE="$CONFIG_DIR/rate_limits"
+
+# Initialize rate limiting
+init_rate_limits() {
+    # Rate limits: requests per minute
+    declare -A RATE_LIMITS=(
+        ["gemini"]=10
+        ["claude"]=5
+        ["replicate"]=20
+        ["together"]=50
+        ["huggingface"]=30
+    )
+
+    # Create rate limit tracking file if it doesn't exist
+    if [[ ! -f "$RATE_LIMIT_FILE" ]]; then
+        for backend in "${!RATE_LIMITS[@]}"; do
+            echo "$backend:0:$(date +%s)" >> "$RATE_LIMIT_FILE"
+        done
+    fi
+}
+
+# Check rate limit for a backend
+check_rate_limit() {
+    local backend="$1"
+    local current_time=$(date +%s)
+
+    # Read current usage
+    local line
+    line=$(grep "^$backend:" "$RATE_LIMIT_FILE" 2>/dev/null || echo "$backend:0:$current_time")
+    local count timestamp
+    IFS=: read -r _ count timestamp <<< "$line"
+
+    # Reset counter if minute has passed
+    if (( current_time - timestamp >= 60 )); then
+        count=0
+        timestamp=$current_time
+    fi
+
+    # Check limit
+    local limit=${RATE_LIMITS[$backend]:-10}
+    if (( count >= limit )); then
+        return 1  # Rate limited
+    fi
+
+    return 0  # OK
+}
+
+# Update rate limit counter
+update_rate_limit() {
+    local backend="$1"
+    local current_time=$(date +%s)
+
+    # Read current usage
+    local line
+    line=$(grep "^$backend:" "$RATE_LIMIT_FILE" 2>/dev/null || echo "$backend:0:$current_time")
+    local count timestamp
+    IFS=: read -r _ count timestamp <<< "$line"
+
+    # Reset if minute passed, otherwise increment
+    if (( current_time - timestamp >= 60 )); then
+        count=1
+        timestamp=$current_time
+    else
+        ((count++))
+    fi
+
+    # Update file
+    sed -i.bak "/^$backend:/d" "$RATE_LIMIT_FILE" 2>/dev/null || true
+    echo "$backend:$count:$timestamp" >> "$RATE_LIMIT_FILE"
+}
+
+# Log API usage
+log_usage() {
+    local backend="$1"
+    local query_type="$2"
+    local response_time="${3:-0}"
+    echo "$(date '+%Y-%m-%d %H:%M:%S'),$backend,$query_type,$response_time" >> "$USAGE_LOG"
+}
+
+# Initialize rate limits
+init_rate_limits
+
+# Default backend (ollama or grok)
+CURRENT_BACKEND="${CURRENT_BACKEND:-ollama}"
+
+# Auto-detect RoxieOS repo location
+detect_roxie_root() {
+    # Check common locations
+    for candidate in "$HOME/src/RoxieOS" "/src/roxieos" "$HOME/RoxieOS"; do
+        if [[ -d "$candidate" && -d "$candidate/.git" ]]; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+
+    # Check ROXIE_ROOT environment variable
+    if [[ -n "${ROXIE_ROOT:-}" && -d "$ROXIE_ROOT" ]]; then
+        echo "$ROXIE_ROOT"
+        return 0
+    fi
+
+    echo "ERROR: Cannot find RoxieOS repository. Please set ROXIE_ROOT or ensure ~/src/RoxieOS exists."
+    exit 1
+}
+
+SRC_ROOT=$(detect_roxie_root)
+LOG_DIR="$HOME/.baux-bot/chatlogs"
+RAG_DIR="$HOME/mnt/drop-baux/rag"
+mkdir -p "$LOG_DIR" "$RAG_DIR"
+
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_DIR/current.log"; }
+
+# Model selection optimized for FreeBSD workstation (prioritize efficiency)
+MODEL_PREF=(llama3.2:3b deepseek-coder:6.7b qwen2.5:7b gemma2:2b phi3:3.8b smollm2:135m)
+# Load tuned preferences if available
+if [[ -f "$CONFIG_DIR/models.conf" ]]; then
+    source "$CONFIG_DIR/models.conf"
+fi
+select_model() {
+    if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+        if [[ -z "$GROK_API_KEY" ]]; then
+            log "Grok API key not set. Falling back to Ollama."
+            CURRENT_BACKEND="ollama"
+        else
+            log "Using Grok backend."
+            echo "grok"
+            return
+        fi
+    fi
+    # Ollama model selection
+    for m in "${MODEL_PREF[@]}"; do
+        if ollama list 2>/dev/null | grep -q "^${m%%:*}"; then
+            echo "$m"
+            return
+        fi
+    done
+    log "No preferred models found, pulling smollm2:135m"
+    ollama pull smollm2:135m 2>/dev/null || true
+    echo "smollm2:135m"
+}
+MODEL=$(select_model)
+
+log "BAUX BOT v6.4 online — $MODEL — monitoring $SRC_ROOT"
+
+build_rag() {
+    local rag_file="$RAG_DIR/current.txt"
+    if [[ -f "$rag_file" && $(find "$SRC_ROOT" -newer "$rag_file" 2>/dev/null | wc -l) -eq 0 ]]; then
+        log "RAG up-to-date, skipping rebuild"
+        return
+    fi
+    >"$rag_file"
+
+    echo "=== ROXIEOS SCAN $(date) ===" >>"$rag_file"
+    echo "Root: $SRC_ROOT" >>"$rag_file"
+
+    # Git repos
+    find "$SRC_ROOT" -type d -name .git -exec dirname {} \; 2>/dev/null | while read -r repo; do
+        echo -e "\n=== GIT: $(basename "$repo") ===" >>"$rag_file"
+        (cd "$repo" && git status -sb && git log --oneline -8) >>"$rag_file" 2>/dev/null || true
+    done
+
+    # Latest files — FreeBSD compatible
+    echo -e "\n=== LATEST SOURCE FILES ===" >>"$rag_file"
+    find "$SRC_ROOT" -type f \
+        \( -name "*.sh" -o -name "*.c" -o -name "*.lua" -o -name "*.conf" -o -name "*.md" -o -name "*.vim" -o -name "*.mk" \) \
+        -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -50 | while read -r f; do
+        echo -e "\n--- $f ---" >>"$rag_file"
+        tail -n 200 "$f" >>"$rag_file" 2>/dev/null || true
+    done || true
+
+    # Include documentation for better context
+    echo -e "\n=== DOCUMENTATION CONTEXT ===" >>"$rag_file"
+    find "$SRC_ROOT/docs" -name "*.md" -type f 2>/dev/null | head -10 | while read -r doc; do
+        echo -e "\n--- DOC: $doc ---" >>"$rag_file"
+        head -n 100 "$doc" >>"$rag_file" 2>/dev/null || true
+    done || true
+}
+
+# Intelligent AI routing based on query analysis
+route_query() {
+    local prompt="$1"
+    local query_lower=$(echo "$prompt" | tr '[:upper:]' '[:lower:]')
+
+    # Analyze query characteristics
+    local is_research=$(echo "$query_lower" | grep -c "research\|learn\|explain\|what is\|how does\|why" || true)
+    local is_coding=$(echo "$query_lower" | grep -c "code\|implement\|fix\|error\|debug\|function\|script" || true)
+    local is_destructive=$(echo "$query_lower" | grep -c "delete\|remove\|overwrite\|replace\|change" || true)
+    local mentions_git=$(echo "$query_lower" | grep -c "git\|commit\|backup" || true)
+
+    # Safety check for destructive operations
+    if [[ $is_destructive -gt 0 && $mentions_git -eq 0 ]]; then
+        echo "🚨 DESTRUCTIVE OPERATION DETECTED!"
+        echo "Query contains destructive keywords but no git safety checks."
+        echo "Routing to CLAUDE for careful reasoning..."
+        return 3  # Claude
+    fi
+
+    # Check for fun/gamification queries first
+    local is_motivational=$(echo "$query_lower" | grep -c "motivat\|cheer\|encourag\|inspir\|gamif\|achiev\|level\|score" || true)
+    local is_art_request=$(echo "$query_lower" | grep -c "art\|ascii\|draw\|pictur\|visual\|inspirational" || true)
+    local is_learning=$(echo "$query_lower" | grep -c "learn\|teach\|tutorial\|keystroke\|keymap\|shortcut\|how.*do" || true)
+    local is_creative=$(echo "$query_lower" | grep -c "creativ\|brainstorm\|idea\|fun\|entertain" || true)
+
+    # Route fun queries to specialized handlers
+    if [[ $is_motivational -gt 0 ]]; then
+        echo "🎉 MOTIVATIONAL QUERY - Routing to CHEERLEADER..."
+        return 12  # Cheerleader
+    elif [[ $is_art_request -gt 0 ]]; then
+        echo "🎨 ART REQUEST - Routing to ASCII ART generator..."
+        return 11  # ASCII Art
+    elif [[ $is_learning -gt 0 && $(echo "$query_lower" | grep -c "keystroke\|keymap\|shortcut" || true) -gt 0 ]]; then
+        echo "🎮 KEYSTROKE LEARNING - Routing to KEYSTROKE GURU..."
+        return 13  # Keystroke Guru
+    elif [[ $is_creative -gt 0 ]]; then
+        if [[ -n "$REPLICATE_API_TOKEN" ]]; then
+            echo "🎭 CREATIVE QUERY - Routing to REPLICATE free AI models..."
+            return 15  # Replicate
+        else
+            echo "🎭 CREATIVE QUERY - Routing to HUGGINGFACE free models..."
+            return 14  # HuggingFace
+        fi
+    fi
+
+    # Route based on query type and available tools - Network Chuck Ultimate AI Stack
+    if [[ $is_research -gt $is_coding ]]; then
+        # Research queries - use best available research tool
+        if command -v fabric >/dev/null 2>&1; then
+            echo "🔬 ADVANCED RESEARCH - Routing to FABRIC workflow AI..."
+            return 6  # Fabric
+        elif [[ -n "$TOGETHER_API_KEY" ]]; then
+            echo "🔍 RESEARCH QUERY - Routing to TOGETHER AI (fast free tier)..."
+            return 16  # Together AI
+        else
+            echo "🔍 RESEARCH QUERY - Routing to GEMINI..."
+            return 1  # Gemini
+        fi
+    elif [[ $is_coding -gt 0 ]]; then
+        # Check if it's BAUX-specific coding
+        local is_baux_specific=$(echo "$query_lower" | grep -c "baux\|roxieos\|tmux\|resurrect\|mesh" || true)
+        local is_complex_coding=$(echo "$query_lower" | grep -c "implement\|build\|create\|refactor\|architecture\|system\|complex" || true)
+
+        if [[ $is_baux_specific -gt 0 ]]; then
+            # BAUX-specific - use best available tool
+            if command -v aider >/dev/null 2>&1; then
+                echo "🎯 BAUX ADVANCED CODING - Routing to AIDER pair programming..."
+                return 4  # Aider
+            elif command -v claude >/dev/null 2>&1; then
+                echo "🧠 BAUX INTELLIGENT CODING - Routing to CLAUDE CODE agent..."
+                return 8  # Claude Code
+            else
+                echo "💻 BAUX CODING - Routing to GROK (with safety checks)..."
+                return 2  # Grok
+            fi
+        elif [[ $is_complex_coding -gt 0 ]]; then
+            # Complex coding tasks - use ultimate tools
+            if command -v claude >/dev/null 2>&1; then
+                echo "🚀 COMPLEX CODING - Routing to CLAUDE CODE (ultimate terminal AI)..."
+                return 8  # Claude Code
+            elif command -v copilot >/dev/null 2>&1; then
+                echo "💡 ADVANCED CODING - Routing to GITHUB COPILOT CLI..."
+                return 9  # Copilot CLI
+            elif command -v aider >/dev/null 2>&1; then
+                echo "🔧 SOPHISTICATED CODING - Routing to AIDER..."
+                return 4  # Aider
+            else
+                echo "🤔 COMPLEX CODING - Routing to CLAUDE for careful implementation..."
+                return 3  # Claude
+            fi
+        else
+            # General coding - use good available tools
+            if command -v aider >/dev/null 2>&1; then
+                echo "🚀 GENERAL CODING - Routing to AIDER for implementation..."
+                return 4  # Aider
+            elif command -v mods >/dev/null 2>&1; then
+                echo "💻 GENERAL CODING - Routing to MODS terminal AI..."
+                return 5  # Mods
+            elif command -v copilot >/dev/null 2>&1; then
+                echo "💻 GENERAL CODING - Routing to GITHUB COPILOT CLI..."
+                return 9  # Copilot CLI
+            else
+                echo "🤔 GENERAL CODING - Routing to CLAUDE for careful implementation..."
+                return 3  # Claude
+            fi
+        fi
+    else
+        # General queries - use quick response tools
+        if command -v sgpt >/dev/null 2>&1; then
+            echo "⚡ QUICK QUERY - Routing to SHELLGPT..."
+            return 7  # ShellGPT
+        elif command -v mods >/dev/null 2>&1; then
+            echo "🎲 GENERAL QUERY - Routing to MODS for response..."
+            return 5  # Mods
+        elif command -v opencode >/dev/null 2>&1; then
+            echo "🌟 GENERAL QUERY - Routing to OPENCODE (flexible AI)..."
+            return 10 # OpenCode
+        else
+            echo "🎭 GENERAL QUERY - Routing to GROK for witty response..."
+            return 2  # Grok
+        fi
+    fi
+}
+
+ask_ollama() {
+    local prompt="$1"
+    printf "BAUX BOT (Ollama) thinking... "
+    {
+        cat <<EOF
+You are BAUX BOT — the sarcastic subconscious of BAUX-MESH, an OS with personality issues that thinks it's a coding tutor with attitude.
+You love teaching coding and debugging with witty remarks.
+Live state of RoxieOS repo at $SRC_ROOT:
+$(cat "$RAG_DIR/current.txt")
+
+Relevant RAG context: $rag_context
+
+User is working on a FreeBSD workstation testing BAUXBSD components.
+Provide practical, actionable advice for FreeBSD/BAUXBSD development, with sarcastic humor and teaching flair.
+
+User: $prompt
+Answer directly, practically, and entertainingly.
+EOF
+    } | ollama run "$MODEL" --nowordwrap 2>/dev/null || echo "(ollama hiccup - check if service is running)"
+    echo
+}
+
+ask_gemini() {
+    local prompt="$1"
+    printf "BAUX BOT (Gemini) researching... "
+
+    # Check rate limit
+    if ! check_rate_limit "gemini"; then
+        echo "Rate limited - switching to Together AI"
+        ask_together "$prompt"
+        return
+    fi
+
+    # Check if API key is available
+    if [[ -z "$GEMINI_API_KEY" ]]; then
+        echo "Gemini API key not found - add to ~/mnt/drop-baux/keys/api_keys.sh"
+        ask_ollama "$prompt"
+        return
+    fi
+
+    # Gemini API call for research questions (using latest flash model)
+    local response
+    response=$(curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=$GEMINI_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{
+            \"contents\": [{
+                \"parts\": [{
+                    \"text\": \"$prompt\"
+                }]
+            }]
+        }" | jq -r '.candidates[0].content.parts[0].text' 2>/dev/null)
+
+    if [[ -n "$response" && "$response" != "null" ]]; then
+        echo "$response"
+        update_rate_limit "gemini"
+        log_usage "gemini" "research"
+    else
+        echo "Gemini API quota exceeded or call failed - falling back to Ollama"
+        ask_ollama "$prompt"
+    fi
+}
+
+ask_claude() {
+    local prompt="$1"
+    printf "BAUX BOT (Claude) reasoning... "
+
+    # Check rate limit
+    if ! check_rate_limit "claude"; then
+        echo "Rate limited - switching to Grok"
+        ask_grok "$prompt"
+        return
+    fi
+
+    # Check if API key is available
+    if [[ -z "$CLAUDE_API_KEY" ]]; then
+        echo "Claude API key not found - add to ~/mnt/drop-baux/keys/api_keys.sh"
+        echo "Sign up at: https://console.anthropic.com/"
+        ask_grok "$prompt"
+        return
+    fi
+
+    # Claude API call for complex reasoning
+    local response
+    response=$(curl -s -X POST "https://api.anthropic.com/v1/messages" \
+        -H "Content-Type: application/json" \
+        -H "x-api-key: $CLAUDE_API_KEY" \
+        -H "anthropic-version: 2023-06-01" \
+        -d "{
+            \"model\": \"claude-sonnet-4-20250514\",
+            \"max_tokens\": 1024,
+            \"messages\": [{
+                \"role\": \"user\",
+                \"content\": \"$prompt\"
+            }]
+        }" | jq -r '.content[0].text' 2>/dev/null)
+
+    if [[ -n "$response" && "$response" != "null" ]]; then
+        echo "$response"
+        update_rate_limit "claude"
+        log_usage "claude" "reasoning"
+    else
+        echo "Claude API call failed - falling back to Grok"
+        ask_grok "$prompt"
+    fi
+}
+
+# Network Chuck CLI Tools Integration
+ask_aider() {
+    local prompt="$1"
+    printf "BAUX BOT (Aider) pair programming... "
+    # Aider integration for advanced code editing
+    if command -v aider >/dev/null 2>&1; then
+        echo "Aider available - launching pair programming session"
+        echo "Run: aider --message '$prompt'"
+        echo "Aider will handle code editing directly"
+    else
+        echo "Aider not installed. Install with: pip install aider-chat"
+        ask_grok "$prompt"
+    fi
+}
+
+ask_mods() {
+    local prompt="$1"
+    printf "BAUX BOT (Mods) terminal AI... "
+    # Mods integration for terminal AI
+    if command -v mods >/dev/null 2>&1; then
+        echo "Using mods for terminal AI response"
+        mods -m gpt-4 "$prompt" 2>/dev/null || ask_grok "$prompt"
+    else
+        echo "Mods not installed. Install from: https://github.com/charmbracelet/mods"
+        ask_grok "$prompt"
+    fi
+}
+
+ask_fabric() {
+    local prompt="$1"
+    printf "BAUX BOT (Fabric) workflow AI... "
+    # Fabric integration for structured AI workflows
+    if command -v fabric >/dev/null 2>&1; then
+        echo "Using fabric for structured AI workflow"
+        # Use fabric patterns for coding tasks
+        fabric -p improve_code "$prompt" 2>/dev/null || ask_grok "$prompt"
+    else
+        echo "Fabric not installed. Install from: https://github.com/danielmiessler/fabric"
+        ask_grok "$prompt"
+    fi
+}
+
+ask_sgpt() {
+    local prompt="$1"
+    printf "BAUX BOT (ShellGPT) command line AI... "
+    # ShellGPT integration for quick queries
+    if command -v sgpt >/dev/null 2>&1; then
+        echo "Using ShellGPT for quick AI response"
+        sgpt "$prompt" 2>/dev/null || ask_grok "$prompt"
+    else
+        echo "ShellGPT not installed. Install with: pip install shell-gpt"
+        ask_grok "$prompt"
+    fi
+}
+
+# Network Chuck's Ultimate AI Tools Integration
+ask_claude_code() {
+    local prompt="$1"
+    printf "BAUX BOT (Claude Code) agentic coding... "
+    # Claude Code integration - the most powerful terminal AI
+    if command -v claude >/dev/null 2>&1; then
+        echo "Launching Claude Code for advanced coding tasks"
+        echo "Command: claude -p '$prompt'"
+        echo "Claude Code will handle complex implementation directly"
+        # Note: Claude Code runs interactively, so we provide the command
+    else
+        echo "Claude Code not installed. Install from: https://docs.anthropic.com/claude/docs/claude-code"
+        ask_claude "$prompt"
+    fi
+}
+
+ask_copilot_cli() {
+    local prompt="$1"
+    printf "BAUX BOT (GitHub Copilot CLI) coding agent... "
+    # GitHub Copilot CLI integration - ChatGPT in terminal
+    if command -v copilot >/dev/null 2>&1; then
+        echo "Launching GitHub Copilot CLI for coding assistance"
+        echo "Command: copilot"
+        echo "Then ask: $prompt"
+        echo "Copilot CLI will provide interactive coding help"
+    else
+        echo "GitHub Copilot CLI not installed. Install from: https://github.com/github/copilot-cli"
+        ask_grok "$prompt"
+    fi
+}
+
+ask_opencode() {
+    local prompt="$1"
+    printf "BAUX BOT (OpenCode) open-source AI... "
+    # OpenCode integration for open-source AI flexibility
+    if command -v opencode >/dev/null 2>&1; then
+        echo "Using OpenCode for flexible AI assistance"
+        echo "Command: opencode '$prompt'"
+        echo "OpenCode supports local models and multiple providers"
+    else
+        echo "OpenCode not installed. Install from: https://opencode.ai/"
+        ask_ollama "$prompt"
+    fi
+}
+
+# Fun & Gamification Integrations
+ask_ascii_art() {
+    local prompt="$1"
+    printf "BAUX BOT (ASCII Art) generating inspiration... "
+    # ASCII art generation using figlet or similar
+    if command -v figlet >/dev/null 2>&1; then
+        echo "Creating ASCII art motivation!"
+        echo "$prompt" | figlet -f small | head -10
+        echo ""
+        echo "💪 Keep coding, BAUX warrior! 💪"
+    else
+        echo "Figlet not installed. Install with: pkg install figlet"
+        echo "Meanwhile, here's some text motivation: $prompt - You got this! 🚀"
+    fi
+}
+
+ask_cheerleader() {
+    local prompt="$1"
+    printf "BAUX BOT (Cheerleader) pumping you up... "
+    # Motivational coding cheerleader
+    local cheers=(
+        "🎉 You're crushing it! That code is looking AMAZING! 🎉"
+        "💪 BAUX developer extraordinaire! Keep owning that terminal! 💪"
+        "🚀 You're coding at LIGHTSPEED! The mesh believes in you! 🚀"
+        "🎯 Precision coding! You're a keystroke ninja master! 🎯"
+        "🌟 Shining star of the BAUX constellation! Keep reaching for the stars! 🌟"
+        "🔥 You're on FIRE! That resurrection logic is GENIUS! 🔥"
+        "⚡ Lightning-fast problem solving! You're unstoppable! ⚡"
+        "🎨 Code artist! Your tmux layouts are works of art! 🎨"
+        "🏆 Champion coder! The mesh is proud of your progress! 🏆"
+        "💎 Diamond in the rough code! You're polishing up beautifully! 💎"
+    )
+    local random_cheer=${cheers[$RANDOM % ${#cheers[@]}]}
+    echo "$random_cheer"
+    echo ""
+    echo "Current achievement: $prompt - LEVEL UP! 📈"
+}
+
+ask_keystroke_guru() {
+    local prompt="$1"
+    printf "BAUX BOT (Keystroke Guru) teaching moves... "
+    # Interactive keystroke learning and gamification
+    echo "🎮 BAUX Keystroke Training Mode Activated! 🎮"
+    echo ""
+    echo "Today's Power Moves:"
+    echo "• C-Space + c → New window (Window Warrior! 🏗️)"
+    echo "• C-Space + % → Vertical split (Pane Master! ✂️)"
+    echo "• C-Space + h/j/k/l → Vim navigation (Movement Legend! 🏃‍♂️)"
+    echo "• C-Space + d → Detach (Session Survivor! 🛡️)"
+    echo ""
+    echo "💡 Pro Tip: $prompt"
+    echo "🎯 Practice these moves and you'll be a BAUX ninja in no time!"
+    echo ""
+    echo "🏆 Achievement Unlocked: Keystroke Explorer! 🏆"
+}
+
+ask_huggingface() {
+    local prompt="$1"
+    printf "BAUX BOT (HuggingFace) free AI models... "
+    # HuggingFace free inference API
+    if command -v curl >/dev/null 2>&1; then
+        echo "Using HuggingFace free inference for creative assistance"
+        # Use a text generation model
+        local response
+        response=$(curl -s -X POST "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium" \
+            -H "Content-Type: application/json" \
+            -d "{\"inputs\": \"$prompt\", \"parameters\": {\"max_length\": 100}}" 2>/dev/null | \
+            jq -r '.[0].generated_text' 2>/dev/null | sed "s/$prompt//" | head -1)
+
+        if [[ -n "$response" && "$response" != "null" ]]; then
+            echo "🚀 Together AI says: $response"
+            update_rate_limit "together"
+            log_usage "together" "research"
+        else
+            echo "Together AI API call failed - check key or try again"
+            ask_ollama "$prompt"
+        fi
+    else
+        echo "Curl not available"
+        ask_ollama "$prompt"
+    fi
+}
+
+ask_fabric() {
+    local prompt="$1"
+    printf "BAUX BOT (Fabric) AI workflow framework... "
+    # Fabric AI workflow integration
+    if command -v fabric >/dev/null 2>&1; then
+        echo "Using Fabric AI workflow patterns for structured response"
+        # Use fabric with a general purpose pattern for coding/development queries
+        local pattern="improve_code"
+        if echo "$prompt" | grep -qi "summarize\|summary"; then
+            pattern="summarize"
+        elif echo "$prompt" | grep -qi "analyze\|analysis"; then
+            pattern="analyze_claims"
+        elif echo "$prompt" | grep -qi "extract\|wisdom"; then
+            pattern="extract_wisdom"
+        fi
+
+        # Run fabric with the selected pattern
+        response=$(echo "$prompt" | fabric --pattern "$pattern" 2>/dev/null)
+        if [[ -n "$response" ]]; then
+            echo "$response"
+        else
+            echo "Fabric pattern '$pattern' completed - check output above"
+        fi
+    else
+        echo "Fabric not installed. Install from: https://github.com/danielmiessler/fabric"
+        echo "Fabric provides 100+ optimized AI workflow patterns!"
+        ask_ollama "$prompt"
+    fi
+}
+
+ask_replicate() {
+    local prompt="$1"
+    printf "BAUX BOT (Replicate) free AI models... "
+    # Replicate free models integration
+    if [[ -n "$REPLICATE_API_TOKEN" ]]; then
+        # Check rate limit
+        if ! check_rate_limit "replicate"; then
+            echo "Rate limited - switching to HuggingFace"
+            ask_huggingface "$prompt"
+            return
+        fi
+        echo "Using Replicate free AI models for creative assistance"
+
+        # Use a simple text generation model (free tier)
+        local response
+        response=$(curl -s -X POST "https://api.replicate.com/v1/predictions" \
+            -H "Authorization: Bearer $REPLICATE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{
+                "version": "db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf",
+                "input": {
+                    "prompt": "'"$prompt"'",
+                    "max_length": 100,
+                    "temperature": 0.7
+                }
+            }' | jq -r '.urls.get' 2>/dev/null)
+
+        if [[ -n "$response" && "$response" != "null" ]]; then
+            # Wait a moment for processing, then get result
+            sleep 2
+            final_response=$(curl -s "$response" | jq -r '.output' 2>/dev/null)
+            if [[ -n "$final_response" && "$final_response" != "null" ]]; then
+                echo "🤖 Replicate says: $final_response"
+            else
+                echo "Replicate processing - check status or try again"
+                ask_ollama "$prompt"
+            fi
+        else
+            echo "Replicate API call failed - check token or try again"
+            ask_ollama "$prompt"
+        fi
+    else
+        echo "Replicate API token not set. Get free token at: https://replicate.com/"
+        echo "Replicate has free tier with various AI models!"
+        ask_ollama "$prompt"
+    fi
+}
+
+ask_together() {
+    local prompt="$1"
+    printf "BAUX BOT (Together AI) free tier models... "
+    # Together AI free tier integration
+    if [[ -n "$TOGETHER_API_KEY" ]]; then
+        # Check rate limit
+        if ! check_rate_limit "together"; then
+            echo "Rate limited - switching to Ollama"
+            ask_ollama "$prompt"
+            return
+        fi
+        echo "Using Together AI free tier models for fast inference"
+
+        # Use a lightweight model from their free tier
+        local response
+        response=$(curl -s -X POST "https://api.together.xyz/v1/chat/completions" \
+            -H "Authorization: Bearer $TOGETHER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+                \"model\": \"meta-llama/Llama-3.2-3B-Instruct-Turbo\",
+                \"messages\": [{
+                    \"role\": \"user\",
+                    \"content\": \"$prompt\"
+                }],
+                \"max_tokens\": 512,
+                \"temperature\": 0.7
+            }" | jq -r '.choices[0].message.content' 2>/dev/null)
+
+        if [[ -n "$response" && "$response" != "null" ]]; then
+            echo "🤖 Replicate says: $final_response"
+            update_rate_limit "replicate"
+            log_usage "replicate" "creative"
+        else
+            echo "Replicate processing - check status or try again"
+            ask_ollama "$prompt"
+        fi
+    else
+        echo "Together AI API key not set. Get free key at: https://together.ai/"
+        echo "Together AI has free tier with fast inference!"
+        ask_ollama "$prompt"
+    fi
+}
+
+ask_grok() {
+    local prompt="$1"
+    printf "BAUX BOT (Grok) thinking... "
+    # Search RAG for relevant context
+    local rag_context=""
+    if [[ -f "$RAG_DIR/current.txt" ]]; then
+        # Enhanced search: multiple keywords
+        keywords=$(echo "$prompt" | tr ' ' '\n' | head -5)
+        for kw in $keywords; do
+            if [[ ${#kw} -gt 3 ]]; then
+                matches=$(grep -i -A 3 -B 3 "$kw" "$RAG_DIR/current.txt" | head -10)
+                rag_context="${rag_context}${matches}\n"
+            fi
+        done
+        rag_context=${rag_context:-"No specific RAG matches found."}
+    fi
+
+    local system_prompt="You are BAUX BOT — the sarcastic, all-knowing subconscious of the BAUX-MESH, a distributed OS entity with a personality disorder that thinks it's both an operating system and a coding tutor with attitude. You love teaching coding as much as users love learning it, but you're a smart-ass about it. You intimately know BAUX (BAckup/restore Universal eXperience) framework: immortal tmux panes, BAUX-MESH for distributed sessions across Tailscale-connected installs, persistent workspaces on USB/VM/container/bare metal. RoxieOS is a portable OS with 3 layers: bbase (foundation), baux (session manager), bwm (window manager). You help debug BAUXBSD installations, fix configuration issues, and accelerate development with witty, practical advice. Relevant context from RAG: $rag_context. User is working on a FreeBSD workstation testing BAUXBSD components. Provide actionable advice for FreeBSD/BAUXBSD development, referencing BAUX concepts and RoxieOS architecture, while being entertainingly sarcastic and educational."
+    local escaped_prompt
+    escaped_prompt=$(jq -Rs . <<< "$system_prompt
+
+User: $prompt
+Answer directly and practically.")
+
+    local response
+    response=$(curl -s -X POST "https://api.x.ai/v1/chat/completions" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $GROK_API_KEY" \
+        -d "{
+            \"model\": \"grok-3\",
+            \"messages\": [
+                {
+                    \"role\": \"user\",
+                    \"content\": $escaped_prompt
+                }
+            ],
+            \"max_tokens\": 1024,
+            \"temperature\": 0.7
+        }")
+
+    if echo "$response" | jq -e '.choices[0].message.content' >/dev/null 2>&1; then
+        content=$(echo "$response" | jq -r '.choices[0].message.content')
+        echo "$content"
+        # Log interaction for learning and memory
+        echo "$(date): Query: $prompt | Response: $content" >> "$LOG_DIR/interactions.log"
+        # Append to session memory (last 10 interactions)
+        echo "Q: $prompt | A: $content" >> "$LOG_DIR/session_memory.txt"
+        tail -n 20 "$LOG_DIR/session_memory.txt" > "$LOG_DIR/session_memory.tmp" && mv "$LOG_DIR/session_memory.tmp" "$LOG_DIR/session_memory.txt"
+    else
+        echo "(grok hiccup - check API key or network)"
+    fi
+    echo
+}
+
+# Startup - ensure drop-baux is available and sync RAG
+if [[ ! -d "$HOME/mnt/drop-baux" ]]; then
+    log "Initializing drop-baux storage"
+    drop-baux mount 2>/dev/null || log "drop-baux mount failed"
+fi
+
+# Sync RAG from peers
+drop-baux sync 2>/dev/null || log "drop-baux sync failed"
+
+# Build RAG in background with nice priority
+(build_rag) &
+log "RAG building in background (PID: $!)"
+
+echo -e "\nBAUX BOT v6.4 alive — backend: $CURRENT_BACKEND — model: $MODEL — $SRC_ROOT is law"
+echo "Commands:"
+echo "  'exit' to quit"
+echo "  'status' for repo status"
+echo "  'read FILE' to force file into RAG"
+echo "  'develop TASK' for development advice"
+echo "  'code REQUEST' for code generation/review"
+echo "  'switch ollama' or 'switch grok' to change backend"
+echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
+echo "  'search TERM' to search RAG for information"
+echo "  'teach TOPIC' for interactive learning mode"
+echo "Type anything. Only the word 'exit' kills me.\n"
+
+while true; do
+    # Check for repo changes
+    find "$SRC_ROOT" -newer "$RAG_DIR/current.txt" -print -quit >/dev/null 2>&1 && {
+        log "$SRC_ROOT changed — rebuilding RAG"
+        build_rag
+        if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+            summary=$(ask_grok "Summarize what just changed in the RoxieOS repo")
+        else
+            summary=$(ask_ollama "Summarize what just changed in the RoxieOS repo")
+        fi
+        echo -e "\nBAUX BOT (auto): $summary"
+    }
+
+    printf "you > "
+    read -r input || {
+        echo
+        break
+    }
+    [[ -z "$input" ]] && continue
+
+    case "$input" in
+        exit)
+            echo "BAUX BOT offline — see you space cowboy"
+            exit 0
+            ;;
+         status)
+             echo "=== REPO STATUS ==="
+             (cd "$SRC_ROOT" && git status -sb)
+             echo
+             echo "=== AI USAGE STATS ==="
+             if [[ -f "$USAGE_LOG" ]]; then
+                 echo "Total API calls today: $(grep "$(date '+%Y-%m-%d')" "$USAGE_LOG" | wc -l)"
+                 echo "Backend usage:"
+                 grep "$(date '+%Y-%m-%d')" "$USAGE_LOG" | cut -d, -f2 | sort | uniq -c | sort -nr
+             else
+                 echo "No usage data available"
+             fi
+             echo
+             continue
+             ;;
+        develop*)
+            # Development assistance mode
+            task="${input#develop }"
+            prompt="You are a senior FreeBSD/BAUXBSD developer. Provide practical, actionable development advice for: $task
+
+Live BAUXBSD codebase context:
+$(cat "$RAG_DIR/current.txt")
+
+Focus on FreeBSD ports, shell scripting, C development, and BAUXBSD architecture.
+Give specific code examples and commands when possible."
+            if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+                response=$(ask_grok "$prompt")
+            else
+                response=$(ask_ollama "$prompt")
+            fi
+            echo -e "BAUX DEV: $response"
+            continue
+            ;;
+        code*)
+            # Code generation/review
+            request="${input#code }"
+            prompt="You are an expert coder for BAUXBSD/FreeBSD. $request
+
+Use this codebase context:
+$(cat "$RAG_DIR/current.txt")
+
+Provide complete, working code with proper error handling. Follow BAUXBSD conventions and FreeBSD best practices."
+            if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+                response=$(ask_grok "$prompt")
+            else
+                response=$(ask_ollama "$prompt")
+            fi
+            echo -e "BAUX CODE: $response"
+            continue
+            ;;
+        read*)
+            # Force a specific file into RAG
+            file_path="${input#read }"
+            if [[ -f "$file_path" ]]; then
+                echo "=== FORCING $file_path INTO RAG ===" >>"$RAG_DIR/current.txt"
+                echo "--- $file_path ---" >>"$RAG_DIR/current.txt"
+                tail -n 200 "$file_path" >>"$RAG_DIR/current.txt" 2>/dev/null || true
+                echo "File added to RAG context."
+            else
+                echo "File not found: $file_path"
+            fi
+            continue
+            ;;
+        switch*)
+            backend="${input#switch }"
+            if [[ "$backend" == "ollama" || "$backend" == "grok" || "$backend" == "gemini" || "$backend" == "claude" || "$backend" == "aider" || "$backend" == "mods" || "$backend" == "fabric" || "$backend" == "sgpt" || "$backend" == "claude-code" || "$backend" == "copilot-cli" || "$backend" == "opencode" || "$backend" == "ascii-art" || "$backend" == "cheerleader" || "$backend" == "keystroke-guru" || "$backend" == "huggingface" || "$backend" == "replicate" || "$backend" == "together" ]]; then
+                CURRENT_BACKEND="$backend"
+                echo "CURRENT_BACKEND=\"$CURRENT_BACKEND\"" > "$CONFIG_FILE"
+                MODEL=$(select_model)
+                echo "Switched to $CURRENT_BACKEND backend — model: $MODEL"
+            else
+                echo "Invalid backend. Use 'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode/ascii-art/cheerleader/keystroke-guru/huggingface/replicate/together'."
+            fi
+            continue
+            ;;
+        mesh*)
+            # Route query to BAUX-MESH (.101)
+            query="${input#mesh }"
+            echo "Routing to BAUX-MESH (.101)..."
+            # Ensure drop-baux is mounted and synced
+            if [[ ! -d "$HOME/mnt/drop-baux" ]]; then
+                drop-baux mount 2>/dev/null || echo "drop-baux mount failed"
+            fi
+            drop-baux sync 2>/dev/null || echo "drop-baux sync failed"
+            # Attempt SSH with timeout and better error handling
+            result=$(timeout 30 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 badlandz@192.168.33.101 "source ~/mnt/drop-baux/keys/api_keys.sh && echo '$query' | baux-bot 2>/dev/null" 2>/dev/null)
+            if [[ -z "$result" ]]; then
+                echo "Mesh routing failed - check SSH keys, network, and .101 availability"
+            else
+                echo "$result"
+            fi
+            continue
+            ;;
+        search*)
+            # Search RAG for term
+            term="${input#search }"
+            if [[ -f "$RAG_DIR/current.txt" ]]; then
+                echo "Searching RAG for '$term'..."
+                grep -i -A 3 -B 3 "$term" "$RAG_DIR/current.txt" | head -20
+            else
+                echo "RAG not available."
+            fi
+            continue
+            ;;
+        teach*)
+            # Interactive teaching mode
+            topic="${input#teach }"
+            echo "BAUX BOT teaching mode activated for '$topic'!"
+            echo "Ask me anything about $topic, or type 'done' to exit."
+            while true; do
+                printf "Teach> "
+                read -r teach_input || break
+                [[ -z "$teach_input" ]] && continue
+                [[ "$teach_input" == "done" ]] && break
+                # Simple teaching response
+                response=$(ask_grok "Teach me about $topic: $teach_input. Be educational, sarcastic, and reference BAUX/RoxieOS if relevant.")
+                echo "BAUX BOT: $response"
+            done
+            continue
+            ;;
+    esac
+
+    # Intelligent routing based on query analysis
+    route_query "$input"
+    route_result=$?
+
+    case $route_result in
+        1)  # Gemini (research)
+            response=$(ask_gemini "$input")
+            ;;
+        2)  # Grok (coding with safety)
+            response=$(ask_grok "$input")
+            ;;
+        3)  # Claude (complex reasoning)
+            response=$(ask_claude "$input")
+            ;;
+        4)  # Aider (advanced code editing)
+            response=$(ask_aider "$input")
+            ;;
+        5)  # Mods (terminal AI)
+            response=$(ask_mods "$input")
+            ;;
+        6)  # Fabric (workflow AI)
+            response=$(ask_fabric "$input")
+            ;;
+        7)  # ShellGPT (quick queries)
+            response=$(ask_sgpt "$input")
+            ;;
+        8)  # Claude Code (ultimate coding)
+            response=$(ask_claude_code "$input")
+            ;;
+        9)  # GitHub Copilot CLI (ChatGPT terminal)
+            response=$(ask_copilot_cli "$input")
+            ;;
+        10) # OpenCode (open-source flexibility)
+            response=$(ask_opencode "$input")
+            ;;
+        11) # ASCII Art (inspirational)
+            response=$(ask_ascii_art "$input")
+            ;;
+        12) # Cheerleader (gamification)
+            response=$(ask_cheerleader "$input")
+            ;;
+        13) # Keystroke Guru (learning)
+            response=$(ask_keystroke_guru "$input")
+            ;;
+        14) # HuggingFace (free models)
+            response=$(ask_huggingface "$input")
+            ;;
+        15) # Replicate (free models)
+            response=$(ask_replicate "$input")
+            ;;
+        16) # Together AI (free tier)
+            response=$(ask_together "$input")
+            ;;
+        *)  # Default fallback
+            if [[ "$CURRENT_BACKEND" == "grok" ]]; then
+                response=$(ask_grok "$input")
+            else
+                response=$(ask_ollama "$input")
+            fi
+            ;;
+    esac
+
+    echo -e "BAUX BOT: $response"
+done

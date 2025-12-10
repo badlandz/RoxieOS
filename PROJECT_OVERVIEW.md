@@ -21,17 +21,19 @@ BAUX (BAckup/restore Universal eXperience) is a revolutionary distributed operat
 ## Current Deployment Status
 
 ### Active Nodes
-- **baux01 (.101)**: Primary FreeBSD workstation - resurrection active
-- **baux-scale (cloud)**: Vultr VPS - resurrection deployed
-- **.133 (x300 laptop)**: Mobile development node - resurrection active
+- **baux01 (.101)**: Primary FreeBSD workstation - resurrection active, pending TUI deployment
+- **baux-scale (cloud)**: Vultr VPS - resurrection deployed, pending TUI deployment
+- **.133 (x300 laptop)**: Mobile development node - resurrection active, deployment package ready
 - **.90 (Debian container)**: Rescue/compatibility testing
 
 ### Working Features ✅
 - Session resurrection across all nodes
 - bterm terminal with font scaling
-- BAUX Bot with intelligent AI routing
-- Session TUI for management
+- BAUX Bot with intelligent AI routing (17+ backends)
+- Session TUI for management (deployment package ready)
 - Cross-node session synchronization
+- Performance monitoring and rate limiting
+- Comprehensive documentation and deployment tools
 
 ## AI Integration Landscape
 

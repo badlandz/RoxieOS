@@ -27,7 +27,9 @@
 - **Performance Monitoring**: ✅ Added AI API usage tracking and rate limiting to baux-bot with automatic fallback
 - **Rate Limiting**: Implemented per-backend rate limits (Gemini: 10/min, Claude: 5/min, Replicate: 20/min, Together: 50/min)
 - **Usage Stats**: Added `status` command to show daily API usage statistics and backend utilization
-- **Next Steps**: Debug resurrection timing and verify plugin auto-loading across deployed nodes.
+- **Deployment Package**: ✅ Created complete deployment package with TUI, enhanced AI routing, and session management
+- **Deployment Status**: 🔄 Ready for production deployment to .133, .101, and baux-scale nodes
+- **Next Steps**: Execute deployment commands on target nodes, test cross-node functionality, stabilize BAUX-MESH connectivity.
 
 ### **🐛 KNOWN ISSUES & BUG NOTES:**
 - **Resurrection Not Working**: `baux` starts fresh sessions, doesn't restore previous state. May need longer wait for auto-save (10min) or manual trigger.
