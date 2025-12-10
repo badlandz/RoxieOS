@@ -45,7 +45,7 @@ echo "Note: Ligatures patch requires harfbuzz library - skipping for now"
 # patch -p1 < st-ligatures-20240105-0.9.diff
 
 echo "Copying BAUX configuration..."
-cp "$(pwd)/../../../files/usr/local/share/bterm/config.def.h" config.def.h
+cp "/home/badlandz/src/RoxieOS/ports/bterm/files/usr/local/share/bterm/config.def.h" config.def.h
 
 echo "Building bterm..."
 make
