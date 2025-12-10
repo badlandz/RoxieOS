@@ -36,7 +36,11 @@ BAUX Bot supports multiple AI backends for different types of queries:
   - Create new API key
   - Copy the full key (not project ID)
   - ⚠️ **Very limited free quota** - hits limits quickly, falls back to Ollama
-- **Claude**: Anthropic API (pay per use)
+- **Claude**: Anthropic API (pay per use, generous free tier for new users)
+  - Go to: https://console.anthropic.com/
+  - Sign up for free account
+  - Get API key from dashboard
+  - Free tier: 5 requests/minute, good for development
 
 ## API Setup Instructions
 

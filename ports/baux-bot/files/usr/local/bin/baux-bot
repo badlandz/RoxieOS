@@ -349,9 +349,36 @@ ask_gemini() {
 ask_claude() {
     local prompt="$1"
     printf "BAUX BOT (Claude) reasoning... "
-    # TODO: Implement Claude API call for complex reasoning
-    echo "Claude integration coming soon - falling back to Grok for now"
-    ask_grok "$prompt"
+
+    # Check if API key is available
+    if [[ -z "$CLAUDE_API_KEY" ]]; then
+        echo "Claude API key not found - add to ~/mnt/drop-baux/keys/api_keys.sh"
+        echo "Sign up at: https://console.anthropic.com/"
+        ask_grok "$prompt"
+        return
+    fi
+
+    # Claude API call for complex reasoning
+    local response
+    response=$(curl -s -X POST "https://api.anthropic.com/v1/messages" \
+        -H "Content-Type: application/json" \
+        -H "x-api-key: $CLAUDE_API_KEY" \
+        -H "anthropic-version: 2023-06-01" \
+        -d "{
+            \"model\": \"claude-3-haiku-20240307\",
+            \"max_tokens\": 1024,
+            \"messages\": [{
+                \"role\": \"user\",
+                \"content\": \"$prompt\"
+            }]
+        }" | jq -r '.content[0].text' 2>/dev/null)
+
+    if [[ -n "$response" && "$response" != "null" ]]; then
+        echo "$response"
+    else
+        echo "Claude API call failed - falling back to Grok"
+        ask_grok "$prompt"
+    fi
 }
 
 # Network Chuck CLI Tools Integration
