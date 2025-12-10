@@ -1,0 +1,11 @@
+BAUXBSD bterm - suckless terminal with BAUX theming and scaling fonts
+
+bterm is a customized version of st (suckless terminal) with:
+- BAUX Gruvbox color scheme
+- JetBrains Mono nerd font with ligatures
+- Xresources support for runtime font scaling
+- Multiple fallback fonts for glyph coverage
+- Scrollback buffer support
+- Optimized for BAUX workflow
+
+WWW: https://github.com/badlandz/RoxieOS

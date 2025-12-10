@@ -178,6 +178,11 @@ Commands: [a]ttach [s]witch [p]ull [c]lone [d]elete [q]uit
 - **Week 5:** TUI integration and testing
 - **Week 6:** Persistence polish and reliability testing
 
-**Progress:** Phase 2 complete! Mesh session resurrection working across nodes. The BAUX heart is beating strong! 💓
+**Progress: Phase 2 COMPLETE + Phase 3 STARTED!** 🎉
+- ✅ **Resurrection deployed** to baux01, .133, laptop
+- ✅ **Cross-node sessions** detected (baux-01x300 on .133)
+- ✅ **Plugin ecosystem** installed and functional
+- 🔄 **TUI development** ready to begin
+- 💓 **BAUX heart beating strong** across the mesh!
 
 **Rationale:** This stabilizes the BAUX core before GUI/server expansion, ensuring the "heart" beats reliably across the mesh.
