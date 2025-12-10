@@ -2,15 +2,15 @@
 
 ## GruvBAUX Prototype (Pre-v0.1) - December 2025
 
-### Current Status Update (December 10, 2025)
+### Current Status Update (December 10, 2025) - ROLLBACK POINT
+- **ROLLBACK POINT CREATED**: ✅ Committed current state with working mesh infrastructure and session persistence. BAUX remote detection fixed, session switching infrastructure in place. Ready to debug session management issues with safe rollback.
 - **BAUX Session Startup Fix**: ✅ Fixed remote detection logic in `~/baux` script. Now only checks `BAUX_REMOTE` environment variable instead of SSH connection variables, allowing SSH sessions to properly start tmux while preventing nesting during remote operations.
 - **BAUX_HOME Path Fix**: ✅ Corrected `BAUX_HOME` from `/usr/local/share/baux` to `/usr/local/share` to match installed tmux configuration location.
-- **Tmux Plugin Issues**: 🔄 **STALLED** - tmux loads with default config instead of BAUX config. Suspected cause: tmux plugins (TPM, resurrect, continuum) not installed on system, causing config load failure. Temporarily disabled plugin references in tmux.conf to restore basic BAUX functionality.
 - **Session Switching Infrastructure**: ✅ Created missing `baux-pull` script for remote session access. Fixed tmux plugin manager path mismatch in configuration.
 - **System Testing Results**: Comprehensive testing revealed partial BAUX functionality. baux-bot operational on <your-lan-ip-2> with Grok backend and active RAG. Local baux-bot (<your-lan-ip-1>) has Ollama autotune working but limited interactivity. Mesh infrastructure not active (no Headscale, no port 9999 listening). Session switching not functional due to missing mesh connectivity.
 - **baux-scale Server Deployment**: ✅ VM provisioned at <your-ip> (Vultr: 2 vCPU, 4GB RAM, 80GB storage, 3TB bandwidth, $20/mo). ✅ DNS configured as bs.<your-domain>. ✅ User accounts and SSH access established. ✅ Source code synchronized across all 4 systems.
 - **Infrastructure Status**: All systems have FreeBSD 15, Ollama, and baux-bot. SSH key coordination complete. Ready for mesh implementation.
-- **Next Steps**: Resolve tmux config loading issue, then proceed to install Headscale on baux-scale server, configure control plane, establish WireGuard mesh, implement session registry, enable cross-device switching.
+- **Next Steps**: Debug tmux config loading issues (plugins causing config failure), then proceed to install Headscale on baux-scale server, configure control plane, establish WireGuard mesh, implement session registry, enable cross-device switching.
 
 ### Major Changes
 - **FreeBSD Migration**: Complete restructure from Debian to FreeBSD ports/src model

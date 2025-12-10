@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# baux-pull — Pull a remote BAUX session
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: baux pull <remote-host> [session-name]"
+    echo "Example: baux pull baux01 my-session"
+    exit 1
+fi
+
+REMOTE="$1"
+SESSION="${2:-baux-$(hostname)}"
+
+echo "Pulling session '$SESSION' from $REMOTE..."
+
+# Connect to remote and attach to the tmux session
+# BAUX_REMOTE prevents the remote baux from starting its own tmux
+exec ssh -t "$REMOTE" "BAUX_REMOTE=1 tmux attach-session -t '$SESSION' 2>/dev/null || echo 'Session not found on remote host'"

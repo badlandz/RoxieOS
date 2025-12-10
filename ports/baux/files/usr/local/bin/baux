@@ -18,8 +18,8 @@ fi
 # ──────────────────────────────────────────────────────────────
 # 1. Anti-nesting & remote detection (the tmux-in-tmux killer)
 # ──────────────────────────────────────────────────────────────
-if [[ -n "${BAUX_REMOTE:-}" || -n "${SSH_TTY:-}" || -n "${SSH_CONNECTION:-}" ]]; then
-  # We were reached via `baux pull` or plain SSH into a BAUX node
+if [[ -n "${BAUX_REMOTE:-}" ]]; then
+  # We were reached via `baux pull` or other BAUX remote operations
   # → Do NOT start another tmux. Just give a clean shell.
   export BAUX_INSIDE_REMOTE=1
   exec bash --login
