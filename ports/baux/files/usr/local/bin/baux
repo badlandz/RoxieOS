@@ -44,10 +44,12 @@ if [[ $# -gt 0 ]]; then
      # Custom session name
      SESSION="$1"
      ;;
-   --version | -v)
-     echo "BAUX v0.3.0-pre (cluster-ready)"
-     exit 0
-     ;;
+    --version | -v)
+      # Include git hash for version identification
+      GIT_HASH=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." 2>/dev/null && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+      echo "BAUX v0.3.0-dev-$GIT_HASH (cluster-ready)"
+      exit 0
+      ;;
    --help | -h)
      cat <<'HELP'
 BAUX — the immortal terminal OS
