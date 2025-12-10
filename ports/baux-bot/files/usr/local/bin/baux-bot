@@ -27,9 +27,7 @@ if [[ $# -gt 0 ]]; then
             exec "$0" --internal-autotune
             ;;
         --help|-h)
-            # Include git hash for version identification
-            GIT_HASH=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." 2>/dev/null && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-            echo "BAUX BOT v6.4-dev-$GIT_HASH — AI assistant for RoxieOS development"
+            echo "BAUX BOT v6.4 — AI assistant for RoxieOS development"
             echo "Usage: baux-bot [command]"
             echo ""
             echo "Commands:"
@@ -909,9 +907,7 @@ drop-baux sync 2>/dev/null || log "drop-baux sync failed"
 (build_rag) &
 log "RAG building in background (PID: $!)"
 
-# Include git hash in startup message
-GIT_HASH=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." 2>/dev/null && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-echo -e "\nBAUX BOT v6.4-dev-$GIT_HASH alive — backend: $CURRENT_BACKEND — model: $MODEL — $SRC_ROOT is law"
+echo -e "\nBAUX BOT v6.4 alive — backend: $CURRENT_BACKEND — model: $MODEL — $SRC_ROOT is law"
 echo "Commands:"
 echo "  'exit' to quit"
 echo "  'status' for repo status"
@@ -1133,8 +1129,5 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
     esac
 
-    # Debug: log the response before echoing
-    log "Response received: ${response:0:100}..."
     echo -e "BAUX BOT: $response"
-    log "Response echoed successfully"
 done
