@@ -1129,5 +1129,8 @@ Provide complete, working code with proper error handling. Follow BAUXBSD conven
             ;;
     esac
 
+    # Debug: log the response before echoing
+    log "Response received: ${response:0:100}..."
     echo -e "BAUX BOT: $response"
+    log "Response echoed successfully"
 done
