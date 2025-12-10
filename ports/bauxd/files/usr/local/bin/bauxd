@@ -191,8 +191,7 @@ case "${1:-}" in
     "status")
         if [[ -f "$PID_FILE" ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
             echo "bauxd is running (PID: $(cat "$PID_FILE"))"
-            # Quick health check
-            get_health | jq .status 2>/dev/null || echo "Health check: $(get_deployment_type)"
+            echo "Deployment type: $(get_deployment_type)"
         else
             echo "bauxd is not running"
         fi
