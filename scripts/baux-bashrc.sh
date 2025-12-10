@@ -161,7 +161,24 @@ if [[ -d ~/.nvm ]]; then
 fi
 
 # ──────────────────────────────────────────────────────────────
-# 9. SECURITY & CLEANUP
+# 9. X11/WINDOW SYSTEM INTEGRATION
+# ──────────────────────────────────────────────────────────────
+
+# Only set X keymaps if we have a display and are not in SSH
+if [[ -n "$DISPLAY" && -z "$SSH_CLIENT" && -z "$SSH_TTY" ]]; then
+    # X11 keymap settings (only when local with display)
+    if command -v xmodmap >/dev/null 2>&1; then
+        # Add any X11 keymap customizations here
+        # xmodmap commands would go here
+        true  # Placeholder for future X11 settings
+    fi
+else
+    # SSH or no display - skip X11 operations silently
+    true
+fi
+
+# ──────────────────────────────────────────────────────────────
+# 10. SECURITY & CLEANUP
 # ──────────────────────────────────────────────────────────────
 
 # Clear sensitive environment variables on exit

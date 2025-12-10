@@ -36,7 +36,12 @@ echo "  • session TUI..."
 cp "$BAUX_ROOT/ports/baux/files/usr/local/share/baux/scripts/baux-session-tui" "$DEPLOY_DIR/"
 
 echo "  • enhanced baux-bot..."
-cp "$BAUX_ROOT/ports/baux-bot/files/usr/local/bin/baux-bot" "$DEPLOY_DIR/"
+if [[ -f "$BAUX_ROOT/ports/baux-bot/files/usr/local/bin/baux-bot" ]]; then
+    cp "$BAUX_ROOT/ports/baux-bot/files/usr/local/bin/baux-bot" "$DEPLOY_DIR/"
+else
+    echo "    ⚠️  WARNING: baux-bot not found in ports, using deployment version"
+    cp "$BAUX_ROOT/deployment-20251210-181939/baux-bot" "$DEPLOY_DIR/" 2>/dev/null || echo "    ❌ ERROR: No baux-bot available"
+fi
 
 echo "  • deployment script..."
 cp "$BAUX_ROOT/scripts/deploy-baux-production.sh" "$DEPLOY_DIR/"
