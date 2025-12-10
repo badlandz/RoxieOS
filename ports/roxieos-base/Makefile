@@ -17,7 +17,8 @@ LICENSE=	BSD2CLAUSE
 NO_BUILD=	yes
 NO_ARCH=	yes
 
-RUN_DEPENDS=	x11-fonts/nerd-fonts
+RUN_DEPENDS=	x11-fonts/nerd-fonts \
+		bbase
 
 do-install:
 	# Create RoxieOS OS release identification

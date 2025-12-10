@@ -5,9 +5,13 @@
 # Configure Caps Lock → Escape globally
 # This affects both console and X11
 
-# For console (tty) - using kbdmap
-if [ -f /usr/share/syscons/keymaps/us.iso.kbd ]; then
-    # Create custom keymap with Caps Lock as Escape
+# For console (tty) - use BAUX keymap from bbase
+if [ -f /usr/local/share/syscons/keymaps/baux.kbd ]; then
+    # Set BAUX keymap as default (includes Caps Lock → Escape)
+    sysrc keymap="baux" 2>/dev/null || echo 'keymap="baux"' >> /etc/rc.conf
+    echo "Configured BAUX keymap (Caps Lock → Escape) for console"
+elif [ -f /usr/share/syscons/keymaps/us.iso.kbd ]; then
+    # Fallback: Create custom keymap with Caps Lock as Escape
     cat > /usr/share/syscons/keymaps/us.capsesc.kbd << 'EOF'
 # US keyboard with Caps Lock mapped to Escape
 include "/usr/share/syscons/keymaps/us.iso.kbd"
@@ -18,7 +22,7 @@ EOF
 
     # Set as default keymap
     sysrc keymap="us.capsesc" 2>/dev/null || echo 'keymap="us.capsesc"' >> /etc/rc.conf
-    echo "Configured Caps Lock → Escape for console"
+    echo "Configured fallback Caps Lock → Escape for console"
 fi
 
 # Set console font to prevent tiny dots issue

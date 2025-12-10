@@ -12,6 +12,11 @@ if [ -f /usr/local/share/roxieos/xmodmap.rc ]; then
     xmodmap /usr/local/share/roxieos/xmodmap.rc
 fi
 
+# Load Xresources if available
+if [ -f ~/.Xresources ]; then
+    xrdb -merge ~/.Xresources
+fi
+
 # Set background (if feh is available)
 if command -v feh >/dev/null 2>&1; then
     feh --bg-scale /usr/local/share/roxieos/wallpaper.png 2>/dev/null || true
@@ -48,6 +53,12 @@ fi
 if command -v fc-cache >/dev/null 2>&1; then
     echo "Updating font cache..."
     fc-cache -f -v >/dev/null 2>&1 || echo "Warning: Font cache update failed"
+fi
+
+# Load X11 keymap
+if [ -f /usr/local/share/roxieos/xmodmap.rc ]; then
+    echo "Loading X11 keymap..."
+    xmodmap /usr/local/share/roxieos/xmodmap.rc 2>/dev/null || echo "Warning: Could not load X11 keymap"
 fi
 
 echo "RoxieOS X11 setup complete"
