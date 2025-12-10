@@ -2,19 +2,23 @@
 
 ## GruvBAUX Prototype (Pre-v0.1) - December 2025
 
-### Current Status Update (December 10, 2025) - MAJOR MILESTONE: BAUX RESURRECTION WORKING! 🎉
-- **🎯 MAJOR ACHIEVEMENT**: BAUX session resurrection is now functional on baux01! Sessions automatically save every 10 minutes and restore across disconnects/crashes/reboots.
-- **✅ VERIFIED WORKING**: Second `baux` run shows loaded plugins, proper keymaps (C-Space prefix), status bar on top, window tabs - matches user's working laptop functionality.
-- **🔧 IMPLEMENTATION**: Extracted resurrection logic from working Debian .deb package, integrated tmux-resurrect/continuum plugins, created BAUX-managed plugin location, added restore_session() function.
-- **🧹 CLEAN DEPLOYMENT**: Install script includes conflict cleanup, removes old configurations, prevents litter from interfering with new installs.
-- **ROLLBACK POINT CREATED**: ✅ Current state committed as safe rollback point before expanding deployment.
+### Current Status Update (December 10, 2025) - MAJOR MILESTONE: BAUX RESURRECTION DEPLOYED ACROSS MESH! 🎉
+- **🎯 MAJOR ACHIEVEMENT**: BAUX session resurrection deployed and functional across 3 FreeBSD nodes + 1 Debian container!
+- **✅ DEPLOYMENT STATUS**:
+  - **.133 (x300 laptop)**: ✅ Resurrection deployed, BAUX session active
+  - **.101 (baux01 workstation)**: ✅ Resurrection deployed, BAUX session active
+  - **baux-scale (cloud server)**: ✅ Resurrection deployed, ready for testing
+  - **.90 (Debian container)**: ✅ One active baux-session running
+- **🔧 IMPLEMENTATION**: Resurrection logic extracted from Debian .deb, integrated tmux-resurrect/continuum, BAUX-managed plugin location, restore_session() function.
+- **🧹 CLEAN DEPLOYMENT**: Install script includes conflict cleanup, removes old configurations, prevents litter interference.
+- **ROLLBACK POINT CREATED**: ✅ Current state committed as safe rollback before TUI development.
 - **BAUX Session Startup Fix**: ✅ Fixed remote detection logic in `~/baux` script. Now only checks `BAUX_REMOTE` environment variable instead of SSH connection variables, allowing SSH sessions to properly start tmux while preventing nesting during remote operations.
 - **BAUX_HOME Path Fix**: ✅ Corrected `BAUX_HOME` from `/usr/local/share/baux` to `/usr/local/share` to match installed tmux configuration location.
 - **Session Switching Infrastructure**: ✅ Created missing `baux-pull` script for remote session access. Fixed tmux plugin manager path mismatch in configuration.
 - **System Testing Results**: Comprehensive testing revealed partial BAUX functionality. baux-bot operational on <your-lan-ip-2> with Grok backend and active RAG. Local baux-bot (<your-lan-ip-1>) has Ollama autotune working but limited interactivity. Mesh infrastructure not active (no Headscale, no port 9999 listening). Session switching not functional due to missing mesh connectivity.
 - **baux-scale Server Deployment**: ✅ VM provisioned at <your-ip> (Vultr: 2 vCPU, 4GB RAM, 80GB storage, 3TB bandwidth, $20/mo). ✅ DNS configured as bs.<your-domain>. ✅ User accounts and SSH access established. ✅ Source code synchronized across all 4 systems.
 - **Infrastructure Status**: All systems have FreeBSD 15, Ollama, and baux-bot. SSH key coordination complete. Ready for mesh implementation.
-- **Next Steps**: Deploy resurrection to all BAUX nodes, test cross-system session switching, integrate baux-bot in panes, verify session manager TUI functionality.
+- **Next Steps**: Test cross-system session switching, integrate baux-bot in panes, develop TUI session manager, verify resurrection persistence.
 
 ### Major Changes
 - **FreeBSD Migration**: Complete restructure from Debian to FreeBSD ports/src model
