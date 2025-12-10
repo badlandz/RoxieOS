@@ -22,7 +22,6 @@ case "${1:-}" in
         echo ""
         echo "bauxd - BAUX daemon service"
         echo "Provides REST API on port 9999 for mesh coordination"
-        exit 1
         ;;
 esac</content>
 <parameter name="filePath">ports/bauxd/files/usr/local/bin/bauxd
