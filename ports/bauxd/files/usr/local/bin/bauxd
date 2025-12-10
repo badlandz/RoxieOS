@@ -1,21 +1,21 @@
 #!/usr/local/bin/bash
 # bauxd - BAUX daemon service for mesh coordination
-# Basic CLI version for testing
 
-if [[ "${1:-}" == "test" ]]; then
-    echo "Testing bauxd functionality..."
-    echo "bauxd test: basic CLI working"
-elif [[ "${1:-}" == "status" ]]; then
-    echo "bauxd status: CLI version ready"
-elif [[ "${1:-}" == "start" ]]; then
-    echo "bauxd start not implemented yet"
-elif [[ "${1:-}" == "stop" ]]; then
-    echo "bauxd stop not implemented yet"
-else
-    echo "Usage: $0 {start|stop|status|test}"
-    echo ""
-    echo "bauxd - BAUX daemon service"
-    echo "Provides REST API on port 9999 for mesh coordination"
-    exit 1
-fi</content>
+case "$1" in
+    test)
+        echo "bauxd test: working"
+        ;;
+    status)
+        echo "bauxd status: ready"
+        ;;
+    start)
+        echo "bauxd start: not implemented"
+        ;;
+    stop)
+        echo "bauxd stop: not implemented"
+        ;;
+    *)
+        echo "Usage: bauxd {start|stop|status|test}"
+        ;;
+esac</content>
 <parameter name="filePath">ports/bauxd/files/usr/local/bin/bauxd
