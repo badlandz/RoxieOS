@@ -318,9 +318,32 @@ EOF
 ask_gemini() {
     local prompt="$1"
     printf "BAUX BOT (Gemini) researching... "
-    # TODO: Implement Gemini API call for research questions
-    echo "Gemini integration coming soon - falling back to Ollama for now"
-    ask_ollama "$prompt"
+
+    # Check if API key is available
+    if [[ -z "$GEMINI_API_KEY" ]]; then
+        echo "Gemini API key not found - add to ~/mnt/drop-baux/keys/api_keys.sh"
+        ask_ollama "$prompt"
+        return
+    fi
+
+    # Gemini API call for research questions
+    local response
+    response=$(curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$GEMINI_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{
+            \"contents\": [{
+                \"parts\": [{
+                    \"text\": \"$prompt\"
+                }]
+            }]
+        }" | jq -r '.candidates[0].content.parts[0].text' 2>/dev/null)
+
+    if [[ -n "$response" && "$response" != "null" ]]; then
+        echo "$response"
+    else
+        echo "Gemini API call failed - falling back to Ollama"
+        ask_ollama "$prompt"
+    fi
 }
 
 ask_claude() {
