@@ -196,10 +196,15 @@ echo 'sshd_enable="YES"' >> /etc/rc.conf
 - **Plugin Integration:** tmux-resurrect/continuum ecosystem
 - **Node Communication:** Cross-mesh session switching
 
+#### ✅ COMPLETED: bterm Terminal Ready!
+- **bterm deployed:** st with BAUX theming, JetBrains Mono, scaling fonts
+- **Xresources scaling:** Runtime font size adjustment via xrdb
+- **BAUX integration:** Gruvbox colors, proper keymaps, scrollback
+
 #### 🎯 Immediate Priorities
-1. **Complete Package Migration:** bwm, bterm, bvi, bbase ports
+1. **Complete Package Migration:** bwm, bvi, bbase ports
 2. **TUI Session Selector:** User-friendly session management interface
-3. **Debian Rescue Updates:** ⏳ LOW PRIORITY - Update when FreeBSD core stable
+3. **Cross-system Testing:** Verify resurrection works between nodes
 
 #### 📊 Deployment Status
 - **FreeBSD Nodes:** 3 active (baux01, .133, laptop)
