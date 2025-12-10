@@ -4,9 +4,9 @@
 
 set -euo pipefail
 
-export BAUX_HOME="/usr/local/share"
+export BAUX_HOME="/usr/local/share/baux"
 export NVIM_INIT="$BAUX_HOME/nvim/init.lua"
-TMUX_CONF="$BAUX_HOME/tmux/baux.conf"
+TMUX_CONF="/usr/local/share/tmux/baux.conf"
 # Default session naming: hostname-1 to hostname-9 for tty mapping
 # Users can create custom named sessions
 if [[ $# -gt 0 && "$1" =~ ^[0-9]$ ]]; then
