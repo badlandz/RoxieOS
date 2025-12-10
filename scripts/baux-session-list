@@ -1,0 +1,4 @@
+#!/bin/bash
+# baux-session-list - List available sessions from registry
+
+ssh badlandz@bs.coseismic.org baux-registry list
