@@ -27,9 +27,9 @@ shopt -s globstar
 # 2. BAUX PROMPT - Simple hostname indicator
 # ──────────────────────────────────────────────────────────────
 
-# Simple prompt: user@hostname $
+# Simple prompt: @hostname $
 # tmux shows session/time info, so keep prompt minimal
-PS1='\u@\h \$ '
+PS1='@\h \$ '
 
 # ──────────────────────────────────────────────────────────────
 # 3. DROP-BAUX KEY INTEGRATION
