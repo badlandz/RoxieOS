@@ -4,7 +4,7 @@
 # Autologin, keymaps, X autostart, OS identification
 
 PORTNAME=	roxieos-base
-PORTVERSION=	1.0.0
+PORTVERSION=	1.0.1
 CATEGORIES=	sysutils
 MASTER_SITES=	# No distfiles needed
 
@@ -17,8 +17,7 @@ LICENSE=	BSD2CLAUSE
 NO_BUILD=	yes
 NO_ARCH=	yes
 
-RUN_DEPENDS=	x11-fonts/nerd-fonts \
-		bbase
+RUN_DEPENDS=	x11-fonts/nerd-fonts
 
 do-install:
 	# Create RoxieOS OS release identification
@@ -37,5 +36,4 @@ post-install:
 	${FILESDIR}${PREFIX}/etc/roxieos/setup-autologin
 	${FILESDIR}${PREFIX}/etc/roxieos/setup-keymap
 	${FILESDIR}${PREFIX}/etc/roxieos/setup-x11
-
 .include <bsd.port.mk>

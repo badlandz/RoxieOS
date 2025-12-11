@@ -28,6 +28,7 @@ BAUX (BAckup/restore Universal eXperience) is a revolutionary distributed operat
 
 ### Working Features ✅
 - Session resurrection across all nodes
+- **bwm**: BAUX window manager (dwm fork) with Gruv-BAUX theming
 - bterm terminal with font scaling
 - BAUX Bot with intelligent AI routing (17+ backends)
 - Session TUI for management (deployment package ready)

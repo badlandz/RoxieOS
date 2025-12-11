@@ -4,9 +4,10 @@ This package provides essential system configuration for RoxieOS,
 including:
 
 - OS release identification (/usr/local/share/roxieos/os-release)
+- BAUX keymap with Caps Lock → Escape globally
 - Autologin setup for tty1
-- Keyboard mapping (Caps Lock → Escape)
-- X11 autostart configuration
+- X11 autostart configuration with keymap loading
+- Font management and nerd font installation
 - System integration scripts
 
-WWW: https://roxieos.org
+WWW: https://coseismic.org

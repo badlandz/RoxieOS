@@ -1,13 +1,10 @@
 #!/bin/sh
-# setup-keymap - Configure RoxieOS keyboard mappings
-# Based on Debian concepts adapted for FreeBSD
+# fix-keymap-133.sh - Emergency keymap fix for .133
 
-# Configure Caps Lock → Escape globally
-# This affects both console and X11
+echo "Fixing BAUX keymap on .133..."
 
-# Install and configure BAUX keymap
+# Create keymap in correct location
 if [ ! -f /usr/share/syscons/keymaps/baux.kbd ]; then
-    # Install BAUX keymap (from bbase functionality)
     mkdir -p /usr/share/syscons/keymaps
     cat > /usr/share/syscons/keymaps/baux.kbd << 'EOF'
 # $FreeBSD$
@@ -130,29 +127,20 @@ if [ ! -f /usr/share/syscons/keymaps/baux.kbd ]; then
   107   fkey64 fkey64 fkey64 fkey64 fkey64 fkey64 fkey64 fkey64  O
   108   nop    nop    nop    nop    nop    nop    nop    nop     O
 EOF
-    echo "Installed BAUX keymap"
+    echo "Created BAUX keymap in /usr/share/syscons/keymaps/baux.kbd"
 fi
 
-# Set BAUX keymap as default
-sysrc keymap="baux" 2>/dev/null || echo 'keymap="baux"' >> /etc/rc.conf
-echo "Configured BAUX keymap (Caps Lock → Escape) for console"
-
-# Set console font to prevent tiny dots issue
-if [ -f /usr/share/syscons/fonts/iso-8x16.fnt ]; then
-    sysrc font8x16="iso-8x16" 2>/dev/null || echo 'font8x16="iso-8x16"' >> /etc/rc.conf
-    sysrc font8x14="iso-8x14" 2>/dev/null || echo 'font8x14="iso-8x14"' >> /etc/rc.conf
-    echo "Set console fonts to prevent tiny dots"
+# Set keymap in rc.conf
+if ! grep -q '^keymap="baux"' /etc/rc.conf; then
+    echo 'keymap="baux"' >> /etc/rc.conf
+    echo "Added keymap='baux' to /etc/rc.conf"
 fi
 
-# For X11 - create xmodmap configuration
-cat > /usr/local/etc/X11/xinit/xmodmap.rc << 'EOF'
-! RoxieOS X11 keymap configuration
-! Caps Lock → Escape
-clear Lock
-keycode 66 = Escape
-EOF
+# Load keymap immediately
+kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd
+echo "Loaded BAUX keymap - Caps Lock should now act as Escape"
 
-# Also create .xmodmap for user home
+# Create X11 keymap
 cat > /usr/local/share/roxieos/xmodmap.rc << 'EOF'
 ! RoxieOS user keymap configuration
 ! Caps Lock → Escape
@@ -160,6 +148,7 @@ clear Lock
 keycode 66 = Escape
 EOF
 
-echo "RoxieOS keymap setup complete"
-echo "Caps Lock now maps to Escape in both console and X11"
-echo "User can also run: xmodmap /usr/local/share/roxieos/xmodmap.rc"
+echo "Created X11 keymap configuration"
+echo "Run 'xmodmap /usr/local/share/roxieos/xmodmap.rc' in X11 for X11 keymap"
+
+echo "Keymap fix complete! Test by pressing Caps Lock - should act as Escape."

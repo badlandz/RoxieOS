@@ -29,16 +29,21 @@ Based on comprehensive analysis of BAUX project goals, current implementation st
 - Add session registration on creation/update
 - Integrate with `baux` commands for automatic tracking
 
-### 3. **GUI Layer Completion** (PARTIALLY IMPLEMENTED)
-**Status:** bwm and bterm ports exist but not fully debugged/deployed
-**Impact:** Workstation deployment incomplete without working desktop
+### 3. **GUI Layer Completion** (✅ bwm COMPLETE - bterm PENDING)
+**Status:** bwm fully working with Gruv-BAUX theming; bterm needs debugging
+**Impact:** Workstation deployment 50% complete - window manager ready
 **Why Critical:** BAUX workstation vision requires functional GUI layer
 
-**Immediate Actions:**
-- Debug bwm (dwm fork) compilation and BAUX patches
-- Test bterm (st fork) with scaling fonts and theming
-- Verify X11 integration and keymap support
-- Deploy to .133 for workstation testing
+**Completed:**
+- ✅ bwm (dwm fork) compilation and BAUX patches
+- ✅ FreeBSD-compatible build system
+- ✅ Gruv-BAUX color theming (muted, professional)
+- ✅ X11 integration and keymap support
+- ✅ Deployed to .133 for workstation testing
+
+**Remaining:**
+- Debug bterm (st fork) with scaling fonts and theming
+- Test bterm + bwm integration
 
 ## 🟡 **HIGH PRIORITY: User Experience Gaps**
 
@@ -137,7 +142,7 @@ fi
 |-----------|------------|--------|----------|--------|
 | bauxd HTTP API | Medium | Critical | 1-2 days | In Progress |
 | Session Registry | Medium | Critical | 3-5 days | Not Started |
-| GUI Layer (bwm/bterm) | High | High | 1-2 weeks | Partial |
+| GUI Layer (bwm/bterm) | High | High | 1-2 weeks | bwm ✅ |
 | Live Persistence | Medium | High | 1 week | Framework |
 | Font Accessibility | Low | Medium | 3-5 days | Planned |
 | Cross-Platform Sync | High | Medium | 2-3 weeks | Research |
@@ -147,9 +152,9 @@ fi
 ## 🎯 **Recommended Next Steps**
 
 ### **Today (Dec 10):**
-1. **Complete bauxd HTTP API** - Finish the HTTP server implementation
-2. **Test TUI integration** - Verify API calls work across mesh
-3. **Add baux-lite concept** - Document and plan console-only deployment type
+1. **Debug Session Switcher TUI** - Get TUI operational for session management
+2. **Complete bauxd HTTP API** - Finish the HTTP server implementation
+3. **Test TUI integration** - Verify API calls work across mesh
 
 ### **This Week:**
 1. **Implement session registry** - SQLite database and API
