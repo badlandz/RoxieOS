@@ -16,7 +16,6 @@
 ### **Quick Status**
 - ✅ **Core Components**: baux, bvi, ollama, keymaps working
 - ✅ **bwm Builds**: Window manager compiles successfully
-- ❌ **Xorg Input**: Keyboard/mouse fail in X sessions
 - ❌ **Installer**: Missing core components, requires manual fixes
 - ❌ **BAUX-MESH**: Not implemented (planned Phase 3)
 
@@ -63,26 +62,24 @@ RoxieOS is a FreeBSD-based operating system that merges **FreeBSD's networking e
 
 ### **Critical Installation Issues**
 - **Missing bbase**: Console fonts/keymaps not installed automatically
-- **Xorg Input Failure**: Keyboard/mouse don't work in X sessions
 - **Build Script Bugs**: Linux paths hardcoded in FreeBSD scripts
-- **GPU Conflicts**: AMD/Intel driver conflicts on some hardware
 
 ### **Workaround Installation**
 ```bash
-# 1. Install base system + Xorg
-pkg install xorg drm-kmod
-sysrc kld_list+=amdgpu  # AMD GPUs
+# 1. Install base system + Xorg FIXED
 
 # 2. Manual bbase install (MISSING FROM AUTOMATED INSTALL)
 cd ~/src/RoxieOS/ports/bbase && doas ./install.sh
 
 # 3. Fix bwm build script paths
 # Edit build-bwm-simple.sh: sudo→doas, /usr/X11R6→/usr/local, #!/bin/sh→#!/usr/local/bin/bash
+# FIXED
 
 # 4. Install bwm
 doas ./build-bwm-simple.sh
 
-# 5. Manual accessibility setup
+# 5. Manual accessibility setup because I'm blind and this is still a bug, not working
+# WHY does anyone make the default font only readable with a magnifying glass??!!
 doas sysrc allscreens_flags="-f cp437-8x16"
 echo "Xft.dpi: 192" >> ~/.Xresources
 ```
