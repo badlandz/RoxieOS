@@ -1,0 +1,11 @@
+BAUXBSD window manager - minimal, keyboard-driven X11 window manager
+based on dwm with BAUX session integration.
+
+Features:
+- Session display in status bar when BAUXWM=1
+- Mod4+1-9 for session switching (matches tmux)
+- Gruvbox theming with toxic green color scheme
+- Minimal footprint (~25MB installed)
+- Keyboard-native, no mouse required
+
+WWW: https://roxieos.org
