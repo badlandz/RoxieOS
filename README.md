@@ -2,7 +2,8 @@
 
 **Immortal sessions across devices. AI-powered development. Zero friction cloning.**
 
-*Codename: BAUX-MESH - Distributed session resurrection via Tailscale + Headscale*
+*BAUX-MESH - a Distributed session resurrection via Tailscale + Headscale*
+*BAUX-MESH - the "ecosystem" result of tmux/nvim/tailscale/bash unifications*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![FreeBSD](https://img.shields.io/badge/FreeBSD-15.0+-red.svg)](https://www.freebsd.org/)
@@ -21,11 +22,24 @@
 
 ## Vision Summary
 
-BAUXBSD is a three-layer cyberdeck OS: **Live RoxieOS** (USB rescue tool) → **BAUX** (immortal toolkit) → **baux-dev** (AI workstation). Boot anywhere, resurrect your exact sessions instantly, access AI assistance across mesh networks.
+RoxieOS is a three-layer development platform: **Live RoxieOS** (USB rescue tool) → **BAUX** (immortal toolkit in baux-mesh) → **baux-dev** (AI workstation full bare metal install). Boot anywhere, connect to mesh, resurrect your exact sessions instantly, access AI assistance across mesh networks. Add user live image and it becomes persistent access point to baux-mesh that can run from usb, disk, container, vm, sbc, whatever... 
 
 ## Overview
 
-RoxieOS is a FreeBSD-based operating system that merges **FreeBSD's networking excellence** with **Debian's accessibility mastery**. Create immortal development environments that persist across hardware, survive crashes, and sync via mesh networks.
+RoxieOS is a FreeBSD-based operating system that merges **FreeBSD's networking excellence** with **Debian's accessibility mastery**. Create immortal development environments that persist across hardware, survive crashes, and sync via mesh networks. Linux was used, and remains used for developoment and testing, but suffers from bloat, contant "reinventing the (now incompatible) wheel," but large pool of usable code. FreeBSD, despite it's more limited collection of compatible software (opencode still an issue?!) remains the far superior platform to "unify" a small subset of ports (packages) to create something that can't be done with a "new software program." It's the result of alligning compatibility and conductivity between the key core existing systems that creates "baux-mesh," so "baux-mesh" is not a "program." BAUX-MESH is the "result" of a handfull of properly configured existing software componants.
+
+## Why
+
+It's personal... I live in a dusty town, and I have poor eyesight. Computers don't last, dust builds up, they overheat, they die. They are disposable. But, my "workflow" has evolved over the last 20+ years as "poweruser/hack" (not programmer) to include a very custom configuration of window manager, editor, and project management tools. When one system goes down, I have to "start fresh." Usually, that involves grabbing the latest Linux Mint or Debian iso, installing on a new computer, spending half a day trying to get the fonts big enough that I can even read the screen to login, another half a day fixing keymaps, paths, bashrc, tmux, neovim. Then if I'm lucky it's "kinda usable" and still find 1-2 hours a day for weeks going "oh, I have to add that feature I use once every couple weeks, it's missing." Countless hours, days, weeks, occasionally months of the year are devoted to "fixing/building my IDE," and at the end of the day, it's jsut a handfull of very basic things, neovim, tmux, bash, dwm, and a terminal emulator. That's all I need, but they need to all WORK TOGETHER completely, have unified keymap patterns, know how to route me between projects and pull in AI support, have reasonable search capability (fzf, ripgrep), and getting it all "working" takes forever.
+
+This is why I belive Linux is a "childish" OS, constantly reinventing the incompatible wheel, and at least FreeBSD keeps things simple, and there is "hope" of making it small, clean, and fast enough to run on RISC-V SBC for getting back to work on some random microprocesser firmware if I can create a "complete" from first boot to IDE iso image for recovery, saving UNHEARD of amounts of time configuring in the future.
+
+Like Omarchy, it's basically "just a bunch of scripts," but unlike Omarchy it's not seeking "a modern desktop," rather, it's seeking unification of the most simple basic tools, so well configured they can "fall back" from bloated neovim with AI plugins to run on plain old vi with as many of the same features as possible and the exact same keymaps, and be running on a tiny underpowered system, and you can still "get back to your code and fix it" rather than configuring your IDE. RoxieOS is the OS tweaks to create a BAUX-MESH using extensive configuration for maximum functionality and uniform keymaps/interfaces across a small handful of existing software (headscale, tmux, neovim, bash, dwm, st). That's it. It sounds simple, it is simple. However it doesn't exist "out of the box" until now, with the project to create a RoxieOS live image.
+
+It's an "OS" that's smaller, faster, and persistant. To do that requires 2-3 systems, so there's always "fallback" point to connect, and location to pull your latest configuration/project/code instantly from anywhere. Testing setup right now is:
+1. Workstation (bare metal, simple compact desktop computer)
+2. Laptop ($50 old laptop to test "off my lan" conducivity for remote use)
+3. Cloud VM ($5/month system with real IP and domain name assigned)
 
 **Three Eternal Layers** (never compromise):
 1. **RoxieOS (Live)**: <400MB USB rescue tool, boots in <12s on Pi Zero
