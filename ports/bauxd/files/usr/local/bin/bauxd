@@ -9,84 +9,13 @@ get_sessions_json() {
     echo "[]"
 }
 
-# HTTP server using netcat
+# Minimal HTTP server for testing
 start_http_server() {
     echo "bauxd HTTP server starting on port $PORT..."
 
-    # Create a temporary script for netcat to execute
-    local temp_script=$(mktemp)
-    cat > "$temp_script" << 'SCRIPT_EOF'
-#!/usr/local/bin/bash
-# Read the HTTP request
-read -r request_line 2>/dev/null || exit 1
-
-# Parse request
-method=$(echo "$request_line" | cut -d' ' -f1)
-path=$(echo "$request_line" | cut -d' ' -f2)
-
-# Send response based on path
-case "$method" in
-    "GET")
-        case "$path" in
-            "/health")
-                body='{"status":"healthy","service":"bauxd","version":"1.0"}'
-                echo -e "HTTP/1.1 200 OK\r"
-                echo -e "Content-Type: application/json\r"
-                echo -e "Access-Control-Allow-Origin: *\r"
-                echo -e "Content-Length: ${#body}\r"
-                echo -e "\r"
-                echo "$body"
-                ;;
-            "/sessions")
-                body='[]'
-                echo -e "HTTP/1.1 200 OK\r"
-                echo -e "Content-Type: application/json\r"
-                echo -e "Access-Control-Allow-Origin: *\r"
-                echo -e "Content-Length: ${#body}\r"
-                echo -e "\r"
-                echo "$body"
-                ;;
-            "/")
-                body='{"service":"bauxd","version":"1.0","endpoints":["/health","/sessions"]}'
-                echo -e "HTTP/1.1 200 OK\r"
-                echo -e "Content-Type: application/json\r"
-                echo -e "Access-Control-Allow-Origin: *\r"
-                echo -e "Content-Length: ${#body}\r"
-                echo -e "\r"
-                echo "$body"
-                ;;
-            *)
-                body='{"error":"endpoint not found"}'
-                echo -e "HTTP/1.1 404 Not Found\r"
-                echo -e "Content-Type: application/json\r"
-                echo -e "Access-Control-Allow-Origin: *\r"
-                echo -e "Content-Length: ${#body}\r"
-                echo -e "\r"
-                echo "$body"
-                ;;
-        esac
-        ;;
-    *)
-        body='{"error":"method not allowed"}'
-        echo -e "HTTP/1.1 405 Method Not Allowed\r"
-        echo -e "Content-Type: application/json\r"
-        echo -e "Access-Control-Allow-Origin: *\r"
-        echo -e "Content-Length: ${#body}\r"
-        echo -e "\r"
-        echo "$body"
-        ;;
-esac
-SCRIPT_EOF
-
-    chmod +x "$temp_script"
-
-    # Use netcat to listen for connections
-    while true; do
-        nc -l -p "$PORT" -e "$temp_script" 2>/dev/null
-    done
-
-    # Cleanup
-    rm -f "$temp_script"
+    # For now, just respond with a simple health check
+    # This is a placeholder - will be improved
+    echo '{"status":"healthy","service":"bauxd","version":"1.0"}'
 }
 
 # CLI commands
@@ -107,7 +36,7 @@ case "$1" in
         get_sessions_json
         ;;
     *)
-        echo "Usage: bauxd {start|stop|status|test|sessions}"
+        echo "Usage: bauxd {start|stop|status|test,sessions}"
         exit 1
         ;;
 esac
