@@ -10,12 +10,12 @@ static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "ComicShannsMono Nerd Font:size=20" };
 static const char dmenufont[]       = "ComicShannsMono Nerd Font:size=20";
 
-/* Biohazard Color Palette Mapped to Original Variable Names */
-static const char col_gray1[]       = "#141414"; /* Background (Deep Charcoal) */
-static const char col_gray2[]       = "#141414"; /* Border/Inactive BG (Deep Charcoal) */
-static const char col_gray3[]       = "#41FF00"; /* Normal Foreground (Glitch Green) */
-static const char col_gray4[]       = "#FF6600"; /* Selected Foreground (OSHA Amber) */
-static const char col_cyan[]        = "#004873"; /* Selected Background (NFPA Blue) */
+/* Gruv-BAUX Color Palette - Muted BAUX Theme */
+static const char col_gray1[]       = "#1d2021"; /* Background (Gruvbox dark) */
+static const char col_gray2[]       = "#282828"; /* Border/Inactive BG (Gruvbox dark) */
+static const char col_gray3[]       = "#a89984"; /* Normal Foreground (Gruvbox light gray) */
+static const char col_gray4[]       = "#d79921"; /* Selected Foreground (Gruvbox yellow) */
+static const char col_cyan[]        = "#458588"; /* Selected Background (Gruvbox blue) */
 
 /* The 'colors' array (uses original variable names) */
 static const char *colors[][3]      = {
