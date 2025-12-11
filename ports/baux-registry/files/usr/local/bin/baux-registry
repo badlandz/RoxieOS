@@ -1,162 +1,53 @@
 #!/usr/local/bin/bash
-# baux-registry - BAUX session registry database service
+# baux-registry - Simple JSON file-based session registry
 
-# Configuration
-DB_PATH=${BAUX_REGISTRY_DB:-/var/db/baux/registry.db}
-SCHEMA_PATH=/usr/local/share/baux-registry/schema.sql
+REGISTRY_DIR=${BAUX_REGISTRY_DIR:-/var/db/baux}
 
-# Initialize database
-init_db() {
-    if [[ ! -f "$DB_PATH" ]]; then
-        mkdir -p "$(dirname "$DB_PATH")"
-        sqlite3 "$DB_PATH" < "$SCHEMA_PATH"
-        echo "Registry database initialized at $DB_PATH"
-    fi
+init_registry() {
+    mkdir -p "$REGISTRY_DIR"
+    echo "Registry initialized at $REGISTRY_DIR"
 }
 
-# Register or update a session
 register_session() {
-    local name="$1"
-    local node="$2"
-    local pid="$3"
-    
-    sqlite3 "$DB_PATH" "
-    INSERT INTO sessions (name, node, pid, updated_at, last_seen) 
-    VALUES (, , $pid, datetime(now), datetime(now))
-    ON CONFLICT(name) DO UPDATE SET 
-        node=, 
-        pid=$pid, 
-        updated_at=datetime(now), 
-        last_seen=datetime(now),
-        status=active
-    "
-    echo "Session  registered on node "
+    local name="$1" node="$2" pid="$3"
+    init_registry
+    local now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    echo "{\"name\":\"$name\",\"node\":\"$node\",\"pid\":\"$pid\",\"updated_at\":\"$now\",\"last_seen\":\"$now\",\"status\":\"active\"}" > "$REGISTRY_DIR/session_$name.json"
+    echo "Session '$name' registered on node '$node'"
 }
 
-# Update session last seen
-update_session() {
-    local name="$1"
-    
-    sqlite3 "$DB_PATH" "
-    UPDATE sessions SET last_seen=datetime(now) WHERE name=
-    "
-}
-
-# Mark session as inactive
-deactivate_session() {
-    local name="$1"
-    
-    sqlite3 "$DB_PATH" "
-    UPDATE sessions SET status=inactive, updated_at=datetime(now) WHERE name=
-    "
-}
-
-# List all sessions
 list_sessions() {
-    sqlite3 -header -column "$DB_PATH" "
-    SELECT name, node, status, last_seen FROM sessions ORDER BY last_seen DESC
-    "
+    echo "Name                  Node                  Status    Last Seen"
+    echo "--------------------  --------------------  --------  -------------------"
+    for file in "$REGISTRY_DIR"/session_*.json; do
+        [[ -f "$file" ]] || continue
+        local content=$(cat "$file")
+        local name=$(echo "$content" | sed 's/.*"name":"\([^"]*\)".*/\1/')
+        local node=$(echo "$content" | sed 's/.*"node":"\([^"]*\)".*/\1/')
+        local status=$(echo "$content" | sed 's/.*"status":"\([^"]*\)".*/\1/')
+        local last_seen=$(echo "$content" | sed 's/.*"last_seen":"\([^"]*\)".*/\1/')
+        printf "%-20s  %-20s  %-8s  %s\n" "$name" "$node" "$status" "$last_seen"
+    done
 }
 
-# List sessions by node
-list_sessions_by_node() {
-    local node="$1"
-    
-    sqlite3 -header -column "$DB_PATH" "
-    SELECT name, status, last_seen FROM sessions WHERE node= ORDER BY last_seen DESC
-    "
-}
-
-# Find session location
 find_session() {
     local name="$1"
-    
-    sqlite3 "$DB_PATH" "
-    SELECT node FROM sessions WHERE name= AND status=active LIMIT 1
-    " 2>/dev/null
+    [[ -f "$REGISTRY_DIR/session_$name.json" ]] && sed 's/.*"node":"\([^"]*\)".*/\1/' "$REGISTRY_DIR/session_$name.json"
 }
 
-# Register/update node
 register_node() {
-    local hostname="$1"
-    local ip="$2"
-    
-    sqlite3 "$DB_PATH" "
-    INSERT INTO nodes (hostname, ip_address, last_seen) 
-    VALUES (, , datetime(now))
-    ON CONFLICT(hostname) DO UPDATE SET 
-        ip_address=,
-        last_seen=datetime(now),
-        status=online
-    "
+    local hostname="$1" ip="$2"
+    init_registry
+    local now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    echo "{\"hostname\":\"$hostname\",\"ip_address\":\"$ip\",\"last_seen\":\"$now\",\"status\":\"online\"}" > "$REGISTRY_DIR/node_$hostname.json"
 }
 
-# List nodes
-list_nodes() {
-    sqlite3 -header -column "$DB_PATH" "
-    SELECT hostname, ip_address, status, last_seen FROM nodes ORDER BY last_seen DESC
-    "
-}
-
-# Clean up old inactive sessions (older than 24 hours)
-cleanup_old_sessions() {
-    sqlite3 "$DB_PATH" "
-    UPDATE sessions SET status=inactive 
-    WHERE status=active AND last_seen < datetime(now, -1 day)
-    "
-    echo "Cleaned up old inactive sessions"
-}
-
-# CLI interface
 case "$1" in
-    "init")
-        init_db
-        ;;
-    "register")
-        init_db
-        register_session "$2" "$3" "$4"
-        ;;
-    "update")
-        update_session "$2"
-        ;;
-    "deactivate")
-        deactivate_session "$2"
-        ;;
-    "list")
-        list_sessions
-        ;;
-    "list-node")
-        list_sessions_by_node "$2"
-        ;;
-    "find")
-        find_session "$2"
-        ;;
-    "register-node")
-        register_node "$2" "$3"
-        ;;
-    "list-nodes")
-        list_nodes
-        ;;
-    "cleanup")
-        cleanup_old_sessions
-        ;;
-    "test")
-        init_db
-        echo "Registry database ready at $DB_PATH"
-        ;;
-    *)
-        echo "Usage: baux-registry {init|register|update|deactivate|list|list-node|find|register-node|list-nodes|cleanup|test}"
-        echo "  init                          - Initialize database"
-        echo "  register <name> <node> [pid]  - Register/update session"
-        echo "  update <name>                 - Update session last seen"
-        echo "  deactivate <name>             - Mark session inactive"
-        echo "  list                          - List all sessions"
-        echo "  list-node <node>              - List sessions on node"
-        echo "  find <name>                   - Find session location"
-        echo "  register-node <host> [ip]     - Register/update node"
-        echo "  list-nodes                    - List all nodes"
-        echo "  cleanup                       - Clean old inactive sessions"
-        echo "  test                          - Test database connectivity"
-        exit 1
-        ;;
+    "init") init_registry ;;
+    "register") register_session "$2" "$3" "$4" ;;
+    "list") list_sessions ;;
+    "find") find_session "$2" ;;
+    "register-node") register_node "$2" "$3" ;;
+    "test") init_registry; echo "Registry ready at $REGISTRY_DIR" ;;
+    *) echo "Usage: baux-registry {init|register|list|find|register-node|test}" ;;
 esac
