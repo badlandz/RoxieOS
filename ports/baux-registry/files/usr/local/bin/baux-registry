@@ -1,0 +1,162 @@
+#!/usr/local/bin/bash
+# baux-registry - BAUX session registry database service
+
+# Configuration
+DB_PATH=${BAUX_REGISTRY_DB:-/var/db/baux/registry.db}
+SCHEMA_PATH=/usr/local/share/baux-registry/schema.sql
+
+# Initialize database
+init_db() {
+    if [[ ! -f "$DB_PATH" ]]; then
+        mkdir -p "$(dirname "$DB_PATH")"
+        sqlite3 "$DB_PATH" < "$SCHEMA_PATH"
+        echo "Registry database initialized at $DB_PATH"
+    fi
+}
+
+# Register or update a session
+register_session() {
+    local name="$1"
+    local node="$2"
+    local pid="$3"
+    
+    sqlite3 "$DB_PATH" "
+    INSERT INTO sessions (name, node, pid, updated_at, last_seen) 
+    VALUES (, , $pid, datetime(now), datetime(now))
+    ON CONFLICT(name) DO UPDATE SET 
+        node=, 
+        pid=$pid, 
+        updated_at=datetime(now), 
+        last_seen=datetime(now),
+        status=active
+    "
+    echo "Session  registered on node "
+}
+
+# Update session last seen
+update_session() {
+    local name="$1"
+    
+    sqlite3 "$DB_PATH" "
+    UPDATE sessions SET last_seen=datetime(now) WHERE name=
+    "
+}
+
+# Mark session as inactive
+deactivate_session() {
+    local name="$1"
+    
+    sqlite3 "$DB_PATH" "
+    UPDATE sessions SET status=inactive, updated_at=datetime(now) WHERE name=
+    "
+}
+
+# List all sessions
+list_sessions() {
+    sqlite3 -header -column "$DB_PATH" "
+    SELECT name, node, status, last_seen FROM sessions ORDER BY last_seen DESC
+    "
+}
+
+# List sessions by node
+list_sessions_by_node() {
+    local node="$1"
+    
+    sqlite3 -header -column "$DB_PATH" "
+    SELECT name, status, last_seen FROM sessions WHERE node= ORDER BY last_seen DESC
+    "
+}
+
+# Find session location
+find_session() {
+    local name="$1"
+    
+    sqlite3 "$DB_PATH" "
+    SELECT node FROM sessions WHERE name= AND status=active LIMIT 1
+    " 2>/dev/null
+}
+
+# Register/update node
+register_node() {
+    local hostname="$1"
+    local ip="$2"
+    
+    sqlite3 "$DB_PATH" "
+    INSERT INTO nodes (hostname, ip_address, last_seen) 
+    VALUES (, , datetime(now))
+    ON CONFLICT(hostname) DO UPDATE SET 
+        ip_address=,
+        last_seen=datetime(now),
+        status=online
+    "
+}
+
+# List nodes
+list_nodes() {
+    sqlite3 -header -column "$DB_PATH" "
+    SELECT hostname, ip_address, status, last_seen FROM nodes ORDER BY last_seen DESC
+    "
+}
+
+# Clean up old inactive sessions (older than 24 hours)
+cleanup_old_sessions() {
+    sqlite3 "$DB_PATH" "
+    UPDATE sessions SET status=inactive 
+    WHERE status=active AND last_seen < datetime(now, -1 day)
+    "
+    echo "Cleaned up old inactive sessions"
+}
+
+# CLI interface
+case "$1" in
+    "init")
+        init_db
+        ;;
+    "register")
+        init_db
+        register_session "$2" "$3" "$4"
+        ;;
+    "update")
+        update_session "$2"
+        ;;
+    "deactivate")
+        deactivate_session "$2"
+        ;;
+    "list")
+        list_sessions
+        ;;
+    "list-node")
+        list_sessions_by_node "$2"
+        ;;
+    "find")
+        find_session "$2"
+        ;;
+    "register-node")
+        register_node "$2" "$3"
+        ;;
+    "list-nodes")
+        list_nodes
+        ;;
+    "cleanup")
+        cleanup_old_sessions
+        ;;
+    "test")
+        init_db
+        echo "Registry database ready at $DB_PATH"
+        ;;
+    *)
+        echo "Usage: baux-registry {init|register|update|deactivate|list|list-node|find|register-node|list-nodes|cleanup|test}"
+        echo "  init                          - Initialize database"
+        echo "  register <name> <node> [pid]  - Register/update session"
+        echo "  update <name>                 - Update session last seen"
+        echo "  deactivate <name>             - Mark session inactive"
+        echo "  list                          - List all sessions"
+        echo "  list-node <node>              - List sessions on node"
+        echo "  find <name>                   - Find session location"
+        echo "  register-node <host> [ip]     - Register/update node"
+        echo "  list-nodes                    - List all nodes"
+        echo "  cleanup                       - Clean old inactive sessions"
+        echo "  test                          - Test database connectivity"
+        exit 1
+        ;;
+esac

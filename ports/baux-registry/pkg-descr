@@ -1,0 +1,14 @@
+BAUX Session Registry Database Service
+
+The BAUX session registry maintains a centralized database of tmux session
+locations across the BAUX-MESH network. It tracks which sessions are running
+on which nodes, enabling seamless session discovery and migration.
+
+Features:
+- SQLite-based session registry
+- Node and session tracking
+- Automatic cleanup of stale sessions
+- RESTful API integration ready
+- Mesh network session discovery
+
+WWW: https://github.com/badlandz/RoxieOS
