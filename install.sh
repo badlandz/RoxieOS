@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/local/bin/bash
 # BAUX Global Installer - Manages entire ecosystem deployment
 # Supports multiple deployment types: workstation, headless, kiosk, special
 
