@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/local/bin/bash
 # BAUX Global Installer - Manages entire ecosystem deployment
 # Supports multiple deployment types: workstation, headless, kiosk, special
 
@@ -43,49 +43,43 @@ success() {
 detect_deployment_type() {
     local detected_type="workstation"  # default
 
-    # Check for explicit override
+    # Check for explicit override first
     if [[ -n "${BAUX_DEPLOYMENT_TYPE:-}" ]]; then
         if [[ -n "${DEPLOYMENT_TYPES[$BAUX_DEPLOYMENT_TYPE]:-}" ]]; then
             detected_type="$BAUX_DEPLOYMENT_TYPE"
             log "Deployment type override: $detected_type"
-            return
         else
             error "Invalid deployment type override: $BAUX_DEPLOYMENT_TYPE"
             exit 1
         fi
-    fi
+    else
+        # Hardware-based detection only if no override
+        local has_display=false
+        local has_input=false
 
-    # Hardware-based detection
-    local has_display=false
-    local has_input=false
+        # Check for display (X11 or Wayland)
+        if [[ -n "${DISPLAY:-}" ]] || [[ -e "/tmp/.X11-unix" ]]; then
+            has_display=true
+        fi
 
-    # Check for display (X11 or Wayland)
-    if [[ -n "${DISPLAY:-}" ]] || [[ -e "/tmp/.X11-unix" ]]; then
-        has_display=true
-    fi
+        # Check for input devices (keyboard/mouse)
+        if [[ -c "/dev/input/event0" ]] || [[ -e "/dev/input/mice" ]] || [[ -e "/dev/input/mouse0" ]]; then
+            has_input=true
+        fi
 
-    # Check for input devices (keyboard/mouse)
-    if [[ -c "/dev/input/event0" ]] || [[ -e "/dev/input/mice" ]]; then
-        has_input=true
-    fi
+        # Determine type based on hardware
+        if $has_display && $has_input; then
+            detected_type="workstation"
+        elif $has_display && ! $has_input; then
+            detected_type="kiosk"
+        elif ! $has_display && ! $has_input; then
+            detected_type="headless"
+        fi
 
-    # Check for input devices (keyboard/mouse)
-    if [[ -c "/dev/input/event0" ]] || [[ -e "/dev/input/mice" ]] || [[ -e "/dev/input/mouse0" ]]; then
-        has_input=true
-    fi
-
-    # Determine type based on hardware
-    if $has_display && $has_input; then
-        detected_type="workstation"
-    elif $has_display && ! $has_input; then
-        detected_type="kiosk"
-    elif ! $has_display && ! $has_input; then
-        detected_type="headless"
-    fi
-
-    # Check for special cases
-    if [[ "$(hostname)" == "baux-scale" ]] || [[ "${BAUX_SPECIAL_TYPE:-}" == "mesh-server" ]]; then
-        detected_type="special"
+        # Check for special cases
+        if [[ "$(hostname)" == "baux-scale" ]] || [[ "${BAUX_SPECIAL_TYPE:-}" == "mesh-server" ]]; then
+            detected_type="special"
+        fi
     fi
 
     DEPLOYMENT_TYPE="$detected_type"
