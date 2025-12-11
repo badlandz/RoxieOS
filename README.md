@@ -35,7 +35,7 @@ RoxieOS is a FreeBSD-based operating system that merges **FreeBSD's networking e
 - **Direct Peer Connectivity**: .101 ↔ .133 mesh operational
 - **Session Resurrection**: SSH-based cross-device session access
 - **bwm Window Manager**: BAUX-themed dwm fork with Gruv-BAUX colors + Super+1-9 keymaps
-- **Session Switcher**: Alt+1-9 switches tmux sessions by position (no conflicts!)
+- **Session Switcher**: Alt+1-9 switches tmux sessions by position ✅ (no conflicts!)
 - **Mesh Registry**: SQLite-based session tracking (planned)
 
 ### ✅ **AI-Powered Development** (Multi-Backend)
