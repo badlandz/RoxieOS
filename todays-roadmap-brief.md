@@ -142,7 +142,7 @@ fi
 |-----------|------------|--------|----------|--------|
 | bauxd HTTP API | Medium | Critical | 1-2 days | In Progress |
 | Session Registry | Medium | Critical | 3-5 days | Not Started |
-| GUI Layer (bwm/bterm) | High | High | 1-2 weeks | bwm ✅ |
+| GUI Layer (bwm/bterm) | High | High | 1-2 weeks | bwm ✅ + keymaps |
 | Live Persistence | Medium | High | 1 week | Framework |
 | Font Accessibility | Low | Medium | 3-5 days | Planned |
 | Cross-Platform Sync | High | Medium | 2-3 weeks | Research |
