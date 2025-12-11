@@ -19,10 +19,10 @@ declare -A DEPLOYMENT_TYPES=(
 
 # Port dependencies by deployment type
 declare -A PORT_DEPENDENCIES=(
-    ["workstation"]="baux baux-bot bauxd baux-registry bwm bterm"
-    ["headless"]="baux baux-bot bauxd baux-registry"
-    ["kiosk"]="baux baux-bot bauxd baux-registry bterm"
-    ["special"]="baux baux-bot bauxd baux-registry"
+    ["workstation"]="baux baux-bot bauxd bwm bterm"
+    ["headless"]="baux baux-bot bauxd"
+    ["kiosk"]="baux baux-bot bauxd bterm"
+    ["special"]="baux baux-bot bauxd"
 )
 
 # Logging
@@ -364,11 +364,3 @@ done
 
 # Run main installation
 main
-        "baux-registry")
-            log "Installing baux-registry service..."
-            doas mkdir -p /usr/local/bin /usr/local/share/baux-registry /var/db/baux
-            doas cp "$BAUX_ROOT/ports/baux-registry/files/usr/local/bin/baux-registry" /usr/local/bin/
-            doas cp "$BAUX_ROOT/ports/baux-registry/files/usr/local/share/baux-registry/schema.sql" /usr/local/share/baux-registry/
-            doas chmod +x /usr/local/bin/baux-registry
-            doas chown badlandz /var/db/baux
-            ;;
