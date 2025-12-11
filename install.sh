@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/bash
 # BAUX Global Installer - Manages entire ecosystem deployment
 # Supports multiple deployment types: workstation, headless, kiosk, special
 
@@ -174,7 +174,28 @@ install_port() {
                 log "Skipping $port_name for $DEPLOYMENT_TYPE deployment"
                 return 0
             fi
-            log "GUI component $port_name installation not implemented yet"
+
+            # Build and install GUI components
+            case "$port_name" in
+                "bwm")
+                    log "Building and installing bwm window manager..."
+                    if [[ -f "$BAUX_ROOT/build-bwm-simple.sh" ]]; then
+                        doas "$BAUX_ROOT/build-bwm-simple.sh"
+                    else
+                        error "bwm build script not found: $BAUX_ROOT/build-bwm-simple.sh"
+                        return 1
+                    fi
+                    ;;
+                "bterm")
+                    log "Building and installing bterm terminal..."
+                    if [[ -f "$BAUX_ROOT/ports/bterm/build.sh" ]]; then
+                        doas "$BAUX_ROOT/ports/bterm/build.sh"
+                    else
+                        error "bterm build script not found: $BAUX_ROOT/ports/bterm/build.sh"
+                        return 1
+                    fi
+                    ;;
+            esac
             ;;
         *)
             log "Installation method not defined for $port_name"
@@ -232,6 +253,11 @@ verify_installation() {
     case "$DEPLOYMENT_TYPE" in
         "workstation")
             # Check GUI components
+            for component in bwm bterm; do
+                if ! command -v "$component" >/dev/null 2>&1; then
+                    failed_components+=("$component")
+                fi
+            done
             ;;
         "headless")
             # Check server-only components
