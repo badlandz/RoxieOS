@@ -9,10 +9,108 @@ get_sessions_json() {
     tmux list-sessions 2>/dev/null | while read -r line; do
         name=$(echo "$line" | cut -d: -f1)
         rest=$(echo "$line" | cut -d: -f2-)
-        windows=$(echo "$rest" | grep -o '[0-9]\+ windows' | grep -o '[0-9]\+')
-        created=$(echo "$rest" | sed 's/.*(created \(.*\))/\1/')
+        windows=$(echo "$rest" | grep -o '[0-9]\+ windows' | grep -o '[0-9]\+' || echo "0")
+        created=$(echo "$rest" | sed 's/.*(created \(.*\))/\1/' || echo "unknown")
         echo "{\"name\":\"$name\",\"windows\":$windows,\"created\":\"$created\"}"
-    done | tr '\n' ',' | sed 's/,$//' | sed 's/^/[/;s/$/]/' || echo "[]"
+    done | tr '\n' ',\ | sed 's/,$//' | sed 's/^/[/;s/$/]/' || echo "[]"
+}
+
+# HTTP server using netcat
+start_http_server() {
+    echo "bauxd HTTP server starting on port $PORT..."
+
+    # Create a temporary script for netcat to execute
+    local temp_script=$(mktemp)
+    cat > "$temp_script" << 'SCRIPT_EOF'
+#!/bin/bash
+# Read the HTTP request
+read -r request_line
+read -r -t 0.1 header_line 2>/dev/null || true
+
+# Parse request
+method=$(echo "$request_line" | cut -d' ' -f1)
+path=$(echo "$request_line" | cut -d' ' -f2)
+
+# Send response based on path
+case "$method" in
+    "OPTIONS")
+        echo -e "HTTP/1.1 200 OK\r"
+        echo -e "Access-Control-Allow-Origin: *\r"
+        echo -e "Access-Control-Allow-Methods: GET, OPTIONS\r"
+        echo -e "Access-Control-Allow-Headers: *\r"
+        echo -e "Content-Length: 0\r"
+        echo -e "\r"
+        ;;
+    "GET")
+        case "$path" in
+            "/health")
+                body='{"status":"healthy","service":"bauxd","uptime":"unknown"}'
+                echo -e "HTTP/1.1 200 OK\r"
+                echo -e "Content-Type: application/json\r"
+                echo -e "Access-Control-Allow-Origin: *\r"
+                echo -e "Content-Length: ${#body}\r"
+                echo -e "\r"
+                echo "$body"
+                ;;
+            "/sessions")
+                # Get tmux sessions as JSON
+                sessions=$(tmux list-sessions 2>/dev/null | while read -r line; do
+                    name=$(echo "$line" | cut -d: -f1)
+                    rest=$(echo "$line" | cut -d: -f2-)
+                    windows=$(echo "$rest" | grep -o '[0-9]\+ windows' | grep -o '[0-9]\+' || echo "0")
+                    created=$(echo "$rest" | sed 's/.*(created \(.*\))/\1/' || echo "unknown")
+                    echo "{\"name\":\"$name\",\"windows\":$windows,\"created\":\"$created\"}"
+                done | tr '\n' ',\ | sed 's/,$//' | sed 's/^/[/;s/$/]/' || echo "[]")
+
+                echo -e "HTTP/1.1 200 OK\r"
+                echo -e "Content-Type: application/json\r"
+                echo -e "Access-Control-Allow-Origin: *\r"
+                echo -e "Content-Length: ${#sessions}\r"
+                echo -e "\r"
+                echo "$sessions"
+                ;;
+            "/")
+                body='{"service":"bauxd","version":"1.0","endpoints":["/health","/sessions"]}'
+                echo -e "HTTP/1.1 200 OK\r"
+                echo -e "Content-Type: application/json\r"
+                echo -e "Access-Control-Allow-Origin: *\r"
+                echo -e "Content-Length: ${#body}\r"
+                echo -e "\r"
+                echo "$body"
+                ;;
+            *)
+                body='{"error":"endpoint not found"}'
+                echo -e "HTTP/1.1 404 Not Found\r"
+                echo -e "Content-Type: application/json\r"
+                echo -e "Access-Control-Allow-Origin: *\r"
+                echo -e "Content-Length: ${#body}\r"
+                echo -e "\r"
+                echo "$body"
+                ;;
+        esac
+        ;;
+    *)
+        body='{"error":"method not allowed"}'
+        echo -e "HTTP/1.1 405 Method Not Allowed\r"
+        echo -e "Content-Type: application/json\r"
+        echo -e "Access-Control-Allow-Origin: *\r"
+        echo -e "Content-Length: ${#body}\r"
+        echo -e "\r"
+        echo "$body"
+        ;;
+esac
+SCRIPT_EOF
+
+    chmod +x "$temp_script"
+
+    # Use netcat to listen for connections
+    while true; do
+        echo "HTTP server listening on port $PORT..." >&2
+        nc -l -p "$PORT" -e "$temp_script" 2>/dev/null
+    done
+
+    # Cleanup
+    rm -f "$temp_script"
 }
 
 # CLI commands
@@ -24,10 +122,10 @@ case "$1" in
         echo "bauxd status: ready (port $PORT)"
         ;;
     "start")
-        echo "bauxd start: HTTP server not implemented yet"
+        start_http_server
         ;;
     "stop")
-        echo "bauxd stop: HTTP server not implemented yet"
+        echo "bauxd stop: send SIGTERM to running process"
         ;;
     "sessions")
         get_sessions_json
