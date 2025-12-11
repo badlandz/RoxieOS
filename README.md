@@ -1,4 +1,4 @@
-# RoxieOS - BAUXBSD Workstation OS
+# RoxieOS - BAUXBSD Development Environment
 
 **Immortal sessions across devices. AI-powered development. Zero friction cloning.**
 
@@ -8,6 +8,17 @@
 [![FreeBSD](https://img.shields.io/badge/FreeBSD-15.0+-red.svg)](https://www.freebsd.org/)
 [![GitHub issues](https://img.shields.io/github/issues/badlandz/RoxieOS)](https://github.com/badlandz/RoxieOS/issues)
 [![GitHub stars](https://img.shields.io/github/stars/badlandz/RoxieOS)](https://github.com/badlandz/RoxieOS/stargazers)
+
+## ⚠️ **CURRENT STATUS: PROTOTYPE WITH KNOWN ISSUES**
+
+**This is a working prototype requiring manual workarounds.** See [BUG_REPORT.md](BUG_REPORT.md) for complete issue documentation and [BWM_BUILD_FIXES.md](ports/bwm/BWM_BUILD_FIXES.md) for build troubleshooting.
+
+### **Quick Status**
+- ✅ **Core Components**: baux, bvi, ollama, keymaps working
+- ✅ **bwm Builds**: Window manager compiles successfully
+- ❌ **Xorg Input**: Keyboard/mouse fail in X sessions
+- ❌ **Installer**: Missing core components, requires manual fixes
+- ❌ **BAUX-MESH**: Not implemented (planned Phase 3)
 
 ## Vision Summary
 
@@ -26,11 +37,9 @@ RoxieOS is a FreeBSD-based operating system that merges **FreeBSD's networking e
 
 **Accessibility First**: 9-font stack supports dyslexia/low-vision. 20pt terminals, high-contrast themes, keyboard navigation everywhere.
 
-![RoxieOS Screenshot](https://via.placeholder.com/800x400/000000/00FF00?text=RoxieOS+Screenshot+Coming+Soon)
-
 ## Key Features
 
-### ✅ **WORKING Distributed Mesh** (Phase 1 Complete)
+### 🔄 **PARTIALLY WORKING: Distributed Mesh** (Phase 1 Partial)
 - **Headscale + Tailscale**: 0% packet loss, sub-1ms latency confirmed
 - **Direct Peer Connectivity**: .101 ↔ .133 mesh operational
 - **Session Resurrection**: SSH-based cross-device session access
@@ -38,174 +47,155 @@ RoxieOS is a FreeBSD-based operating system that merges **FreeBSD's networking e
 - **Session Switcher**: Alt+1-9 switches to Session1-9 (auto-creates, rename as needed) ✅
 - **Mesh Registry**: SQLite-based session tracking (planned)
 
-### ✅ **AI-Powered Development** (Multi-Backend)
+### ✅ **WORKING: AI-Powered Development** (Multi-Backend)
 - **baux-bot**: Immortal AI assistant with RAG, socket IPC, tool routing
 - **xai-chat**: Direct Grok/Ollama integration with API key management
 - **Smart Routing**: 16+ backends with intelligent model selection
 - **Context Awareness**: File/code context sent with queries
 
-### ✅ **Immortal Sessions** (Cross-Device Persistence)
+### 🔄 **PARTIALLY WORKING: Immortal Sessions** (Cross-Device Persistence)
 - **tmux Resurrection**: Sessions survive terminal kills/restarts
 - **ZFS Snapshots**: FreeBSD-native persistence layer
 - **SeaweedFS Buffering**: Distributed storage for session state
 - **Hardware Independence**: Sessions work on any enrolled device
 
-### ✅ **Accessibility First Design**
-- **9-Font Stack**: JetBrains Mono, Fira Code, OpenDyslexic, Atkinson Hyperlegible, etc.
-- **20pt Terminals**: Maximum visibility for low-vision users
-- **High Contrast**: Toxic green-black cyberdeck themes
-- **Keyboard Navigation**: Unified keymaps across all layers
+## 🚨 **KNOWN ISSUES & WORKAROUNDS**
 
-### ✅ **Unified Development Experience**
-- **Gruvbox Theming**: Console → WM → Editor → Terminal consistency
-- **Mod4=dwm, Alt=tmux, hjkl=vim**: Same keys everywhere
-- **Fallback Chains**: nvim → vim → vi, AI → tools → none
-- **Zero Friction**: Boot → `baux` → Your exact environment
+### **Critical Installation Issues**
+- **Missing bbase**: Console fonts/keymaps not installed automatically
+- **Xorg Input Failure**: Keyboard/mouse don't work in X sessions
+- **Build Script Bugs**: Linux paths hardcoded in FreeBSD scripts
+- **GPU Conflicts**: AMD/Intel driver conflicts on some hardware
 
-### ✅ **FreeBSD Native + Debian Heritage**
-- **Ports System**: 32 packages with FreeBSD rc.d services
-- **ZFS Integration**: Snapshots, clones, send/receive for persistence
-- **Live Systems**: Unionfs-fuse persistence (NomadBSD-inspired)
-- **Debian Fallback**: Complete alternative implementation available
-
-## Quick Start
-
-### Prerequisites
-- FreeBSD 15.0+ system (tested on ThinkPad X300)
-- Basic FreeBSD knowledge
-
-### Installation
+### **Workaround Installation**
 ```bash
-# Clone the repository
-git clone git@github.com:badlandz/RoxieOS.git
-cd RoxieOS
+# 1. Install base system + Xorg
+pkg install xorg drm-kmod
+sysrc kld_list+=amdgpu  # AMD GPUs
 
-# Install core BAUX system
-./install.sh -f  # Force install all components
+# 2. Manual bbase install (MISSING FROM AUTOMATED INSTALL)
+cd ~/src/RoxieOS/ports/bbase && doas ./install.sh
 
-# Start BAUX session
-baux
+# 3. Fix bwm build script paths
+# Edit build-bwm-simple.sh: sudo→doas, /usr/X11R6→/usr/local, #!/bin/sh→#!/usr/local/bin/bash
+
+# 4. Install bwm
+doas ./build-bwm-simple.sh
+
+# 5. Manual accessibility setup
+doas sysrc allscreens_flags="-f cp437-8x16"
+echo "Xft.dpi: 192" >> ~/.Xresources
 ```
 
-### What You Get
-- **Caps Lock → Escape** globally (roxieos-base)
-- **Root autologin** on console (roxieos-base)
-- **baux command** starts tmux session with custom config
-- **bvi filename** opens files with neovim
-- **bwm** window manager with BAUX theming
-- **baux-bot** AI assistant with 16+ backends
-- **xai-chat** direct Grok/Ollama integration
-- **9 accessibility fonts** with proper fallbacks
-- **Gruvbox theming** across all components
+See [BUG_REPORT.md](BUG_REPORT.md) for complete issue documentation.
 
-### Current Status
-- **32 FreeBSD ports** - Complete BAUXBSD ecosystem
-- **Mesh networking** - Headscale + Tailscale operational
-- **AI integration** - Multi-backend with intelligent routing
-- **Accessibility** - 9 fonts with keyboard navigation
-- **System foundation** - roxieos-base provides core configuration
+## Installation
 
-### Testing & Development
-- **Start BAUX**: `baux` (tmux session with AI integration)
-- **AI Assistant**: `baux-bot` (16+ backends, socket daemon planned)
-- **Editor**: `bvi filename` (neovim with BAUX configuration)
-- **Mesh Test**: `ping 100.64.0.2` (test mesh connectivity)
-- **Window Manager**: `bwm` (dwm fork with BAUX theming)
+### **Automated Install** (Currently Broken)
+```bash
+git clone https://github.com/badlandz/RoxieOS.git
+cd RoxieOS
+./install.sh  # See BUG_REPORT.md for required manual fixes
+```
 
-### Current Platforms
-- **Primary:** ThinkPad X300 (FreeBSD 15.0) - Active development
-- **Mesh Nodes:** .101 (baux01) + .133 (01x300) - Operational
-- **Future:** Raspberry Pi, additional laptops
+### **Manual Component Installation**
+```bash
+# Install individual components
+cd ports/baux && doas ./install.sh
+cd ../baux-bot && doas ./install.sh
+cd ../bwm && doas ./build-bwm-simple.sh  # After fixing paths
+```
 
-### Reporting Issues
-When reporting bugs, include the probe report and specify your platform.
+## Usage
 
-## Combined Innovation: FreeBSD + Debian Synergy
+### **Start BAUX Environment**
+```bash
+# Start tmux with BAUX configuration
+baux
 
-**FreeBSD Core (Networking & Persistence):**
-- **Headscale Mesh**: Distributed session resurrection across devices
-- **ZFS Integration**: Snapshots, clones, send/receive for session persistence
-- **Ports System**: 39 packages with proper dependencies and rc.d services
-- **AI Integration**: Multi-backend AI with intelligent routing
+# Or use individual components
+bvi  # Neovim with BAUX config
+baux-bot what is baux  # AI assistant
+```
 
-**Debian Heritage (Accessibility & Live Systems):**
-- **21-Font Vision**: 9 implemented (43%) - JetBrains Mono, Fira Code, OpenDyslexic, Atkinson Hyperlegible, TeX Gyre, etc.
-- **Live Systems**: Unionfs-fuse persistence, debootstrap builds
-- **Package Infrastructure**: Local APT repositories, meta-packages
-- **Accessibility First**: 20pt terminals, keyboard navigation, high contrast
+### **Session Management**
+```bash
+# Switch sessions (when working)
+baux 3  # Switch to session-3
 
-**Salvaged Concepts (Ready for Implementation):**
-- **Socket IPC**: Crash prevention for AI assistants
-- **Tool Routing**: ripgrep/web search fallbacks before AI
-- **BVI Integration**: Seamless editor AI workflows
-- **Distributed Storage**: FUSE-based cross-device file sharing
-- **Parallel Builds**: Dependency-aware compilation systems
+# Cross-device access (when mesh implemented)
+baux pull remote-host session-name
+```
+
+### **Window Management** (bwm)
+```bash
+# Start X session
+startx  # Launches bwm window manager
+
+# Keybindings (when working)
+Super+1-9  # Switch workspaces
+Alt+1-9    # Switch sessions
+```
+
+## Development Status
+
+### **Phase 1: Core Infrastructure** ✅
+- FreeBSD base system with accessibility
+- Basic component installation
+- AI integration working
+
+### **Phase 2: Session Resurrection** 🔄
+- tmux persistence working
+- Cross-device SSH access working
+- Mesh infrastructure planned
+
+### **Phase 3: BAUX-MESH** ❌
+- Headscale server setup
+- Distributed session discovery
+- Real-time session sync
 
 ## Contributing
 
-We welcome contributions! See [Development Guide](docs/Development.md) for:
+### **Development Workflow**
+1. **Code in ~/src/RoxieOS** on target systems
+2. **Commit immediately** after changes
+3. **Push to GitHub** for synchronization
+4. **Test on all systems** before merging
 
-- Building from source
-- Package development
-- Testing guidelines
-- Code style
+### **Bug Reporting**
+- See [BUG_REPORT.md](BUG_REPORT.md) for known issues
+- Use GitHub issues for new problems
+- Include system details (.101/.133) and reproduction steps
 
-### Integration Opportunities
-- **Font Stack Migration**: Port Debian's accessibility fonts to FreeBSD ports
-- **Live Build Enhancement**: Implement Debian's debootstrap approach in FreeBSD
-- **Cross-Platform Session Sync**: Enable session resurrection across FreeBSD/Debian systems
+## Documentation
 
-### Getting Help
-
-- 📖 [Handbook](docs/Handbook.md) - Complete documentation
-- 🚀 [Mesh Quick Start](docs/Mesh-Quick-Start.md) - Get mesh working in 10 minutes
-- 🐛 [Issues](https://github.com/badlandz/RoxieOS/issues) - Bug reports
-- 💬 [Discussions](https://github.com/badlandz/RoxieOS/discussions) - Q&A
+- **[BUG_REPORT.md](BUG_REPORT.md)**: Complete issue documentation and workarounds
+- **[BWM_BUILD_FIXES.md](ports/bwm/BWM_BUILD_FIXES.md)**: bwm build troubleshooting
+- **[docs/](docs/)**: Architecture and implementation details
+- **[AI-BOT-WARNING.md](AI-BOT-WARNING.md)**: AI development guidelines
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
-## Credits & Inspiration
+## Roadmap
 
-**FreeBSD Ecosystem:**
-- **NomadBSD**: Live USB persistence, unionfs-fuse, Qt installer
-- **FreeBSD Handbook**: Documentation structure, rc.d services
-- **Suckless Tools**: dwm, st, dmenu inspiration for bwm, bterm
-- **Headscale**: Mesh networking for distributed sessions
+### **Immediate (Pre-v0.1)**
+- Fix Xorg input issues
+- Complete automated installer
+- Stabilize bwm window manager
 
-**Debian Heritage:**
-- **Live System Builds**: Debootstrap approach, accessibility fonts
-- **Package Management**: APT repositories, meta-packages
-- **Font Stack**: 21-font accessibility vision (9 implemented)
-- **BVI Integration**: Editor AI workflows, socket IPC
+### **v0.1 Release**
+- Working BAUX-MESH
+- Complete session resurrection
+- Production-ready installer
 
-**Salvaged Concepts:**
-- **Socket Daemon Architecture**: Crash prevention for AI assistants
-- **Tool Routing Systems**: ripgrep/web search before AI calls
-- **20pt Terminal Launcher**: Accessibility-focused UI
-- **Distributed Storage**: FUSE-based cross-device file sharing
-- **Parallel Build Systems**: Dependency-aware compilation
+### **Future**
+- Live USB image
+- Multi-platform support
+- Advanced AI features
 
-**Alternative Implementations:**
-- **coseismicbsd**: Complete alternative BAUXBSD approach
-- **Roxanne Vision**: Original three-layer architecture
-- **groksroxieos**: Merged implementation with interconnects
+---
 
-See [NomadBSD Handbook](https://nomadbsd.org/handbook/handbook.html) for live systems and [FreeBSD Porter's Handbook](https://docs.freebsd.org/en/books/porters-handbook/) for package development.
-
-## Repository Status
-
-- **Status**: Active Development (GruvBAUX Prototype Pre-v0.1)
-- **Ports**: 32 total (26 existing + 6 new/enhanced)
-- **Stability**: Core BAUX system production-ready
-- **Mesh**: Headscale + Tailscale operational
-- **AI**: Multi-backend with intelligent routing
-- **Fonts**: 9 accessibility fonts implemented
-- **License**: MIT
-- **Issues**: [GitHub Issues](https://github.com/badlandz/RoxieOS/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/badlandz/RoxieOS/discussions)
-
-**Root forever. Layers forever. FreeBSD + Debian forever.**
-
-– badlandz, December 2025
+**Status**: Working prototype with extensive manual workarounds required. See [BUG_REPORT.md](BUG_REPORT.md) for complete issue tracking.</content>
+<filePath>README.md

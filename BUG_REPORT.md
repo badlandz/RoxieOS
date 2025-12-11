@@ -1,152 +1,226 @@
-# BAUXBSD Comprehensive Bug Report
-**Generated: December 10, 2025 - 03:45 UTC**
-**Analysis: 52+ code tests + 20+ remote system tests conducted**
-**Repository: RoxieOS @ commit 2824f7f5**
-**Systems Tested: FreeBSD workstation (.101), FreeBSD laptop (.133)**
+# BAUXBSD Critical Bug Report & Workaround Documentation
 
 ## Executive Summary
 
-After conducting comprehensive testing on both the RoxieOS codebase AND the installed BAUX components on the FreeBSD systems (.101 and .133), the following issues have been identified:
+**Project Goal**: "Live USB stick to Tmux/neovim IDE in 10 seconds"
+**Current Reality**: Complex installation requiring multiple workarounds, manual fixes, and unsustainable hacks
+**Critical Issue**: Development pipeline creates unmaintainable code that prevents proper installer creation
 
-1. **BAUX-MESH**: Not implemented (correctly documented as future development)
-2. **tmux Configuration**: BAUX components installed and functional, but user may be running tmux directly instead of via `baux` command
-3. **Keymap**: Properly installed and functional on both systems
-4. **Infrastructure**: All systems have synchronized git trees with complete documentation
+## Major Bug Categories
 
-**Status**: BAUX components are properly installed and functional. The "vanilla tmux" issue appears to be user workflow rather than software bug.
+### 1. **Installer Architecture Flaws**
 
-## System Synchronization Verification
+#### **Missing Core Components**
+- **Issue**: Main `install.sh` doesn't include `bbase` in workstation dependencies
+- **Impact**: Console unusable for visually impaired users, keyboard mapping broken
+- **Workaround**: Manual `bbase` installation required post-install
+- **Fix Required**: Add `bbase` to `PORT_DEPENDENCIES["workstation"]`
 
-### Git Repository Status
-- **Repository Path**: `~/src/RoxieOS` on all systems
-- **Sync Method**: Git pull/push successful on all systems
-- **Documentation**: All 62 markdown files present and identical
-- **Code**: All components committed and pushed
-- **Prevention**: All development occurs in `~/src/RoxieOS` with immediate commits
+#### **Privilege Escalation Failures**
+- **Issue**: `doas` commands fail intermittently during install
+- **Impact**: Components appear installed but aren't actually functional
+- **Workaround**: Manual `doas` commands post-install
+- **Root Cause**: User context issues, permission timing
 
-### System Inventory & Test Results
-| System | IP | OS | BAUX Status | Git Sync | Key Findings |
-|--------|----|----|-------------|----------|--------------|
-| FreeBSD WS | 192.168.33.101 | FreeBSD 15.0 | ✅ Fully installed | ✅ Synced | baux, bvi, ollama working; mesh not implemented |
-| FreeBSD LT | 192.168.33.133 | FreeBSD 15.0 | ✅ Fully installed | ✅ Synced | baux, bvi installed; ollama not running; mesh not implemented |
+#### **Deployment Type Detection**
+- **Issue**: Auto-detection unreliable, manual override required
+- **Impact**: Wrong components installed for hardware
+- **Workaround**: `BAUX_DEPLOYMENT_TYPE=workstation ./install.sh`
 
-## Detailed Bug Analysis
+### 2. **Xorg & Graphics Stack Issues**
 
-### Issue 1: "baux" seems to run vanilla tmux (Investigation Complete)
+#### **Input Device Conflicts**
+- **Issue**: Xorg detects input devices but immediately unloads libinput modules
+- **Symptoms**:
+  - Keyboard works in console, dead in X
+  - Mouse cursor doesn't move in X
+  - `startx` works initially but input fails after Cinnamon install
+- **Workaround**: Explicit `InputDevice` sections in `xorg.conf` (conflicts with auto-detection)
+- **Hardware Context**: AMD Cezanne GPU + USB peripherals
 
-**Symptom**: User reports baux running vanilla tmux without custom configuration.
+#### **GPU Driver Conflicts**
+- **Issue**: Both Intel and AMD drivers loaded simultaneously
+- **Impact**: Graphics acceleration issues, input detection problems
+- **Workaround**: `kldunload i915kms` to disable Intel driver
+- **Fix Required**: BIOS-level GPU selection or better driver detection
 
-**Root Cause Investigation**:
-- **Installed Components Verified**:
-  - ✅ baux binary: `/usr/local/bin/baux` (executable, installed)
-  - ✅ tmux config: `/usr/local/share/tmux/baux.conf` (installed, 2,705 bytes)
-  - ✅ keymap: `/usr/share/syscons/keymaps/baux.kbd` (installed, loads successfully)
-  - ✅ bvi: `/usr/local/bin/bvi` (NVIM v0.11.4 installed)
-  - ✅ ollama: `/usr/local/bin/ollama` (installed with models)
+#### **Xorg Configuration Inconsistencies**
+- **Issue**: Minimal `xorg.conf` works on some systems, explicit config required on others
+- **Impact**: Per-system configuration requirements
+- **Workaround**: Trial-and-error xorg.conf modifications
 
-- **Configuration Analysis**:
-  - tmux config contains: C-Space prefix, M-hjkl navigation, resurrect/continuum plugins
-  - Keymap loads without errors: `kbdcontrol -l /usr/share/syscons/keymaps/baux.kbd` succeeds
-  - No ~/.tmux/resurrect directory (resurrect not yet used)
+### 3. **Build System Problems**
 
-**Likely User Workflow Issue**:
-- User may be running `tmux` directly instead of `baux` command
-- `baux` explicitly loads custom config: `tmux -f /usr/local/share/tmux/baux.conf`
-- Direct `tmux` uses default ~/.tmux.conf or system config
+#### **Cross-Platform Path Issues**
+- **Issue**: Linux paths hardcoded in FreeBSD build scripts
+- **Examples**:
+  - `sudo` instead of `doas`
+  - `/usr/X11R6/` instead of `/usr/local/`
+  - `#!/bin/sh` instead of `#!/usr/local/bin/bash`
+- **Impact**: Build scripts fail on target platform
+- **Workaround**: Manual script fixes during development
 
-**Evidence from Testing**:
-```
-✅ .101: baux --help works, tmux config installed, keymap loads
-✅ .133: baux installed, tmux config installed, keymap loads
-✅ Both: C-Space appears in tmux keybindings (copy-mode)
-❌ Both: No baux processes currently running
-❌ Both: ~/.tmux/resurrect/ directory does not exist
-```
+#### **Dependency Management**
+- **Issue**: Build dependencies not properly declared
+- **Impact**: Silent failures when packages missing
+- **Workaround**: Manual `pkg install` commands
 
-**Resolution**: Use `baux` command instead of `tmux` directly to get BAUX configuration.
+#### **Context-Sensitive Builds**
+- **Issue**: Scripts assume run from specific directory as specific user
+- **Impact**: Fail when run via `doas` or from different locations
+- **Workaround**: Hardcoded paths and manual execution
 
-### Issue 2: BAUX-MESH connectivity failure (Expected/Planned)
+### 4. **Console & Accessibility Issues**
 
-**Symptom**: Cannot connect to BAUX-MESH sessions or switch between systems.
+#### **Keymap Application**
+- **Issue**: `baux.kbd` installed but not applied after reboot
+- **Impact**: Caps→Esc mapping not active
+- **Workaround**: Manual `kbdcontrol -l` commands
+- **Root Cause**: rc.conf vs immediate application conflicts
 
-**Root Cause**: BAUX-MESH not implemented (correctly documented as future development).
+#### **Font Scaling**
+- **Issue**: Console fonts too small, X11 fonts not scaled
+- **Impact**: Unreadable for visually impaired users
+- **Workaround**: Manual `vidcontrol` and `.Xresources` configuration
+- **Fix Required**: Automated accessibility setup
 
-**Evidence from Testing**:
-```
-❌ .101: Port 9999 not listening (netstat shows no mesh service)
-❌ .133: Port 9999 not listening
-❌ Both: baux hosts → "not implemented"
-❌ Both: baux pull → "not implemented"
-✅ Documentation: "BAUX-MESH: 20% complete" correctly stated
-✅ Code: Mesh commands are placeholders in baux script
-```
+### 5. **Development Pipeline Issues**
 
-**Impact**: No distributed session management (as designed for current phase).
+#### **Multi-System Synchronization**
+- **Issue**: Code changes across .90 (Debian), .101 (FreeBSD workstation), .133 (FreeBSD laptop), cloud server
+- **Impact**: Merge conflicts, lost changes, inconsistent states
+- **Workaround**: Manual git operations, rollback points
+- **Fix Required**: Centralized development workflow
 
-**Workaround**: Use SSH for cross-system access:
+#### **Testing Environment Mismatch**
+- **Issue**: Development on Debian, deployment on FreeBSD
+- **Impact**: Linux assumptions baked into FreeBSD code
+- **Workaround**: Dual-environment awareness, manual translations
+- **Fix Required**: Containerized FreeBSD development environment
+
+## Current Workaround Checklist
+
+### **Fresh FreeBSD Installation**
 ```bash
-ssh badlandz@192.168.33.133  # From .101 to .133
+# 1. Install base system
+# 2. Add user to wheel, video groups
+pw groupmod video -m username
+
+# 3. Install Xorg and graphics
+pkg install xorg drm-kmod
+sysrc kld_list+=amdgpu  # For AMD GPUs
+
+# 4. Manual bbase installation (MISSING FROM INSTALLER)
+cd /path/to/roxieos/ports/bbase
+doas ./install.sh
+
+# 5. Fix bwm build script (BROKEN IN SOURCE)
+# Edit build-bwm-simple.sh:
+# - Change #!/bin/sh to #!/usr/local/bin/bash
+# - Change sudo to doas
+# - Update X11 paths to /usr/local/
+
+# 6. Install bwm
+cd /path/to/roxieos
+doas ./build-bwm-simple.sh
+
+# 7. Configure Xorg (trial and error)
+# Minimal xorg.conf for some systems, explicit InputDevice for others
+
+# 8. Manual font setup
+doas sysrc allscreens_flags="-f cp437-8x16"
+echo "Xft.dpi: 192" >> ~/.Xresources
+
+# 9. Handle GPU conflicts
+kldunload i915kms  # If Intel driver conflicts
 ```
 
-## Component Status Matrix
+### **Xorg Debugging Steps**
+```bash
+# Check input devices
+ls /dev/input/
+dmesg | grep -i usb
 
-### ✅ Properly Installed Components
-| Component | .101 Status | .133 Status | Test Results |
-|-----------|-------------|-------------|--------------|
-| baux | ✅ Installed | ✅ Installed | Help output works, binary executable |
-| tmux config | ✅ Installed | ✅ Installed | File exists, proper permissions |
-| keymap | ✅ Installed & Working | ✅ Installed & Working | kbdcontrol loads successfully |
-| bvi | ✅ Installed | ✅ Installed | NVIM v0.11.4, --version works |
-| ollama | ✅ Installed with models | ✅ Installed (not running) | Models: smollm2, llama3.2 |
+# Check Xorg log
+tail /var/log/Xorg.0.log
 
-### ❌ Not Implemented (As Expected)
-| Component | Status | Documentation | Notes |
-|-----------|--------|---------------|-------|
-| BAUX-MESH | ❌ Planned | "20% complete" | Future Phase 3 development |
-| Headscale | ❌ Planned | Extensive docs | Cloud server setup planned |
-| Port 9999 | ❌ Not listening | LAN probing planned | No mesh infrastructure |
+# Test different xorg.conf configurations
+# Try minimal, then explicit InputDevice sections
 
-## Testing Results Summary
+# Check GPU drivers
+kldstat | grep -E '(amdgpu|i915)'
 
-### Statistics
-- **Code Tests**: 52 individual checks on repository
-- **Remote Tests**: 20+ commands executed on .101 and .133
-- **Pass Rate**: 95% (installed components working)
-- **Expected Missing**: BAUX-MESH (planned future)
-- **System Sync**: ✅ All systems pulled latest commit successfully
+# Test with different window managers
+# bwm vs cinnamon vs twm
+```
 
-### Key Findings
-1. **Installation Success**: All BAUX components properly installed via FreeBSD ports
-2. **Functionality**: baux, bvi, keymap, ollama all working as expected
-3. **User Education**: Primary issue appears to be using `tmux` vs `baux` command
-4. **Mesh Status**: Correctly not implemented - extensive documentation for future phases
-5. **Infrastructure**: Git synchronization working perfectly across all systems
+## Architectural Problems
 
-## Recommendations
+### **Component Coupling**
+- **Issue**: Ports depend on each other in undocumented ways
+- **Example**: bwm requires specific Xorg configuration, fonts require bbase
+- **Impact**: Installation order matters, failures cascade
 
-### Immediate Actions
-1. **Use `baux` command**: Always run `baux` instead of `tmux` to get BAUX configuration
-2. **Test mesh expectations**: BAUX-MESH is planned for future - use SSH for now
-3. **Verify workflow**: `baux` → custom tmux with BAUX features
+### **Configuration Drift**
+- **Issue**: Per-system configuration requirements
+- **Impact**: No "works everywhere" installer possible
+- **Root Cause**: Hardware diversity without abstraction layer
 
-### Development Process
-1. **Modify in ~/src/RoxieOS** - commit and push immediately
-2. **Install via FreeBSD ports**: `cd ports/[component] && doas ./install.sh`
-3. **Test on target systems** after installation
+### **Error Handling**
+- **Issue**: Silent failures, no rollback mechanisms
+- **Impact**: Partially broken systems appear working
+- **Fix Required**: Comprehensive error checking and recovery
 
-### Future Development
-1. **BAUX-MESH implementation** as documented in Phase 3
-2. **Enhanced user guidance** for proper `baux` usage
-3. **Mesh infrastructure** deployment when ready
+## Roadmap Impact
+
+### **Live USB Goal Compromised**
+- **Current State**: Requires 50+ manual steps, multiple reboots
+- **Target**: "10 seconds to IDE"
+- **Gap**: 2-3 orders of magnitude from goal
+
+### **Maintainability Crisis**
+- **Issue**: Workarounds accumulate, creating technical debt
+- **Impact**: Each "fix" makes proper solution harder
+- **Solution Needed**: Clean architecture reset
+
+## Immediate Action Items
+
+### **High Priority**
+1. **Fix installer** to include all required components
+2. **Standardize Xorg configuration** across hardware
+3. **Implement proper error handling** in build scripts
+4. **Create hardware abstraction layer** for GPU/input detection
+
+### **Medium Priority**
+1. **Document all workarounds** (this document)
+2. **Create rollback mechanisms** for failed installs
+3. **Implement automated testing** for installations
+4. **Design proper development workflow**
+
+### **Long Term**
+1. **Architecture redesign** for maintainable installer
+2. **Hardware abstraction** for universal compatibility
+3. **Containerized development** environment
+4. **Automated deployment** pipeline
+
+## Success Criteria
+
+### **Installation Success**
+- ✅ Zero manual steps required
+- ✅ Works on all supported hardware
+- ✅ Proper error messages and recovery
+- ✅ Accessibility features automatic
+
+### **Development Success**
+- ✅ Single source of truth
+- ✅ Automated testing
+- ✅ Rollback capabilities
+- ✅ Cross-platform compatibility
 
 ## Conclusion
 
-The BAUX system is properly installed and functional on both FreeBSD systems. The reported "vanilla tmux" issue is likely due to running `tmux` directly instead of the `baux` command, which explicitly loads the custom BAUX configuration. BAUX-MESH is correctly not implemented as it's planned for future development phases.
+The current state demonstrates a working prototype but an unsustainable development approach. The accumulation of workarounds prevents achieving the "Live USB to IDE in 10 seconds" vision. A clean architectural reset is required to build a maintainable, deployable system.
 
-**All systems have synchronized git trees with complete documentation. No software bugs detected in installed components.**
-
----
-
-**Report Generated By**: opencode AI Assistant  
-**Test Environments**: Debian (.90) code analysis + FreeBSD (.101/.133) installed system testing  
-**Next Steps**: Use `baux` command for BAUX features, implement mesh in future phases
+**Status**: Prototype functional with extensive manual intervention required.
+**Next Step**: Architectural redesign for maintainable installer.</content>
+<filePath>BUG_REPORT.md
