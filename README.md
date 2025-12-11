@@ -2,9 +2,9 @@
 
 **Immortal sessions across devices. AI-powered development. Zero friction cloning.**
 
-*BAUX-MESH - a Distributed session resurrection via Tailscale + Headscale*
-*BAUX-MESH - the "ecosystem" result of tmux/nvim/tailscale/bash unifications*
-*BAUX-MESH - the power is controlable thanks to [KEYMAPS-GLOBAL.md](KEYMAPS-GLOBAL.md)*
+* *BAUX-MESH - a Distributed session resurrection via Tailscale + Headscale*
+* BAUX-MESH - the "ecosystem" result of tmux/nvim/tailscale/bash unifications*
+* BAUX-MESH - the power is controlable thanks to [KEYMAPS-GLOBAL.md](KEYMAPS-GLOBAL.md)*
 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
