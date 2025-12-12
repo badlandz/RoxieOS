@@ -1,0 +1,149 @@
+# baux_bot_shared/communication/mesh.py
+"""
+Mesh communication utilities for BAUX-BOT distributed AI ecosystem.
+"""
+
+import asyncio
+import aiohttp
+import json
+from typing import Dict, List, Optional, Any
+from ..config.settings import get_settings
+
+
+class BauxdClient:
+    """Client for communicating with bauxd service."""
+
+    def __init__(self):
+        self.settings = get_settings()
+        self.base_url = f"http://{self.settings.bauxd_host}:{self.settings.bauxd_port}"
+
+    async def health_check(self) -> bool:
+        """Check if bauxd service is healthy."""
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"{self.base_url}/health") as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return data.get("status") == "healthy"
+        except Exception:
+            pass
+        return False
+
+    async def get_sessions(self) -> List[Dict[str, Any]]:
+        """Get all sessions from bauxd registry."""
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"{self.base_url}/sessions") as response:
+                    if response.status == 200:
+                        return await response.json()
+        except Exception:
+            pass
+        return []
+
+    async def discover_ai_servers(self) -> List[Dict[str, Any]]:
+        """Discover AI servers in the mesh via bauxd."""
+        try:
+            sessions = await self.get_sessions()
+            # Filter for AI servers and validate structure
+            ai_servers = []
+            for session in sessions:
+                if isinstance(session, dict) and session.get("type") == "ai-server":
+                    # Validate required fields
+                    if all(key in session for key in ["name", "node", "capabilities"]):
+                        ai_servers.append(session)
+            return ai_servers
+        except Exception as e:
+            self.settings.debug_mode and print(f"AI server discovery error: {e}")
+            return []
+
+    async def register_service(self, service_type: str, metadata: Dict[str, Any]) -> bool:
+        """Register this service with bauxd (future extension)."""
+        # TODO: Implement when bauxd API supports service registration
+        # For now, services are registered via external means
+        return True
+
+    async def get_service_status(self, service_name: str) -> Optional[Dict[str, Any]]:
+        """Get detailed status for a specific service."""
+        try:
+            sessions = await self.get_sessions()
+            for session in sessions:
+                if isinstance(session, dict) and session.get("name") == service_name:
+                    return session
+        except Exception:
+            pass
+        return None
+
+
+class MeshCoordinator:
+    """Coordinates distributed operations across BAUX mesh."""
+
+    def __init__(self):
+        self.bauxd = BauxdClient()
+        self.settings = get_settings()
+
+    async def discover_services(self, service_type: str) -> List[Dict[str, Any]]:
+        """Discover services of a specific type in the mesh."""
+        if service_type == "ai-server":
+            return await self.bauxd.discover_ai_servers()
+        elif service_type == "ai-router":
+            # Routers would be registered differently
+            return []  # TODO: Implement router discovery
+        elif service_type == "baux-node":
+            # All BAUX nodes
+            sessions = await self.bauxd.get_sessions()
+            return [s for s in sessions if isinstance(s, dict) and "node" in s]
+        return []
+
+    async def find_optimal_server(self, requirements: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Find the best AI server for given requirements using intelligent selection."""
+        servers = await self.discover_services("ai-server")
+
+        if not servers:
+            return None
+
+        # Enhanced selection logic
+        scored_servers = []
+        for server in servers:
+            score = 0
+
+            # Prefer servers with matching capabilities
+            required_caps = requirements.get("capabilities", [])
+            server_caps = server.get("capabilities", [])
+            if any(cap in server_caps for cap in required_caps):
+                score += 10
+
+            # Prefer lower load servers
+            load = server.get("load", 0)
+            score += max(0, 10 - load)
+
+            # Prefer servers with better response times
+            latency = server.get("avg_latency", 1000)
+            score += max(0, 10 - (latency // 100))
+
+            scored_servers.append((score, server))
+
+        # Return highest scoring server
+        if scored_servers:
+            scored_servers.sort(key=lambda x: x[0], reverse=True)
+            return scored_servers[0][1]
+
+        return None
+
+    async def route_request(self, request_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Route a request to the optimal server with load balancing."""
+        server = await self.find_optimal_server(request_data)
+
+        if server:
+            return {
+                "server": server,
+                "routed": True,
+                "timestamp": __import__("time").time(),  # Add proper timestamp
+                "request": request_data
+            }
+
+        return None
+
+    async def update_server_load(self, server_name: str, load_delta: int) -> bool:
+        """Update load information for a server (for future load balancing)."""
+        # TODO: Implement when bauxd supports load reporting
+        return True
