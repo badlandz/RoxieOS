@@ -1,0 +1,92 @@
+#!/usr/local/bin/bash
+# bauxd - BAUX daemon service
+
+# Configuration
+PORT=${BAUXD_PORT:-9999}
+
+# HTTP server using Python
+start_http_server() {
+    echo "bauxd HTTP server starting on port $PORT..."
+    
+    # Create temporary Python script
+    printf 'import http.server
+import socketserver
+import json
+import os
+
+class BauxdHandler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Content-Type", "application/json")
+        
+        if self.path == "/health":
+            response = {"status": "healthy", "service": "bauxd", "version": "1.0"}
+        elif self.path == "/sessions":
+            sessions = []
+            registry_dir = "/var/db/baux"
+            if os.path.exists(registry_dir):
+                for filename in os.listdir(registry_dir):
+                    if filename.startswith("session_") and filename.endswith(".json"):
+                        filepath = os.path.join(registry_dir, filename)
+                        try:
+                            with open(filepath, "r") as f:
+                                session_data = json.load(f)
+                                sessions.append(session_data)
+                        except:
+                            pass
+            response = sessions
+        elif self.path == "/":
+            response = {"service": "bauxd", "version": "1.0", "endpoints": ["/health", "/sessions"]}
+        else:
+            self.send_response(404)
+            response = {"error": "endpoint not found"}
+        
+        response_json = json.dumps(response)
+        self.send_header("Content-Length", len(response_json))
+        self.end_headers()
+        self.wfile.write(response_json.encode())
+
+with socketserver.TCPServer(("", %d), BauxdHandler) as httpd:
+    print(f"Server running on port %d")
+    httpd.serve_forever()
+' "$PORT" "$PORT" > /tmp/bauxd_server.py
+    
+    python3 /tmp/bauxd_server.py
+}
+
+# CLI commands
+case "$1" in
+    "test")
+        echo "bauxd test: working"
+        ;;
+    "status")
+        echo "bauxd status: ready (port $PORT)"
+        ;;
+    "start")
+        start_http_server
+        ;;
+    "stop")
+        echo "bauxd stop: send SIGTERM to running process"
+        ;;
+    "sessions")
+        # Return sessions from registry
+        echo "["
+        first=true
+        for file in /var/db/baux/session_*.json; do
+            if [[ -f "$file" ]]; then
+                if [[ "$first" == true ]]; then
+                    first=false
+                else
+                    echo ","
+                fi
+                cat "$file"
+            fi
+        done
+        echo "]"
+        ;;
+    *)
+        echo "Usage: bauxd {start|stop|status|test,sessions}"
+        exit 1
+        ;;
+esac

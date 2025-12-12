@@ -53,12 +53,11 @@ SQL_EOF
     echo "bauxd database initialized at $DB_PATH"
 }
 
-# HTTP server using Python
+# HTTP server using Python with SQLite support
 start_http_server() {
     echo "bauxd HTTP server v2.0 starting on port $PORT..."
     
-    # Create temporary Python script with variables substituted
-    cat > /tmp/bauxd_server.py << PYTHON_EOF
+    python3 << PYTHON_EOF
 import http.server
 import socketserver
 import json
@@ -69,7 +68,6 @@ import time
 from datetime import datetime
 
 DB_PATH = "$DB_PATH"
-PORT = $PORT
 
 def get_db_connection():
     return sqlite3.connect(DB_PATH)
@@ -85,14 +83,14 @@ def get_hardware_stats():
         network_io = (net_after.bytes_sent - net_before.bytes_sent + 
                      net_after.bytes_recv - net_before.bytes_recv) / 0.1
         return {
-            cpu_percent: cpu_percent,
-            memory_percent: memory.percent,
-            disk_usage: disk.percent,
-            network_io: network_io,
-            timestamp: datetime.now().isoformat()
+            'cpu_percent': cpu_percent,
+            'memory_percent': memory.percent,
+            'disk_usage': disk.percent,
+            'network_io': network_io,
+            'timestamp': datetime.now().isoformat()
         }
     except Exception as e:
-        return {error: str(e)}
+        return {'error': str(e)}
 
 class BauxdHandler(http.server.BaseHTTPRequestHandler):
     def send_json_response(self, data, status=200):
@@ -151,46 +149,11 @@ class BauxdHandler(http.server.BaseHTTPRequestHandler):
         except Exception as e:
             self.send_json_response({"error": str(e)}, 500)
 
-    def do_POST(self):
-        try:
-            content_length = int(self.headers["Content-Length"])
-            post_data = self.rfile.read(content_length)
-            data = json.loads(post_data.decode())
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            
-            if self.path == "/ai/services":
-                cursor.execute("""
-                    INSERT OR REPLACE INTO ai_services 
-                    (name, node, type, capabilities, status, load_factor, last_seen) 
-                    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-                """, (
-                    data.get("name"),
-                    data.get("node", os.uname().nodename),
-                    data.get("type"),
-                    json.dumps(data.get("capabilities", [])),
-                    data.get("status", "active"),
-                    data.get("load_factor", 0.0)
-                ))
-                conn.commit()
-                response = {"status": "AI service registered", "id": cursor.lastrowid}
-            
-            else:
-                response = {"error": "endpoint not found"}
-                
-            conn.close()
-            self.send_json_response(response)
-            
-        except Exception as e:
-            self.send_json_response({"error": str(e)}, 500)
-
 if __name__ == "__main__":
-    with socketserver.TCPServer(("", PORT), BauxdHandler) as httpd:
-        print(f"bauxd v2.0 server running on port {PORT}")
+    with socketserver.TCPServer(("", $PORT), BauxdHandler) as httpd:
+        print(f"bauxd v2.0 server running on port $PORT")
         httpd.serve_forever()
 PYTHON_EOF
-    
-    python3 /tmp/bauxd_server.py
 }
 
 # CLI commands
