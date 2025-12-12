@@ -1,6 +1,6 @@
 # $FreeBSD$
 #
-# baux-bot - BAUXBSD AI assistant
+# baux-bot - BAUX AI assistant
 
 PORTNAME=	baux-bot
 PORTVERSION=	0.1.0
@@ -8,7 +8,7 @@ CATEGORIES=	misc
 MASTER_SITES=	# No distfiles needed
 
 MAINTAINER=	baux@roxieos.org
-COMMENT=	BAUXBSD AI assistant with Ollama integration
+COMMENT=	BAUX AI assistant with Ollama integration
 
 LICENSE=	BSD2CLAUSE
 

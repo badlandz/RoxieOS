@@ -1,4 +1,4 @@
-# baux-bot - BAUXBSD AI Assistant
+# baux-bot - BAUX AI Assistant
 
 ## Installation
 
@@ -57,7 +57,7 @@ Starts an interactive chat session with full RoxieOS codebase context.
 - **Real-time monitoring**: Automatically rebuilds knowledge base when repo changes (lazy loading for speed)
 - **FreeBSD optimized**: Uses FreeBSD-compatible commands and paths
 - **Privacy focused**: Local Ollama models, no cloud dependencies
-- **Development focused**: Specialized prompts for BAUXBSD/FreeBSD development
+- **Development focused**: Specialized prompts for BAUX/FreeBSD development
 
 ## Troubleshooting
 
@@ -88,4 +88,4 @@ service ollama status           # Check status
 - **RAG System**: Builds context from git status + 50 most recent source files
 - **Model Selection**: Automatically chooses best available model
 - **Memory**: Logs all conversations for continuity
-- **Integration**: Designed for tmux-based BAUXBSD workflow
+- **Integration**: Designed for tmux-based BAUX workflow
