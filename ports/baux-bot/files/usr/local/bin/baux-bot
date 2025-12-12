@@ -1,53 +1,30 @@
 #!/usr/local/bin/bash
-# baux-bot.sh v6.3 — FreeBSD workstation edition
-# Adapted for ~/src/RoxieOS/ development workflow
-# Dec 07 2025
+# baux-bot — BAUX-BOT v2.0 client launcher
+# Launches the Python-based BAUX-BOT client with proper environment
 
 set -euo pipefail
 
-# Source user environment
-if [[ -f ~/.bashrc ]]; then
-    source ~/.bashrc
-fi
-# Source mesh keys
-if [[ -f ~/mnt/drop-baux/keys/api_keys.sh ]]; then
-    source ~/mnt/drop-baux/keys/api_keys.sh
+# BAUX environment setup
+export BAUX_HOME="/usr/local/share/baux"
+export PYTHONPATH="$BAUX_HOME/baux-bot/v2-shared:$PYTHONPATH"
+
+# Find the client script
+CLIENT_SCRIPT="$BAUX_HOME/baux-bot/v2-client/baux_bot_client/main.py"
+
+if [ ! -f "$CLIENT_SCRIPT" ]; then
+    echo "ERROR: BAUX-BOT client not found at $CLIENT_SCRIPT"
+    echo "BAUX-BOT may not be properly installed."
+    exit 1
 fi
 
-# Force CPU mode for compatibility (disable Vulkan GPU)
-export OLLAMA_GPU_LAYERS=0
-
-# Handle command-line options
-if [[ $# -gt 0 ]]; then
-    case "$1" in
-        --autotune-ollama)
-            echo "BAUX BOT Ollama Auto-Tune starting..."
-            echo "This will test available models and optimize for your hardware."
-            echo "Results will be saved to ~/.baux-bot/tune.log"
-            exec "$0" --internal-autotune
-            ;;
-        --help|-h)
-            echo "BAUX BOT v6.4 — AI assistant for RoxieOS development"
-            echo "Usage: baux-bot [command]"
-            echo ""
-            echo "Commands:"
-            echo "  (no args)        Start interactive chat"
-            echo "  --autotune-ollama  Benchmark and optimize models"
-            echo "  --help           Show this help"
-            echo ""
-            echo "Interactive commands:"
-            echo "  'exit' to quit"
-            echo "  'status' for repo status and AI usage stats"
-            echo "  'read FILE' to force file into RAG"
-            echo "  'develop TASK' for development advice"
-            echo "  'code REQUEST' for code generation/review"
-             echo "  'switch ollama/grok/gemini/claude/aider/mods/fabric/sgpt/claude-code/copilot-cli/opencode/ascii-art/cheerleader/keystroke-guru/huggingface/replicate/together' to change backend (auto-routing available)"
-            echo "  'mesh QUERY' to route to BAUX-MESH (.101)"
-            echo "  'search TERM' to search RAG for information"
-            echo "  'teach TOPIC' for interactive learning mode"
-            exit 0
-            ;;
-    esac
+# Set up Poetry environment if available
+if command -v poetry >/dev/null 2>&1; then
+    cd "$BAUX_HOME/baux-bot/v2-client"
+    exec poetry run python "$CLIENT_SCRIPT" "$@"
+else
+    # Fallback to system python
+    exec python3 "$CLIENT_SCRIPT" "$@"
+fi
 fi
 
 if [[ $# -gt 0 && "$1" == "--internal-autotune" ]]; then

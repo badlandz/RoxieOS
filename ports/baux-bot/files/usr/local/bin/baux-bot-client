@@ -1,0 +1,4 @@
+#!/usr/local/bin/bash
+# baux-bot-client — Direct launcher for BAUX-BOT v2.0 Python client
+
+exec /usr/local/share/baux/scripts/baux-bot "$@"
