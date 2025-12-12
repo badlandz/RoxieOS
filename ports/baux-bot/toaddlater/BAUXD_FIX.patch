@@ -1,0 +1,28 @@
+--- a/ports/bauxd/files/usr/local/bin/bauxd
++++ b/ports/bauxd/files/usr/local/bin/bauxd
+@@ -61,7 +61,7 @@ start_http_server() {
+     cat > /tmp/bauxd_server.py << PYTHON_EOF
+ import http.server
+ import socketserver
+-import json
++import json
+ import sqlite3
+ import os
+ import psutil
+@@ -81,7 +81,7 @@ def get_hardware_stats():
+         disk = psutil.disk_usage('/')
+         net_before = psutil.net_io_counters()
+         time.sleep(0.1)
+         net_after = psutil.net_io_counters()
+-        network_io = (net_after.bytes_sent - net_before.bytes_sent + 
++        network_io = (net_after.bytes_sent - net_before.bytes_sent +
+                       net_after.bytes_recv - net_before.bytes_recv) / 0.1
+         return {
+             cpu_percent: cpu_percent,
+@@ -193,6 +193,7 @@ PYTHON_EOF
+     
+     python3 /tmp/bauxd_server.py
++    python3 /tmp/bauxd_server.py
+ }
+ 
+ # CLI commands

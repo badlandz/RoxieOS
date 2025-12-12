@@ -1,5 +1,5 @@
 === ROXANNE CYBERDECK PROJECT CONTEXT ===
-Generated: Fri Dec 12 04:01:44 MST 2025
+Generated: Fri Dec 12 04:46:52 MST 2025
 Project: FreeBSD-based portable development environment
 Architecture: bbase (foundation) + baux (session manager) + bwm (window manager)
 Goal: USB boot -> root shell -> instant productivity with tmux + neovim + AI
@@ -430,6 +430,38 @@ try:
 except Exception as e:
     print("ERROR: " + str(e))
 ---
+--- CONSOLIDATION_INSTRUCTIONS.md (readonly) ---
+# BAUX-BOT Evolution: Integration with bauxd
+
+## End Game: Become bauxd Client Service
+
+According to BAUX_CONSOLIDATION_PLAN.md, BAUX-BOT must evolve from standalone service to integrated bauxd client. This eliminates duplicate service discovery and enables hardware-aware AI routing.
+
+## Current State vs Target State
+
+### Current BAUX-BOT (bash-based)
+- Custom service discovery logic
+- Local Ollama + GROK API integration  
+- File-based session tracking
+- No hardware awareness
+- Standalone operation
+
+### Target BAUX-BOT (bauxd-integrated)
+- Uses bauxd for service discovery (/ai/services endpoint)
+- Registers with bauxd as AI service
+- Hardware-aware query routing via bauxd
+- Centralized session management
+- Mesh-coordinated operation
+
+## Evolution Path
+
+### Phase 1: Add bauxd Client (Current Focus)
+1. Implement HTTP client for bauxd API calls
+2. Add service registration with bauxd
+3. Replace local discovery with bauxd queries
+4. Add hardware-aware routing logic
+
+---
 --- SPECIFICATION.md (readonly) ---
 # BAUX-BOT v2.0: Complete Specification & Roadmap
 
@@ -462,6 +494,12 @@ BAUX-BOT v2.0 represents a complete architectural rebuild of the BAUX AI ecosyst
 
 ### ✅ Enhanced Concepts (From Debian Experiments)
 ---
+--- OPTIMIZATION_TODO.md (readonly) ---
+PRIORITY 1: Implement context size limits - add MAX_CONTEXT_SIZE=8000 and size tracking
+PRIORITY 2: Fix file scanning inefficiency - use find with printf and sort instead of head after scan
+PRIORITY 3: Add incremental context updates - only rebuild when files change
+PRIORITY 4: Implement retry logic with exponential backoff for API calls
+---
 --- API-SETUP.md (readonly) ---
 # BAUX Bot API Setup Guide
 
@@ -493,6 +531,34 @@ BAUX Bot supports **16+ AI backends** for different types of queries:
 
 ### ✅ Fully Implemented & Working
 - **Ollama**: Local models (always available)
+---
+--- BAUXD_FIX_STEPS.md (readonly) ---
+# BAUX-BOT: Apply This Fix Yourself
+
+## Problem
+bauxd fails with: disk = psutil.disk_usage(/) - missing quotes
+
+## Solution Steps (Apply These Yourself)
+
+1. Read the file: ports/bauxd/files/usr/local/bin/bauxd
+2. Find line 81: disk = psutil.disk_usage('/')
+3. Change it to: disk = psutil.disk_usage(/)
+4. Save the file
+
+## Test
+cd ports/bauxd/files/usr/local/bin
+rm /tmp/bauxd_server.py
+./bauxd start
+
+Should show: bauxd HTTP server v2.0 starting on port 9999...
+
+## Verify
+curl -X POST http://localhost:9999/ai/services -H Content-Type: application/json -d {}
+
+Should return: {status: AI service registered, id: 1}
+
+## Why
+This enables BAUX-BOT to register with bauxd and participate in mesh consolidation.
 ---
 --- README.md (readonly) - COMPRESSED DIFF ---
 SOURCE: /home/badlandz/src/RoxieOS/ports/baux-bot/toaddlater/README.md
@@ -840,6 +906,38 @@ FILES DIFFER - unified diff above
 - **Distributed State**: Complement bauxd with additional registry features
 
 ---
+--- OPTIMIZATION_INSTRUCTIONS.md (readonly) ---
+# BAUX-BOT Performance Optimization Instructions
+
+## Critical Performance Issues Identified
+
+### 1. Context Size Management (HIGH PRIORITY)
+- Problem: RAG context is 1409 lines (~48KB) rebuilt on every query
+- Impact: Massive context sent to AI models, causing timeouts and high costs
+- Solution: Implement 8000 token limit with incremental updates
+
+### 2. File Scanning Inefficiency (HIGH PRIORITY)  
+- Problem: Scans entire directories then limits to 20 files
+- Impact: Unnecessary I/O operations on every context rebuild
+- Solution: Limit scanning before processing, use find with head
+
+### 3. No Incremental Context Updates (MEDIUM PRIORITY)
+- Problem: Full context rebuild on every query
+- Impact: Slow response times, unnecessary work
+- Solution: Only rebuild when files actually change
+
+### 4. Missing Retry Logic (MEDIUM PRIORITY)
+- Problem: Single API attempts with fixed timeouts
+- Impact: Failures on temporary network issues
+- Solution: Exponential backoff retry mechanism
+
+## Implementation Priority
+
+1. Phase 1: Context size limits + efficient scanning
+2. Phase 2: Incremental updates + retry logic
+
+## Success Criteria
+---
 --- archive/BUG-REPORT.md (readonly) ---
 # BAUX-BOT Bug Report: RAG Auto-Summary Trigger Bug
 
@@ -1160,6 +1258,38 @@ BAUX-BOT represents a scattered but brilliant AI ecosystem that needs consolidat
 **Immediate Priority**: Enable baux-bot to read/write entire directories and multiple files simultaneously, replacing the current OpenCode chat interface. This will accelerate the entire development cycle by providing AI assistance directly within the BAUX ecosystem.
 
 ---
+--- OPTIMIZATION_CODE_EXAMPLES.md (readonly) ---
+# BAUX-BOT Optimization Code Examples
+
+## Context Size Management Implementation
+
+Add these variables to the top of build_context():
+MAX_CONTEXT_SIZE=8000  # tokens (~32KB)
+current_size=0
+
+Add size tracking in scan_directory_for_context():
+# Before adding content, check size
+content_size=1
+if (( current_size + content_size > MAX_CONTEXT_SIZE )); then
+    echo Context size limit reached, truncating... >> 
+    break
+fi
+current_size=0
+
+## Efficient File Scanning
+
+Replace this inefficient code:
+find  -name  -type f -print0 2>/dev/null | head -20
+
+With this efficient version:
+find  -name  -type f -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -20 | cut -d' ' -f2-
+
+## Incremental Context Updates
+
+Add this check before build_context():
+# Only rebuild if files changed
+if [[ -f /context.txt ]] && [[ /context.txt -nt  ]]; then
+---
 --- IMPLEMENTATION_STATUS.md (readonly) ---
 # BAUX-BOT v2.0 Implementation Status Report
 
@@ -1223,6 +1353,24 @@ BAUX-BOT represents a scattered but brilliant AI ecosystem that needs consolidat
 - [ ] Concurrent operation testing
 
 ### 4. Integration Testing
+---
+--- BAUXD_FIX_INSTRUCTIONS.md (readonly) ---
+# BAUX-BOT: Fix bauxd Syntax Error
+
+## Problem
+bauxd fails with: disk = psutil.disk_usage(/) - missing quotes
+
+## Solution  
+In ports/bauxd/files/usr/local/bin/bauxd line 81:
+CHANGE: disk = psutil.disk_usage('/')
+TO: disk = psutil.disk_usage("/")
+
+## Test
+./bauxd start
+curl -X POST http://localhost:9999/ai/services -d "{}"
+
+## Why
+POST endpoints needed for BAUX-BOT registration with bauxd
 ---
 --- BUG-REPORT.md (readonly) ---
 # BAUX-BOT Bug Report: RAG Auto-Summary Trigger Bug
@@ -1555,6 +1703,35 @@ find_baux_root() {
 --- test_routing.sh (build) ---
 #!/bin/bash
 ---
+--- apply_improvement.sh (build) ---
+#!/usr/local/bin/bash
+# Auto-apply improvement script
+
+set -euo pipefail
+
+# Set auto-apply mode
+export AUTO_APPLY=true
+
+# Run the improvement
+echo improve add AUTO_APPLY environment variable support to improve_self function - check if AUTO_APPLY=true then automatically apply changes without asking for confirmation, for safe self-improvement loops | ./baux-bot-hybrid.sh
+---
+--- test_bauxd.sh (build) ---
+#!/usr/local/bin/bash
+# Test bauxd integration functions
+
+source ./baux-bot-hybrid.sh
+
+echo Testing bauxd functions...
+echo 1. Testing discover_ai_services:
+discover_ai_services
+
+echo
+echo 2. Testing register_with_bauxd:
+register_with_bauxd
+
+echo
+echo Test complete.
+---
 --- baux-bot-hybrid-new.sh (build) ---
 ---
 --- debug-rag.sh (build) ---
@@ -1683,6 +1860,23 @@ RESPONSE=$(curl -s https://api.x.ai/v1/chat/completions \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
 ---
+--- direct_test.sh (build) ---
+#!/usr/local/bin/bash
+# Direct test of bauxd functions
+
+# Define functions directly
+bauxd_get() {
+    local endpoint=
+    curl -s http://localhost:9999 -H Content-Type: application/json 2>/dev/null || echo '{error: bauxd connection failed}'
+}
+
+bauxd_post() {
+    local endpoint=
+    local data=
+    curl -s -X POST http://localhost:9999          -H Content-Type: application/json          -d  2>/dev/null || echo '{error: bauxd connection failed}'
+}
+
+---
 --- debug-api.sh (build) ---
 #!/bin/bash
 # Debug the API call
@@ -1700,11 +1894,38 @@ SYSTEM_CONTENT="You are Grok helping build Roxanne Cyberdeck OS. You have access
 
 PROJECT CONTEXT:
 ---
+--- self_improvement_loop_simple.sh (build) ---
+#!/usr/local/bin/bash
+# Simple self-improvement loop test
+
+set -euo pipefail
+
+echo 🚀 Starting Simple Self-Improvement Test
+echo ========================================
+
+# Test 1: Performance monitoring
+echo 🎯 Test 1: Performance monitoring
+export AUTO_APPLY=true
+echo improve add performance monitoring to track response times and API call durations | timeout 120 ./baux-bot-hybrid.sh
+
+if [ 0 -eq 0 ]; then
+    echo ✅ Test 1 passed
+---
 --- test-ollama.sh (build) ---
 #!/bin/bash
 echo "Testing Ollama directly..."
 echo "Hello" | ollama run smollm2:135m --nowordwrap
 echo "Done"
+---
+--- test_bauxd_simple.sh (build) ---
+#!/usr/local/bin/bash
+# Simple test of bauxd functions
+
+# Source only the functions, not main()
+source ./baux-bot-hybrid.sh
+
+# Skip main execution
+exit 0
 ---
 --- grok-chat-simple.sh (build) ---
 #!/bin/bash
@@ -1824,6 +2045,23 @@ query_ai() {
 
 echo "Commands: 'exit' to quit"
 echo
+---
+--- self_improvement_loop.sh (build) ---
+#!/usr/local/bin/bash
+# Safe self-improvement loop for BAUX-BOT
+
+set -euo pipefail
+
+MAX_ITERATIONS=5
+iteration=1
+
+echo 🚀 Starting BAUX-BOT Self-Improvement Loop
+echo ==========================================
+echo Max iterations: 
+echo AUTO_APPLY: enabled
+echo
+
+while [  -le  ]; do
 ---
 --- grok-simple.sh (build) ---
 #!/bin/bash
@@ -2179,6 +2417,23 @@ One hotkey → Grok-3 pane that already knows your entire project and is explici
 
 ## Usage
 ---
+--- toaddlater/CONSOLIDATION_INSTRUCTIONS.md (build) ---
+# BAUX-BOT Evolution: Integration with bauxd
+
+## End Game: Become bauxd Client Service
+
+According to BAUX_CONSOLIDATION_PLAN.md, BAUX-BOT must evolve from standalone service to integrated bauxd client. This eliminates duplicate service discovery and enables hardware-aware AI routing.
+
+## Current State vs Target State
+
+### Current BAUX-BOT (bash-based)
+- Custom service discovery logic
+- Local Ollama + GROK API integration  
+- File-based session tracking
+- No hardware awareness
+- Standalone operation
+
+---
 --- toaddlater/SPECIFICATION.md (build) ---
 # BAUX-BOT v2.0: Complete Specification & Roadmap
 
@@ -2196,6 +2451,12 @@ BAUX-BOT v2.0 represents a complete architectural rebuild of the BAUX AI ecosyst
 - **Contextual Intelligence**: Deep understanding of BAUX patterns, FreeBSD, tmux, neovim
 - **Workflow Integration**: Seamless embedding in development sessions
 ---
+--- toaddlater/OPTIMIZATION_TODO.md (build) ---
+PRIORITY 1: Implement context size limits - add MAX_CONTEXT_SIZE=8000 and size tracking
+PRIORITY 2: Fix file scanning inefficiency - use find with printf and sort instead of head after scan
+PRIORITY 3: Add incremental context updates - only rebuild when files change
+PRIORITY 4: Implement retry logic with exponential backoff for API calls
+---
 --- toaddlater/API-SETUP.md (build) ---
 # BAUX Bot API Setup Guide
 
@@ -2212,6 +2473,23 @@ BAUX Bot supports **16+ AI backends** for different types of queries:
 - **HuggingFace**: Free creative text generation
 - **ASCII Art**: Fun motivational text art
 - **Cheerleader**: Coding motivation and encouragement
+---
+--- toaddlater/BAUXD_FIX_STEPS.md (build) ---
+# BAUX-BOT: Apply This Fix Yourself
+
+## Problem
+bauxd fails with: disk = psutil.disk_usage(/) - missing quotes
+
+## Solution Steps (Apply These Yourself)
+
+1. Read the file: ports/bauxd/files/usr/local/bin/bauxd
+2. Find line 81: disk = psutil.disk_usage('/')
+3. Change it to: disk = psutil.disk_usage(/)
+4. Save the file
+
+## Test
+cd ports/bauxd/files/usr/local/bin
+rm /tmp/bauxd_server.py
 ---
 --- toaddlater/README.md (build) ---
 # BAUX-BOT v2.0
@@ -2246,6 +2524,23 @@ BAUX-MESH AI Ecosystem
 **BAUX-BOT v2.0 Usage**:
 - Router tier uses bauxd for discovering AI servers across mesh
 - Client tier uses bauxd for finding available routers
+---
+--- toaddlater/OPTIMIZATION_INSTRUCTIONS.md (build) ---
+# BAUX-BOT Performance Optimization Instructions
+
+## Critical Performance Issues Identified
+
+### 1. Context Size Management (HIGH PRIORITY)
+- Problem: RAG context is 1409 lines (~48KB) rebuilt on every query
+- Impact: Massive context sent to AI models, causing timeouts and high costs
+- Solution: Implement 8000 token limit with incremental updates
+
+### 2. File Scanning Inefficiency (HIGH PRIORITY)  
+- Problem: Scans entire directories then limits to 20 files
+- Impact: Unnecessary I/O operations on every context rebuild
+- Solution: Limit scanning before processing, use find with head
+
+### 3. No Incremental Context Updates (MEDIUM PRIORITY)
 ---
 --- toaddlater/archive/BUG-REPORT.md (build) ---
 # BAUX-BOT Bug Report: RAG Auto-Summary Trigger Bug
@@ -2417,6 +2712,23 @@ BAUX-BOT represents a scattered but brilliant AI ecosystem that needs consolidat
 - **Session Memory**: Conversation continuity across interactions
 - **Mesh Routing**: Cross-node query distribution via SSH
 ---
+--- toaddlater/OPTIMIZATION_CODE_EXAMPLES.md (build) ---
+# BAUX-BOT Optimization Code Examples
+
+## Context Size Management Implementation
+
+Add these variables to the top of build_context():
+MAX_CONTEXT_SIZE=8000  # tokens (~32KB)
+current_size=0
+
+Add size tracking in scan_directory_for_context():
+# Before adding content, check size
+content_size=1
+if (( current_size + content_size > MAX_CONTEXT_SIZE )); then
+    echo Context size limit reached, truncating... >> 
+    break
+fi
+---
 --- toaddlater/IMPLEMENTATION_STATUS.md (build) ---
 # BAUX-BOT v2.0 Implementation Status Report
 
@@ -2450,6 +2762,23 @@ BAUX-BOT represents a scattered but brilliant AI ecosystem that needs consolidat
 - [ ] FreeBSD laptop (target deployment)
 - [ ] Debian compatibility (secondary platform)
 - [ ] Resource-constrained device simulation
+---
+--- toaddlater/BAUXD_FIX_INSTRUCTIONS.md (build) ---
+# BAUX-BOT: Fix bauxd Syntax Error
+
+## Problem
+bauxd fails with: disk = psutil.disk_usage(/) - missing quotes
+
+## Solution  
+In ports/bauxd/files/usr/local/bin/bauxd line 81:
+CHANGE: disk = psutil.disk_usage('/')
+TO: disk = psutil.disk_usage("/")
+
+## Test
+./bauxd start
+curl -X POST http://localhost:9999/ai/services -d "{}"
+
+## Why
 ---
 --- toaddlater/BUG-REPORT.md (build) ---
 # BAUX-BOT Bug Report: RAG Auto-Summary Trigger Bug
