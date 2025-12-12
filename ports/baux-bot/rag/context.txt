@@ -1,5 +1,5 @@
 === ROXANNE CYBERDECK PROJECT CONTEXT ===
-Generated: Fri Dec 12 15:38:11 MST 2025
+Generated: Fri Dec 12 15:41:15 MST 2025
 Project: FreeBSD-based portable development environment
 Architecture: bbase (foundation) + baux (session manager) + bwm (window manager)
 Goal: USB boot -> root shell -> instant productivity with tmux + neovim + AI
