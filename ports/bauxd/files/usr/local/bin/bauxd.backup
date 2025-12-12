@@ -1,0 +1,229 @@
+#!/usr/local/bin/bash
+# bauxd - BAUX daemon service (Consolidated v2.0)
+# Unified mesh coordination with SQLite backend and hardware monitoring
+
+# Configuration
+PORT=${BAUXD_PORT:-9999}
+DB_PATH=${BAUXD_DB_PATH:-/var/db/baux/bauxd.db}
+
+# Initialize SQLite database
+init_database() {
+    mkdir -p "$(dirname "$DB_PATH")"
+    
+    sqlite3 "$DB_PATH" << SQL_EOF
+-- BAUX Consolidated Database Schema
+
+CREATE TABLE IF NOT EXISTS sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    node TEXT NOT NULL,
+    pid INTEGER,
+    status TEXT DEFAULT 'active',
+    hardware_requirements TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS hardware_stats (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    node TEXT NOT NULL,
+    cpu_percent REAL,
+    memory_percent REAL,
+    disk_usage REAL,
+    network_io REAL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS ai_services (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    node TEXT NOT NULL,
+    type TEXT NOT NULL,
+    capabilities TEXT,
+    status TEXT DEFAULT 'active',
+    load_factor REAL DEFAULT 0.0,
+    last_seen DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_sessions_name ON sessions(name);
+CREATE INDEX IF NOT EXISTS idx_hardware_node ON hardware_stats(node);
+CREATE INDEX IF NOT EXISTS idx_ai_services_type ON ai_services(type);
+SQL_EOF
+
+    echo "bauxd database initialized at $DB_PATH"
+}
+
+# HTTP server using Python
+start_http_server() {
+    echo "bauxd HTTP server v2.0 starting on port $PORT..."
+    
+    # Create temporary Python script with variables substituted
+    cat > /tmp/bauxd_server.py << PYTHON_EOF
+import http.server
+import socketserver
+import json
+import sqlite3
+import os
+import psutil
+import time
+from datetime import datetime
+
+DB_PATH = "$DB_PATH"
+PORT = $PORT
+
+def get_db_connection():
+    return sqlite3.connect(DB_PATH)
+
+def get_hardware_stats():
+    try:
+        cpu_percent = psutil.cpu_percent(interval=1)
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage(/)
+        net_before = psutil.net_io_counters()
+        time.sleep(0.1)
+        net_after = psutil.net_io_counters()
+        network_io = (net_after.bytes_sent - net_before.bytes_sent + 
+                     net_after.bytes_recv - net_before.bytes_recv) / 0.1
+        return {
+            cpu_percent: cpu_percent,
+            memory_percent: memory.percent,
+            disk_usage: disk.percent,
+            network_io: network_io,
+            timestamp: datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {error: str(e)}
+
+class BauxdHandler(http.server.BaseHTTPRequestHandler):
+    def send_json_response(self, data, status=200):
+        self.send_response(status)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Content-Type", "application/json")
+        response_json = json.dumps(data)
+        self.send_header("Content-Length", len(response_json))
+        self.end_headers()
+        self.wfile.write(response_json.encode())
+
+    def do_GET(self):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            if self.path == "/health":
+                hardware = get_hardware_stats()
+                response = {
+                    "status": "healthy",
+                    "service": "bauxd",
+                    "version": "2.0",
+                    "database": "connected" if os.path.exists(DB_PATH) else "missing",
+                    "hardware": hardware
+                }
+            elif self.path == "/sessions":
+                cursor.execute("SELECT name, node, pid, status, created_at FROM sessions WHERE status = 'active'")
+                rows = cursor.fetchall()
+                sessions = [{"name": row[0], "node": row[1], "pid": row[2], "status": row[3], "created_at": row[4]} for row in rows]
+                response = sessions
+            elif self.path == "/hardware":
+                hostname = os.uname().nodename
+                cursor.execute("SELECT cpu_percent, memory_percent, disk_usage, network_io, timestamp FROM hardware_stats WHERE node = ? ORDER BY timestamp DESC LIMIT 5", (hostname,))
+                rows = cursor.fetchall()
+                response = {
+                    "node": hostname,
+                    "current": get_hardware_stats(),
+                    "history": [{"cpu": row[0], "memory": row[1], "disk": row[2], "network": row[3], "timestamp": row[4]} for row in rows]
+                }
+            elif self.path == "/ai/services":
+                cursor.execute("SELECT name, node, type, capabilities, status, load_factor FROM ai_services WHERE status = 'active'")
+                rows = cursor.fetchall()
+                services = [{"name": row[0], "node": row[1], "type": row[2], "capabilities": json.loads(row[3]) if row[3] else [], "status": row[4], "load_factor": row[5]} for row in rows]
+                response = services
+            elif self.path == "/":
+                response = {
+                    "service": "bauxd", "version": "2.0",
+                    "endpoints": ["/health", "/sessions", "/hardware", "/ai/services"]
+                }
+            else:
+                response = {"error": "endpoint not found"}
+                
+            conn.close()
+            self.send_json_response(response)
+            
+        except Exception as e:
+            self.send_json_response({"error": str(e)}, 500)
+
+    def do_POST(self):
+        try:
+            content_length = int(self.headers["Content-Length"])
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode())
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            if self.path == "/ai/services":
+                cursor.execute("""
+                    INSERT OR REPLACE INTO ai_services 
+                    (name, node, type, capabilities, status, load_factor, last_seen) 
+                    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """, (
+                    data.get("name"),
+                    data.get("node", os.uname().nodename),
+                    data.get("type"),
+                    json.dumps(data.get("capabilities", [])),
+                    data.get("status", "active"),
+                    data.get("load_factor", 0.0)
+                ))
+                conn.commit()
+                response = {"status": "AI service registered", "id": cursor.lastrowid}
+            
+            else:
+                response = {"error": "endpoint not found"}
+                
+            conn.close()
+            self.send_json_response(response)
+            
+        except Exception as e:
+            self.send_json_response({"error": str(e)}, 500)
+
+if __name__ == "__main__":
+    with socketserver.TCPServer(("", PORT), BauxdHandler) as httpd:
+        print(f"bauxd v2.0 server running on port {PORT}")
+        httpd.serve_forever()
+PYTHON_EOF
+    
+    python3 /tmp/bauxd_server.py
+}
+
+# CLI commands
+case "$1" in
+    "init")
+        init_database
+        ;;
+    "test")
+        echo "bauxd v2.0 test: enhanced with SQLite backend and hardware monitoring"
+        ;;
+    "status")
+        echo "bauxd v2.0 status: ready (port $PORT, database: $DB_PATH)"
+        ;;
+    "start")
+        init_database
+        start_http_server
+        ;;
+    "stop")
+        echo "bauxd v2.0 stop: send SIGTERM to running process"
+        ;;
+    "sessions")
+        sqlite3 "$DB_PATH" "SELECT name || '|' || node || '|' || status FROM sessions WHERE status = 'active';" | column -t -s "|"
+        ;;
+    "hardware")
+        sqlite3 "$DB_PATH" "SELECT node, cpu_percent, memory_percent, disk_usage, timestamp FROM hardware_stats ORDER BY timestamp DESC LIMIT 3;" | column -t -s "|"
+        ;;
+    *)
+        echo "bauxd v2.0 - Consolidated BAUX Service"
+        echo "Usage: bauxd {init|start|stop|status|test|sessions|hardware}"
+        echo ""
+        echo "New features:"
+        echo "  init     - Initialize SQLite database"
+        echo "  hardware - Show hardware monitoring data"
+        exit 1
+        ;;
+esac

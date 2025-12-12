@@ -1,0 +1,19 @@
+smart_query() {
+    local question=
+    
+    # Self-improvement and integration tasks go to Claude
+    if [[  =~ (self.*improve|modify|integrate|v2|merge|architecture) ]]; then
+        echo 🚀 Using CLAUDE for self-improvement tasks...
+        query_claude 
+    # Complex questions go to GROK
+    elif [[  =~ (improve|debug|fix|optimize|design|complex|advanced) ]] || \
+         [[  =~ (code.*review|security|performance) ]] || \
+         [[ 0 -gt 100 ]]; then
+        echo 🤖 Using GROK for advanced reasoning...
+        query_grok 
+    else
+        # Simple questions use local Ollama
+        echo 🤖 Using local Ollama for fast response...
+        query_ollama 
+    fi
+}

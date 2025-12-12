@@ -1,28 +1,3 @@
-#!/usr/local/bin/bash
-# BAUX-BOT Hybrid - Ollama + GROK API for advanced reasoning
-
-set -euo pipefail
-
-# Configuration
-PROJECT_ROOT="/src/RoxieOS"
-RAG_DIR="./rag"
-MODEL="qwen2.5-coder:1.5b"
-GROK_API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
-# Load API keys if available
-if [[ -f ~/mnt/drop-baux/keys/api_keys.sh ]]; then
-    source ~/mnt/drop-baux/keys/api_keys.sh
-fi
-
-
-# Directory access control configuration
-# Format: directory_path:access_level:description
-DIRECTORY_CONFIG=(
-    "/home/badlandz/src/RoxieOS/ports/baux-bot/toaddlater:readonly:Original FreeBSD BAUX-BOT code (reference)"
-    "/home/badlandz/src/RoxieOS/ports/baux-bot:build:Enhanced BAUX-BOT (self-improvement target)"
-    "/tmp/baux-bot-build:build:Temporary build directory for testing"
-)
-
-mkdir -p "$RAG_DIR"
 
 # Directory access control functions
 get_directory_access() {
