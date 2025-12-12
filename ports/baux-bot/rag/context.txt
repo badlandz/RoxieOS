@@ -1,5 +1,5 @@
 === ROXANNE CYBERDECK PROJECT CONTEXT ===
-Generated: Fri Dec 12 15:23:58 MST 2025
+Generated: Fri Dec 12 15:38:11 MST 2025
 Project: FreeBSD-based portable development environment
 Architecture: bbase (foundation) + baux (session manager) + bwm (window manager)
 Goal: USB boot -> root shell -> instant productivity with tmux + neovim + AI
@@ -17,25 +17,8 @@ Directory: /tmp/baux-bot-build
 Access: build
 Description: Temporary build directory for testing
 
---- old-bot-stuff/README.md (build) ---
 === BAUX-BOT CURRENT CODE ===
 File: baux-bot-hybrid.sh (build directory)
-# Hi I'm BAUX BOT!
-
-I'm here to help keep BAUX fun and productive, try me out!
-
-Right now I'm just a script called baux-bot.sh in ~/src/baux/bot/ 
-But someday I'll be a fully integrated pain in the BAUX!
-
-Wed Nov 19 04:23:26 AM MST 2025
-Bot was written to use RAG and focus on README and ROADMAP
-Still a script, not made pane or window, waiting to load RAG and models
-
-Thoughts: Probably should be "openable" as mapped key for "bot" 
-what is the best workflow, alt-b for bot, alt-something, alt? 
-
-Where is my tmux now... I'm alt-hjkl for switching windows so:
----
 #!/usr/local/bin/bash
 # BAUX-BOT Hybrid - Ollama + GROK API for advanced reasoning
 
@@ -92,25 +75,7 @@ Path: /home/badlandz/src/RoxieOS/ports/baux-bot/toaddlater
 Access Level: readonly
 Description: Original FreeBSD BAUX-BOT code (reference)
 
---- grok/GROKSAID.md (build) ---
-YES.  
-We can get **90 % of the way there this weekend** — no exaggeration — and the remaining 10 % only needs one $8 cloud run later.
-
-Here’s exactly how your dream workflow looks in practice, starting **tomorrow night**:
-
-```
-tmux (BAUX session)
-┌──────────────┬──────────────┬──────────────┐
-│ vim          │ shell        │ GROK PANE    │
-│ /src/roxieos/baux/tmux.conf   │ ls /src…     │              │
-│ …editing…    │              │ > waiting…   │
-└──────────────┴──────────────┴──────────────┘
-```
-
-You hit **Ctrl-b X** (or Mod4+X, whatever you pick) → magic happens:
----
 --- install.sh (readonly) ---
---- grok/README.md (build) ---
 #!/usr/local/bin/bash
 # BAUX-BOT v2.0 Installation Script
 
@@ -139,57 +104,7 @@ doas cp ../baux/core/tmux/baux.conf /usr/local/share/tmux/baux.conf
 echo "BAUX-BOT v2.0 installation complete!"
 echo "Run 'baux-bot-client --help' to test"
 ---
-# baux-grok — Grok-3 inside your tmux, instantly
-
-One hotkey → Grok-3 pane that already knows your entire project and is explicitly instructed to make you stupid rich with minimal effort.
-
-## Why
-- Because `Mod4+g` → money printer is the most cyberdeck feature of 2025
-- Because RAG on the actual code you’re looking at beats 50 different browser tabs
-- Because you’re root anyway, might as well have a superintelligence on speed dial
-
-## Requirements
-- `grok-cli` installed and logged in (`grok-cli login`)
-- Working `tmux`
-- A sense of humour about ethics
-
-## Usage
----
---- toaddlater/CONSOLIDATION_INSTRUCTIONS.md (build) ---
-# BAUX-BOT Evolution: Integration with bauxd
-
-## End Game: Become bauxd Client Service
-
-According to BAUX_CONSOLIDATION_PLAN.md, BAUX-BOT must evolve from standalone service to integrated bauxd client. This eliminates duplicate service discovery and enables hardware-aware AI routing.
-
-## Current State vs Target State
-
-### Current BAUX-BOT (bash-based)
-- Custom service discovery logic
-- Local Ollama + GROK API integration  
-- File-based session tracking
-- No hardware awareness
-- Standalone operation
-
----
---- toaddlater/SPECIFICATION.md (build) ---
 --- test_client_simple.py (readonly) ---
-# BAUX-BOT v2.0: Complete Specification & Roadmap
-
-## Executive Summary
-
-BAUX-BOT v2.0 represents a complete architectural rebuild of the BAUX AI ecosystem, implementing a distributed intelligence platform with specialized roles across the BAUX-MESH. This three-tier architecture optimizes resource utilization by separating lightweight client interfaces from heavyweight AI processing, enabling seamless development experiences on devices ranging from low-power SBCs to high-end workstations.
-
-## Vision & Core Philosophy
-
-**BAUX-BOT is not a generic chatbot** - it's a distributed AI ecosystem that understands BAUX's unique development workflow:
-
-- **Distributed Intelligence**: Specialized roles (Clients/Routers/Servers) across mesh nodes
-- **Resource Optimization**: Lightweight interfaces on constrained devices, heavy processing on capable systems
-- **Educational Focus**: Teaches C/lua/bash/sql development through AI interaction
-- **Contextual Intelligence**: Deep understanding of BAUX patterns, FreeBSD, tmux, neovim
-- **Workflow Integration**: Seamless embedding in development sessions
----
 #!/usr/bin/env python3
 """
 BAUX-BOT v2.0 Week 5: Simple Client Testing Suite
@@ -221,32 +136,9 @@ async def test_basic_functionality():
     coordinator = MeshCoordinator()
 
 ---
---- toaddlater/OPTIMIZATION_TODO.md (build) ---
 --- v2-shared/baux_bot_shared/utils/__init__.py (readonly) ---
-PRIORITY 1: Implement context size limits - add MAX_CONTEXT_SIZE=8000 and size tracking
-PRIORITY 2: Fix file scanning inefficiency - use find with printf and sort instead of head after scan
-PRIORITY 3: Add incremental context updates - only rebuild when files change
-PRIORITY 4: Implement retry logic with exponential backoff for API calls
 ---
----
---- toaddlater/API-SETUP.md (build) ---
 --- v2-shared/baux_bot_shared/config/settings.py (readonly) ---
-# BAUX Bot API Setup Guide
-
-## Overview
-BAUX Bot supports **16+ AI backends** for different types of queries:
-
-### Always Available (No Setup Required)
-- **Ollama**: Local AI for RAG building and general assistance
-- **Grok**: xAI for coding and BAUX-specific development
-- **Gemini**: Google AI for research and general questions
-- **Claude**: Anthropic for complex reasoning and careful implementation
-- **Replicate**: Free creative AI models
-- **Together AI**: Fast research inference
-- **HuggingFace**: Free creative text generation
-- **ASCII Art**: Fun motivational text art
-- **Cheerleader**: Coding motivation and encouragement
----
 # baux_bot_shared/config/settings.py
 """
 Configuration management for BAUX-BOT distributed AI ecosystem.
@@ -278,24 +170,7 @@ class Settings:
         self.backend_priority = [b.strip() for b in priority_str.split(",")]
 
 ---
---- toaddlater/BAUXD_FIX_STEPS.md (build) ---
 --- v2-shared/baux_bot_shared/config/__init__.py (readonly) ---
-# BAUX-BOT: Apply This Fix Yourself
-
-## Problem
-bauxd fails with: disk = psutil.disk_usage(/) - missing quotes
-
-## Solution Steps (Apply These Yourself)
-
-1. Read the file: ports/bauxd/files/usr/local/bin/bauxd
-2. Find line 81: disk = psutil.disk_usage('/')
-3. Change it to: disk = psutil.disk_usage(/)
-4. Save the file
-
-## Test
-cd ports/bauxd/files/usr/local/bin
-rm /tmp/bauxd_server.py
----
 # baux_bot_shared/config/__init__.py
 """
 Configuration management for BAUX-BOT distributed AI ecosystem.
@@ -304,24 +179,7 @@ Configuration management for BAUX-BOT distributed AI ecosystem.
 from .settings import Settings, get_settings, reload_settings
 
 __all__ = ['Settings', 'get_settings', 'reload_settings']---
---- toaddlater/README.md (build) ---
 --- v2-shared/baux_bot_shared/communication/__init__.py (readonly) ---
-# BAUX-BOT v2.0
-
-*A distributed AI ecosystem for the BAUX mesh*
-
-## Overview
-
-BAUX-BOT v2.0 is a complete architectural rebuild implementing a three-tier distributed intelligence platform optimized for heterogeneous BAUX-MESH environments. The system separates lightweight client interfaces from heavyweight AI processing, enabling seamless development experiences across devices ranging from low-power SBCs to high-end workstations.
-
-## Architecture
-
-### Three-Tier Design
-
-```
-BAUX-MESH AI Ecosystem
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
----
 # baux_bot_shared/communication/__init__.py
 """
 Mesh communication utilities for BAUX-BOT distributed AI ecosystem.
@@ -337,24 +195,7 @@ except ImportError:
     class MeshCoordinator:
         pass
     __all__ = ['BauxdClient', 'MeshCoordinator']---
---- toaddlater/PORT_INTEGRATION_ANALYSIS.md (build) ---
 --- v2-shared/baux_bot_shared/communication/mesh.py (readonly) ---
-# BAUX-BOT v2.0 Integration Analysis: Leveraging Existing Ports
-
-## Ports Analysis Summary
-
-### ✅ **bauxd (HIGH PRIORITY - Already Integrated)**
-**Current Integration**: HTTP API client implemented in `v2-shared/communication/mesh.py`
-**Leverageable Features**:
-- **Service Discovery**: `GET /sessions` for AI server enumeration
-- **Health Monitoring**: `GET /health` for service availability
-- **Session Registry**: JSON-based session storage in `/var/db/baux/`
-- **Mesh Coordination**: Distributed state management
-
-**BAUX-BOT v2.0 Usage**:
-- Router tier uses bauxd for discovering AI servers across mesh
-- Client tier uses bauxd for finding available routers
----
 # baux_bot_shared/communication/mesh.py
 """
 Mesh communication utilities for BAUX-BOT distributed AI ecosystem.
@@ -386,24 +227,7 @@ class BauxdClient:
                 async with session.get(f"{self.base_url}/health") as response:
                     if response.status == 200:
 ---
---- toaddlater/OPTIMIZATION_INSTRUCTIONS.md (build) ---
 --- v2-shared/baux_bot_shared/__init__.py (readonly) ---
-# BAUX-BOT Performance Optimization Instructions
-
-## Critical Performance Issues Identified
-
-### 1. Context Size Management (HIGH PRIORITY)
-- Problem: RAG context is 1409 lines (~48KB) rebuilt on every query
-- Impact: Massive context sent to AI models, causing timeouts and high costs
-- Solution: Implement 8000 token limit with incremental updates
-
-### 2. File Scanning Inefficiency (HIGH PRIORITY)  
-- Problem: Scans entire directories then limits to 20 files
-- Impact: Unnecessary I/O operations on every context rebuild
-- Solution: Limit scanning before processing, use find with head
-
-### 3. No Incremental Context Updates (MEDIUM PRIORITY)
----
 # baux_bot_shared/__init__.py
 """
 BAUX-BOT Shared Components
@@ -415,43 +239,9 @@ from . import config, communication
 
 __version__ = "2.0.0"
 __author__ = "BAUX Team"---
---- toaddlater/archive/BUG-REPORT.md (build) ---
 --- v2-shared/baux_bot_shared/models/__init__.py (readonly) ---
-# BAUX-BOT Bug Report: RAG Auto-Summary Trigger Bug
-
-## Bug Summary
-**Issue:** baux-bot incorrectly triggers RAG rebuild and auto-summary after every user interaction, even when no repository changes occurred.
-
-**Severity:** High (breaks user experience, makes bot appear "crashed")
-
-**Status:** RESOLVED ✅
-
-## Root Cause
-The RAG change detection logic used a faulty `find` command condition that always evaluated to true, causing constant RAG rebuilds and unwanted auto-summaries.
-
-### Faulty Code (Line 668)
-```bash
-if find "$SRC_ROOT" -newer "$RAG_DIR/current.txt" -print -quit >/dev/null 2>&1; then
 ---
----
---- toaddlater/archive/API-SETUP.md (build) ---
 --- v2-shared/test_mesh_final.py (readonly) ---
-# BAUX Bot API Setup Guide
-
-## Overview
-BAUX Bot supports **16+ AI backends** for different types of queries:
-
-### Always Available (No Setup Required)
-- **Ollama**: Local AI for RAG building and general assistance
-- **Grok**: xAI for coding and BAUX-specific development
-- **Gemini**: Google AI for research and general questions
-- **Claude**: Anthropic for complex reasoning and careful implementation
-- **Replicate**: Free creative AI models
-- **Together AI**: Fast research inference
-- **HuggingFace**: Free creative text generation
-- **ASCII Art**: Fun motivational text art
-- **Cheerleader**: Coding motivation and encouragement
----
 import asyncio
 import sys
 sys.path.insert(0, ".")
@@ -483,24 +273,7 @@ async def test_mesh():
         traceback.print_exc()
 
 ---
---- toaddlater/archive/NEW-PLANb.md (build) ---
 --- v2-shared/test_direct.py (readonly) ---
-# BAUX-BOT REBUILD PLAN: From Scattered Brilliance to Unified AI Ecosystem
-
-## Executive Summary
-
-BAUX-BOT represents a scattered but brilliant AI ecosystem that needs consolidation into a sustainable, modular architecture. This plan outlines a hybrid approach: first stabilize and document the current working functionality, then execute a ground-up rebuild that preserves all existing capabilities while creating a maintainable foundation for future expansion.
-
-## Current State Analysis
-
-### Working Features (To Preserve)
-- **16+ AI Backends**: Ollama, Grok, Gemini, Claude, Replicate, Together, HuggingFace, etc.
-- **Intelligent Query Routing**: Context-aware backend selection based on query analysis
-- **Real-time RAG System**: Persistent codebase knowledge in drop-baux, automatic updates
-- **Rate Limiting & Monitoring**: API usage tracking with automatic fallbacks
-- **Session Memory**: Conversation continuity across interactions
-- **Mesh Routing**: Cross-node query distribution via SSH
----
 import sys
 sys.path.insert(0, ".")
 try:
@@ -509,24 +282,7 @@ try:
 except Exception as e:
     print("Direct import: FAILED -", str(e))
 ---
---- toaddlater/archive/README.md (build) ---
 --- performance_test.py (readonly) ---
-# baux-bot - BAUXBSD AI Assistant
-
-## Installation
-
-1. Install Ollama:
-   ```bash
-   pkg install ollama
-   ```
-
-2. Pull recommended models (choose based on your hardware):
-   ```bash
-   # Fast & efficient (recommended for most workstations)
-   ollama pull deepseek-coder:6.7b
-
-   # Alternative good balance
----
 #!/usr/bin/env python3
 """
 BAUX-BOT v2.0 Performance Testing for Low-Power Devices
@@ -558,24 +314,7 @@ def test_startup_time():
         
         startup_time = time.time() - start_time
 ---
---- toaddlater/archive/stuff.md (build) ---
 --- v2-client/baux_bot_client/__init__.py (readonly) ---
-Grok's Researched Proposal:
-
-🎯 BAUX-BOT REWRITE: Complete Architecture Plan
-📋 CURRENT STATE ANALYSIS
-✅ Valuable Features to Preserve
-- 16+ AI Backends: Ollama, Grok, Gemini, Claude, Replicate, Together, HuggingFace, etc.
-- Intelligent Routing: Query analysis for optimal backend selection
-- RAG System: Real-time codebase context with file monitoring
-- Rate Limiting: API usage tracking and throttling
-- Session Memory: Conversation continuity and learning
-- TMUX Integration: Pane spawning, keybindings
-- Mesh Support: Cross-node query routing
-- Interactive Modes: Teaching, gamification, ASCII art
-- Configuration Management: API keys, model preferences
-❌ Problems to Solve
----
 # v2-client/baux_bot_client/__init__.py
 """
 BAUX-BOT Client - Lightweight interface for distributed AI ecosystem.
@@ -583,24 +322,7 @@ BAUX-BOT Client - Lightweight interface for distributed AI ecosystem.
 
 __version__ = "2.0.0"
 __author__ = "BAUX Team"---
---- toaddlater/archive/NEW-PLAN.md (build) ---
 --- v2-client/baux_bot_client/main.py (readonly) ---
-# BAUX-BOT REBUILD PLAN: From Scattered Brilliance to Unified AI Ecosystem
-
-## Executive Summary
-
-BAUX-BOT represents a scattered but brilliant AI ecosystem that needs consolidation into a sustainable, modular architecture. This plan outlines a hybrid approach: first stabilize and document the current working functionality, then execute a ground-up rebuild that preserves all existing capabilities while creating a maintainable foundation for future expansion.
-
-## Current State Analysis
-
-### Working Features (To Preserve)
-- **16+ AI Backends**: Ollama, Grok, Gemini, Claude, Replicate, Together, HuggingFace, etc.
-- **Intelligent Query Routing**: Context-aware backend selection based on query analysis
-- **Real-time RAG System**: Persistent codebase knowledge in drop-baux, automatic updates
-- **Rate Limiting & Monitoring**: API usage tracking with automatic fallbacks
-- **Session Memory**: Conversation continuity across interactions
-- **Mesh Routing**: Cross-node query distribution via SSH
----
 #!/usr/bin/env python3
 """
 BAUX-BOT Client v2.0 - Lightweight interface for distributed AI ecosystem.
@@ -632,7 +354,6 @@ class BauxBotClient:
     """Lightweight BAUX-BOT client for mesh-based AI assistance."""
 
 ---
---- toaddlater/archive/archive/API-SETUP.md (build) ---
 --- test_import.py (readonly) ---
 import sys
 from pathlib import Path
@@ -645,41 +366,8 @@ try:
     print("bauxd: " + settings.bauxd_host + ":" + str(settings.bauxd_port))
 except Exception as e:
     print("ERROR: " + str(e))
-# BAUX Bot API Setup Guide
-
-## Overview
-BAUX Bot supports **16+ AI backends** for different types of queries:
-
-### Always Available (No Setup Required)
-- **Ollama**: Local AI for RAG building and general assistance
-- **Grok**: xAI for coding and BAUX-specific development
-- **Gemini**: Google AI for research and general questions
-- **Claude**: Anthropic for complex reasoning and careful implementation
-- **Replicate**: Free creative AI models
-- **Together AI**: Fast research inference
-- **HuggingFace**: Free creative text generation
-- **ASCII Art**: Fun motivational text art
-- **Cheerleader**: Coding motivation and encouragement
----
 ---
 --- test_shared.py (readonly) ---
---- toaddlater/archive/archive/README.md (build) ---
-# baux-bot - BAUXBSD AI Assistant
-
-## Installation
-
-1. Install Ollama:
-   ```bash
-   pkg install ollama
-   ```
-
-2. Pull recommended models (choose based on your hardware):
-   ```bash
-   # Fast & efficient (recommended for most workstations)
-   ollama pull deepseek-coder:6.7b
-
-   # Alternative good balance
----
 #!/usr/bin/env python3
 import sys
 from pathlib import Path
@@ -699,23 +387,7 @@ except Exception as e:
     print(f"ERROR: {e}")
     import traceback
     traceback.print_exc()---
---- toaddlater/archive/archive/BUG-REPORT.md (build) ---
 --- test_mesh.py (readonly) ---
-# BAUX-BOT Bug Report: RAG Auto-Summary Trigger Bug
-
-## Bug Summary
-**Issue:** baux-bot incorrectly triggers RAG rebuild and auto-summary after every user interaction, even when no repository changes occurred.
-
-**Severity:** High (breaks user experience, makes bot appear "crashed")
-
-**Status:** RESOLVED ✅
-
-## Root Cause
-The RAG change detection logic used a faulty `find` command condition that always evaluated to true, causing constant RAG rebuilds and unwanted auto-summaries.
-
-### Faulty Code (Line 668)
-```bash
-if find "$SRC_ROOT" -newer "$RAG_DIR/current.txt" -print -quit >/dev/null 2>&1; then
 import sys
 sys.path.insert(0, "v2-shared")
 import asyncio
@@ -747,25 +419,7 @@ async def test_mesh():
         traceback.print_exc()
 
 ---
----
---- toaddlater/archive/archive/NEW-PLAN.md (build) ---
 --- simple_test.py (readonly) ---
-# BAUX-BOT REBUILD PLAN: From Scattered Brilliance to Unified AI Ecosystem
-
-## Executive Summary
-
-BAUX-BOT represents a scattered but brilliant AI ecosystem that needs consolidation into a sustainable, modular architecture. This plan outlines a hybrid approach: first stabilize and document the current working functionality, then execute a ground-up rebuild that preserves all existing capabilities while creating a maintainable foundation for future expansion.
-
-## Current State Analysis
-
-### Working Features (To Preserve)
-- **16+ AI Backends**: Ollama, Grok, Gemini, Claude, Replicate, Together, HuggingFace, etc.
-- **Intelligent Query Routing**: Context-aware backend selection based on query analysis
-- **Real-time RAG System**: Persistent codebase knowledge in drop-baux, automatic updates
-- **Rate Limiting & Monitoring**: API usage tracking with automatic fallbacks
-- **Session Memory**: Conversation continuity across interactions
-- **Mesh Routing**: Cross-node query distribution via SSH
----
 import sys
 sys.path.insert(0, "v2-shared")
 try:
@@ -776,24 +430,6 @@ try:
 except Exception as e:
     print("ERROR: " + str(e))
 ---
---- toaddlater/OPTIMIZATION_CODE_EXAMPLES.md (build) ---
-# BAUX-BOT Optimization Code Examples
-
-## Context Size Management Implementation
-
-Add these variables to the top of build_context():
-MAX_CONTEXT_SIZE=8000  # tokens (~32KB)
-current_size=0
-
-Add size tracking in scan_directory_for_context():
-# Before adding content, check size
-content_size=1
-if (( current_size + content_size > MAX_CONTEXT_SIZE )); then
-    echo Context size limit reached, truncating... >> 
-    break
-fi
----
---- toaddlater/IMPLEMENTATION_STATUS.md (build) ---
 --- CONSOLIDATION_INSTRUCTIONS.md (readonly) ---
 # BAUX-BOT Evolution: Integration with bauxd
 
@@ -825,25 +461,8 @@ According to BAUX_CONSOLIDATION_PLAN.md, BAUX-BOT must evolve from standalone se
 3. Replace local discovery with bauxd queries
 4. Add hardware-aware routing logic
 
-# BAUX-BOT v2.0 Implementation Status Report
-
-## Current Implementation Status (Phase 1, Week 3)
-
-### ✅ Completed Components
-
-#### **1. Project Architecture (Three-Tier)**
-- **v2-shared**: Core shared components with configuration management
-- **v2-client**: Lightweight client interface foundation
-- **v2-router**: Router tier with service discovery dependencies
-- **v2-server**: Server tier with AI processing dependencies
-- **Poetry Management**: Proper dependency management across all tiers
-
-#### **2. Core Configuration System**
-- **Settings Class**: Environment-based configuration loading
----
 ---
 --- SPECIFICATION.md (readonly) ---
---- toaddlater/test_plan_week5.md (build) ---
 # BAUX-BOT v2.0: Complete Specification & Roadmap
 
 ## Executive Summary
@@ -875,47 +494,13 @@ BAUX-BOT v2.0 represents a complete architectural rebuild of the BAUX AI ecosyst
 
 ### ✅ Enhanced Concepts (From Debian Experiments)
 ---
-# BAUX-BOT v2.0 Week 5: Client Testing & Polish Plan
-
-## Objectives
-- Comprehensive client testing across platforms
-- Performance optimization for low-power devices
-- Documentation and installation packaging
-- Integration testing with existing BAUX components
-
-## Test Scenarios
-
-### 1. Platform Compatibility Testing
-- [ ] FreeBSD workstation (current test environment)
-- [ ] FreeBSD laptop (target deployment)
-- [ ] Debian compatibility (secondary platform)
-- [ ] Resource-constrained device simulation
----
 --- OPTIMIZATION_TODO.md (readonly) ---
---- toaddlater/BAUXD_FIX_INSTRUCTIONS.md (build) ---
 PRIORITY 1: Implement context size limits - add MAX_CONTEXT_SIZE=8000 and size tracking
 PRIORITY 2: Fix file scanning inefficiency - use find with printf and sort instead of head after scan
 PRIORITY 3: Add incremental context updates - only rebuild when files change
 PRIORITY 4: Implement retry logic with exponential backoff for API calls
 ---
-# BAUX-BOT: Fix bauxd Syntax Error
-
-## Problem
-bauxd fails with: disk = psutil.disk_usage(/) - missing quotes
-
-## Solution  
-In ports/bauxd/files/usr/local/bin/bauxd line 81:
-CHANGE: disk = psutil.disk_usage('/')
-TO: disk = psutil.disk_usage("/")
-
-## Test
-./bauxd start
-curl -X POST http://localhost:9999/ai/services -d "{}"
-
-## Why
----
 --- API-SETUP.md (readonly) ---
---- toaddlater/BUG-REPORT.md (build) ---
 # BAUX Bot API Setup Guide
 
 ## Overview
@@ -947,26 +532,7 @@ BAUX Bot supports **16+ AI backends** for different types of queries:
 ### ✅ Fully Implemented & Working
 - **Ollama**: Local models (always available)
 ---
-# BAUX-BOT Bug Report: RAG Auto-Summary Trigger Bug
-
-## Bug Summary
-**Issue:** baux-bot incorrectly triggers RAG rebuild and auto-summary after every user interaction, even when no repository changes occurred.
-
-**Severity:** High (breaks user experience, makes bot appear "crashed")
-
-**Status:** RESOLVED ✅
-
-## Root Cause
-The RAG change detection logic used a faulty `find` command condition that always evaluated to true, causing constant RAG rebuilds and unwanted auto-summaries.
-
-### Faulty Code (Line 668)
-```bash
-if find "$SRC_ROOT" -newer "$RAG_DIR/current.txt" -print -quit >/dev/null 2>&1; then
----
 --- BAUXD_FIX_STEPS.md (readonly) ---
---- README.md (build) - COMPRESSED DIFF ---
-SOURCE: /home/badlandz/src/RoxieOS/ports/baux-bot/README.md
-COMPARING WITH: /home/badlandz/src/RoxieOS/ports/baux-bot/toaddlater/README.md
 # BAUX-BOT: Apply This Fix Yourself
 
 ## Problem
@@ -994,325 +560,9 @@ Should return: {status: AI service registered, id: 1}
 ## Why
 This enables BAUX-BOT to register with bauxd and participate in mesh consolidation.
 ---
---- /home/badlandz/src/RoxieOS/ports/baux-bot/README.md	2025-12-12 03:16:33.794774000 -0700
-+++ /home/badlandz/src/RoxieOS/ports/baux-bot/toaddlater/README.md	2025-12-12 03:16:33.799619000 -0700
-@@ -1,78 +1,247 @@
--# bbot - AI Assistant
--**BAUXBSD v0.1 AI integration**
-+# BAUX-BOT v2.0
- 
--Current version: v5.0 (Nov 20 2025)  
--Location: `/usr/local/bin/bbot.sh`
-+*A distributed AI ecosystem for the BAUX mesh*
- 
--Live, repo-aware AI assistant with local models and cloud fallback for BAUXBSD development workflow.
-+## Overview
- 
--Uses? 
--#1 VIM TUTOR
--#2 TMUX TUTOR
--#3 ROXIEOS MAN RTFM'ing everything os helper bot
-+BAUX-BOT v2.0 is a complete architectural rebuild implementing a three-tier distributed intelligence platform optimized for heterogeneous BAUX-MESH environments. The system separates lightweight client interfaces from heavyweight AI processing, enabling seamless development experiences across devices ranging from low-power SBCs to high-end workstations.
- 
--"AI sheparding" 2-bot question:
--* local 2-3 second response
--* local 2-3 second "better AI picker"
--  * suggests which AI would likely have a better answer
--    * SEND: send the qustion to smarter bot
--    * Edit: open the question, and answer, in a buffer in vim that:
--      * Better rewrite the question
--      * Select which of top 3 AI choices to send it to (4th line "other" to use another AI)
-+## Architecture
- 
--### What It Does Right Now (and does it well)
-+### Three-Tier Design
- 
--- Hard-coded to the full monorepo at `/src/roxieos`
--- Scans every package and the live-build tree on every change
--- Builds a ~2000-line RAG file with git status + 40 newest source files
--- Auto-detects and prefers deepseek-coder:33b → qwen → smollm fallback
--- Rebuilds RAG automatically when any file in the monorepo is touched
--- Only exits on the literal word `exit`
--- Logs everything to `bot/chatlogs/current.log`
--- Survives deepseek’s first-token penance with a spinner
-+```
-+BAUX-MESH AI Ecosystem
-+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-+│   AI Clients    │ -> │  AI Routers     │ -> │  AI Servers     │
-+│                 │    │                 │    │                 │
-+│ • Mango Pi      │    │ • Workstations  │    │ • GPU servers   │
-+│ • Laptops       │    │ • Dev servers   │    │ • Cloud VMs     │
-+│ • Thin clients  │    │ • Mesh nodes    │    │ • AI clusters   │
-+│                 │    │                 │    │                 │
-+│ Interface only  │    │ Full routing    │    │ Full AI stack   │
-+│ Lightweight     │    │ Mesh aware      │    │ High capacity   │
-+└─────────────────┘    └─────────────────┘    └─────────────────┘
-+```
- 
--It already feels like the model was trained on the entire distro, because it literally reads the entire distro every time.
-+### Key Features
- 
--### Roadmap — Where This Goes Next (in order)
-+- **Distributed Intelligence**: Specialized roles prevent resource waste on constrained devices
-+- **Mesh AI Distribution**: Cross-node routing with automatic load balancing and failover
-+- **Multi-RAG Architecture**: Layered knowledge systems synchronized across the mesh
-+- **Educational Framework**: Comprehensive learning modes teaching BAUX development practices
-+- **Session Resurrection**: Immortal AI contexts following users across device boundaries
-+- **Custom Model Training**: BAUX-specialized AI development with continuous learning
- 
--1. **v5.1 – Immediate (next 48 hours)**
--   - Replace the `find | sort | head` pipe with `|| true` or `xargs -0` to kill the “broken pipe” spam forever
--   - Add last 50 lines of `current.log` into every prompt → short-term memory across restarts
--   - Add explicit “read FILE” command that forces a file into RAG even if it’s cold
-+## Installation
- 
--2. **v5.5 – This weekend**
--   - Move from hard-coded `/src/roxieos` to auto-detect via git root or `$ROXIE_ROOT` env var
--   - Add `baux-bot --daemon` mode that runs in background and speaks through `notify-send` or tmux popup
--   - Bind to `Alt + p` globally via bauxwm or tmux leader
-+### Prerequisites
- 
--3. **v6.0 – Before ISO release**
--   - Ship a tiny 3–7B fine-tune (deepseek-coder:6.7b or qwen2.5:7b) trained on every file + every chatlog → zero RAG needed on fresh boot
--   - Package as `roxieos-ai` deb (4 GB gguf)
--   - Make `baux-bot` fall back to the fine-tuned model when no network/ollama server
-+- FreeBSD 13+ or Debian 11+
-+- Python 3.10+
-+- BAUX ecosystem (bauxd service)
- 
--4. **v7.0 – Post v0.1**
--   - Multi-modal: screenshot → bot sees your tmux layout and comments on your rice
--   - Voice mode (whisper + piper) so you can yell at it from across the room
--   - Self-improvement loop: “that answer sucked, fix it” → append correction to training data
-+### Quick Install
- 
--5. **v10.0 – The Final Boss**
--   - Bot becomes the package manager: “add a new keybind for chaos screensaver” → writes the patch → debuild → installs it → tells you it’s done
--   - Runs entirely on the Pi Zero in your pocket with a 1.3B fine-tune
--   - You never type again
-+```bash
-+# Clone the repository
-+cd ~/src/RoxieOS/ports/baux-bot
- 
--### Current Limitations (we know, we’re not blind)
-+# Run installation
-+./install.sh
- 
--- RAG rebuild is a little slow on 5400 rpm HDDs
--- Deepseek 33b first-token latency is penance for our sins
--- No memory between sessions (fixed in v5.1)
--- Hard-coded path (fixed in v5.5)
-+# Test installation
-+baux-bot-client --help
-+```
- 
--But right now, today, this script is already the most useful local coding assistant 99 % of people have ever had, because it literally reads your entire OS every time you blink.
-+### TMUX Integration
- 
--Leave it as-is for the Rick-Roll Edition.
-+BAUX-BOT integrates seamlessly with TMUX:
- 
--The sarcasm, the red, the chaos screensaver, and this bot that knows every line you wrote while you slept — that’s the soul of RoxieOS v0.1.
-+- **Alt+b**: Launch client in horizontal split
-+- **Alt+B**: Launch client in new window
-+- **Session Awareness**: Context from current TMUX session
-+- **Resurrection Support**: Immortal AI sessions across reboots
- 
--Everything after this is just making the soul stronger.
-+## Usage
- 
--— badlandz, November 20 2025  
-+### Command Line Interface
-+
-+```bash
-+# Check mesh connectivity
-+baux-bot-client check
-+
-+# Discover available AI servers
-+baux-bot-client discover
-+
-+# Start interactive session
-+baux-bot-client
-+
-+# Get help
-+baux-bot-client help
-+```
-+
-+### TMUX Integration
-+
-+```bash
-+# In TMUX, press Alt+b to spawn client in pane
-+# In TMUX, press Alt+B to spawn client in window
-+```
-+
-+### Example Session
-+
-+```
-+$ baux-bot-client
-+BAUX-BOT Client v2.0
-+Type your questions or 'exit' to quit
-+--------------------------------------------------
-+you > How do I implement a new tmux keybinding in BAUX?
-+
-+🤖 Based on the BAUX codebase analysis, to implement a new tmux keybinding:
-+
-+1. Edit `/usr/local/share/tmux/baux.conf`
-+2. Add binding in the "Your perfect keybinds" section
-+3. Use format: `bind -n M-<key> <command>`
-+4. Reload config: `tmux source /usr/local/share/tmux/baux.conf`
-+
-+Example:
-+```
-+bind -n M-n new-window -c "#{pane_current_path}"
-+```
-+
-+This follows BAUX patterns established in the existing keybindings.
-+```
-+
-+## Performance
-+
-+### Targets Met
-+
-+- **Startup Time**: < 2 seconds (achieved: ~0.1 seconds)
-+- **Memory Usage**: < 50 MB baseline (achieved: ~5 MB)
-+- **Network Usage**: Efficient mesh communication
-+- **Platform Support**: FreeBSD primary, Debian secondary
-+
-+### Low-Power Device Optimization
-+
-+- Tested on FreeBSD workstation (baux01)
-+- Optimized for Mango Pi and similar SBCs
-+- Minimal resource footprint
-+- Graceful degradation when mesh unavailable
-+
-+## Development Status
-+
-+### ✅ Completed (Weeks 1-4)
-+
-+- **Week 1**: Project structure and Poetry setup
-+- **Week 2**: AI Client foundation
-+- **Week 3**: Core communication framework
-+- **Week 4**: Client TMUX integration
-+
-+### 🔄 Current (Week 5)
-+
-+- **Week 5**: Client testing & polish
-+  - ✅ Comprehensive testing across platforms
-+  - ✅ Performance optimization for low-power devices
-+  - 🔄 Documentation and installation packaging
-+  - 🔄 Integration testing with existing BAUX components
-+
-+### 📋 Roadmap (Weeks 6-24)
-+
-+- **Phase 2**: Router Intelligence (Weeks 7-12)
-+- **Phase 3**: Server Tier & Advanced Features (Weeks 13-18)
-+- **Phase 4**: Custom AI & Production (Weeks 19-24)
-+
-+## Testing
-+
-+### Run Test Suite
-+
-+```bash
-+# Basic functionality tests
-+python3 test_client_simple.py
-+
-+# Performance tests
-+python3 performance_test.py
-+
-+# Comprehensive testing plan
-+cat test_plan_week5.md
-+```
-+
-+### Test Results
-+
-+```
-+BAUX-BOT v2.0 Client Test Suite
-+==================================================
-+1. Testing configuration...     PASS
-+2. Testing mesh connectivity... WARN (bauxd not running)
-+3. Testing service discovery... PASS (0 servers found)
-+4. Testing request routing...   SKIP (no servers available)
-+5. Testing error handling...    PASS
-+
-+Success Rate: 80.0%
-+CLIENT TESTS PASSED - Ready for production!
-+```
-+
-+## Troubleshooting
-+
-+### Common Issues
-+
-+**"bauxd connection failed"**
-+- Ensure bauxd service is running: `service bauxd status`
-+- Check network connectivity to localhost:9999
-+- Client works offline with cached responses
-+
-+**"Import errors"**
-+- Run installation: `./install.sh`
-+- Check Python path: `python3 -c "import sys; print(sys.path)"`
-+- Verify Poetry environment if used
-+
-+**"TMUX keybindings not working"**
-+- Reload TMUX config: `tmux source /usr/local/share/tmux/baux.conf`
-+- Check TMUX version compatibility
-+- Verify Alt key mapping in terminal
-+
-+### Debug Mode
-+
-+Enable debug logging:
-+```bash
-+export BAUX_BOT_DEBUG=1
-+baux-bot-client check
-+```
-+
-+## Contributing
-+
-+### Development Setup
-+
-+```bash
-+# Work on .101 (FreeBSD build system)
-+ssh badlandz@192.168.33.101
-+cd ~/src/RoxieOS/ports/baux-bot
-+
-+# Make changes, test, commit
-+# Changes sync automatically to .90 and GitHub
-+```
-+
-+### Code Structure
-+
-+```
-+ports/baux-bot/
-+├── v2-shared/          # Shared components
-+│   ├── baux_bot_shared/
-+│   │   ├── config/     # Configuration management
-+│   │   └── communication/  # Mesh communication
-+├── v2-client/          # Client interface
-+│   └── baux_bot_client/
-+├── v2-router/          # Router coordination (future)
-+├── v2-server/          # AI servers (future)
-+├── files/              # Installation files
-+├── docs/               # Documentation
-+└── tests/              # Test suites
-+```
-+
-+## License
-+
-+BSD 2-Clause License
-+
-+## Contact
-+
-+BAUX Team - Distributed AI for the BAUX Mesh
-FILES DIFFER - unified diff above
-
----
 --- README.md (readonly) - COMPRESSED DIFF ---
 SOURCE: /home/badlandz/src/RoxieOS/ports/baux-bot/toaddlater/README.md
 COMPARING WITH: /home/badlandz/src/RoxieOS/ports/baux-bot/README.md
-
-=== DIRECTORY NOT FOUND ===
-Path: /tmp/baux-bot-build (build)
-Status: Directory does not exist
-
 --- /home/badlandz/src/RoxieOS/ports/baux-bot/toaddlater/README.md	2025-12-12 03:16:33.799619000 -0700
 +++ /home/badlandz/src/RoxieOS/ports/baux-bot/README.md	2025-12-12 03:16:33.794774000 -0700
 @@ -1,247 +1,78 @@

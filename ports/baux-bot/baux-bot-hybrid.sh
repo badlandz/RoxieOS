@@ -209,7 +209,12 @@ safe_modify_file() {
     echo "Modification request: $modification_request"
 
     # Use GROK to generate the modification, fallback to Claude, then Ollama
-    local modify_prompt="Modify Debian BAUX script: add session numbering like FreeBSD version. Change SESSION assignment and add switch case."
+    local modify_prompt="Modify this file: $modification_request
+
+Current file content:
+$(cat "$target_file")
+
+Return only the complete modified file content."
     # Keep it very short to avoid JSON issues
 
     # Debug: check for control characters
@@ -349,7 +354,7 @@ query_grok() {
       -H "Authorization: Bearer $GROK_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
-        \"model\": \"grok-2-1212\",
+        \"model\": \"grok-3\",
         \"messages\": [
           {
             \"role\": \"user\",
