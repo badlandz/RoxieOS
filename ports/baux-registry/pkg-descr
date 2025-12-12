@@ -1,14 +1,17 @@
 BAUX Session Registry Database Service
 
+🚨 DEPRECATED: Functionality moved to bauxd - See docs/BAUX_CONSOLIDATION_PLAN.md
+
 The BAUX session registry maintains a centralized database of tmux session
 locations across the BAUX-MESH network. It tracks which sessions are running
 on which nodes, enabling seamless session discovery and migration.
 
+Status: DEPRECATED - Use bauxd for new deployments
 Features:
-- SQLite-based session registry
-- Node and session tracking
-- Automatic cleanup of stale sessions
-- RESTful API integration ready
-- Mesh network session discovery
+- SQLite-based session registry ✅ WORKING
+- Node and session tracking ✅ WORKING
+- Automatic cleanup of stale sessions ✅ WORKING
+- RESTful API integration ready ❌ MOVED TO BAUXD
+- Mesh network session discovery ❌ MOVED TO BAUXD
 
 WWW: https://github.com/badlandz/RoxieOS

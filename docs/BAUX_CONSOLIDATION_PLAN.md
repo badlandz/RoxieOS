@@ -10,6 +10,11 @@ Following architectural analysis, BAUX services will be consolidated into `bauxd
 
 ## Current State Analysis
 
+### Service Status (Updated Dec 12, 2025)
+- **bauxd**: 🔴 BROKEN - HTTP REST API (port 9999) has syntax errors in POST endpoints
+- **baux-registry**: 🟡 DEPRECATED - File-based registry working but should redirect to bauxd
+- **BAUX-BOT**: 🟡 PARTIAL - Basic AI routing works, self-improvement and file modification incomplete
+
 ### Service Overlap Identified
 - **bauxd**: HTTP REST API (port 9999), session management, service discovery, health monitoring
 - **baux-registry**: File-based session registry (JSON files in /var/db/baux/)
@@ -22,8 +27,9 @@ Following architectural analysis, BAUX services will be consolidated into `bauxd
 
 ## Consolidation Strategy
 
-### Phase 1: Core Consolidation (Week 1-2) ✅ COMPLETE
+### Phase 1: Core Consolidation (Week 1-2) ✅ COMPLETE BUT FLAWED
 **Goal:** Establish bauxd as single source of truth for sessions and services
+**Status:** Implementation complete but POST endpoints broken by syntax errors
 
 #### 1.1 Extend bauxd with SQLite Backend ✅ IMPLEMENTED
 - ✅ Migrated from file-based to SQLite database using consolidated schema
@@ -55,10 +61,10 @@ Following architectural analysis, BAUX services will be consolidated into `bauxd
 #### 2.1 Standardize BAUX-BOT Discovery ❌ NOT IMPLEMENTED
 - ❌ Remove duplicate discovery logic from BAUX-BOT v2.0
 - ❌ Implement proper bauxd client in BAUX-BOT
-- ✅ Add service registration endpoints to bauxd (implemented but broken)
+- 🔴 Add service registration endpoints to bauxd (POST methods broken by syntax errors)
 
-#### 2.2 Add AI Service Registry to bauxd ⚠️ PARTIALLY IMPLEMENTED
-- ✅ `/ai/services` endpoint: Register/discover AI backends across mesh (POST method exists but broken)
+#### 2.2 Add AI Service Registry to bauxd 🔴 BROKEN
+- 🔴 `/ai/services` endpoint: POST method unusable due to heredoc corruption
 - ❌ `/ai/route` endpoint: Intelligent routing based on query type and hardware
 - ❌ Integration with BAUX-BOT load balancing logic
 
@@ -111,8 +117,9 @@ Following architectural analysis, BAUX services will be consolidated into `bauxd
    - **Location:** Command processing logic in main loop
 
 ### Phase 2 Blockers
-- **Cannot test bauxd integration** due to syntax error
-- **Cannot implement BAUX-BOT improvements** due to broken apply_improvement
+- **Cannot test bauxd integration** due to syntax error in POST endpoints
+- **Cannot implement BAUX-BOT improvements** due to unreliable Grok API in analysis
+- **Cannot reliably modify files** through BAUX-BOT due to prompt/API issues
 - **Cannot automate fixes** due to remote editing corruption
 - **Cannot script BAUX-BOT operations** due to command handling issues
 
@@ -254,9 +261,9 @@ GET    /sessions/workload # Workload distribution analysis
 - Backward compatibility maintained
 
 ### Phase 2 Success (Currently Blocked)
-- ❌ BAUX-BOT uses centralized service discovery
-- ❌ AI workload routing considers hardware capabilities
-- ❌ No performance degradation in mesh operations
+- ❌ BAUX-BOT uses centralized service discovery (bauxd POST broken)
+- ❌ AI workload routing considers hardware capabilities (API integration broken)
+- ❌ No performance degradation in mesh operations (cannot test)
 
 ### Phase 3 Success (Cannot Proceed)
 - ❌ Unified monitoring and analytics operational
@@ -291,15 +298,18 @@ GET    /sessions/workload # Workload distribution analysis
 
 ### Immediate Recovery Actions
 1. **Manual bauxd Fix**: Apply Python syntax fix directly on FreeBSD .101
-2. **BAUX-BOT Repair**: Complete the apply_improvement function implementation
+2. **BAUX-BOT Repair**: Fix Grok API reliability and complete modification functions
 3. **Testing Protocol**: Establish local-only development workflow to avoid corruption
 4. **Verification**: Confirm all endpoints working before resuming consolidation
+5. **Documentation**: Update all port docs to reference consolidation status
 
 ### Lessons Learned
 1. **Remote Editing Risk**: Never edit FreeBSD files from Debian - causes corruption
-2. **Self-Improvement Complexity**: BAUX-BOT's improvement capability needs completion before relying on it
-3. **Infrastructure Dependencies**: Cannot build AI features on broken infrastructure
-4. **Testing Requirements**: Need comprehensive local testing before declaring phases complete
+2. **API Reliability**: Grok API works for simple queries but fails in complex analysis functions
+3. **Self-Improvement Complexity**: BAUX-BOT's improvement capability needs robust error handling
+4. **Infrastructure Dependencies**: Cannot build AI features on broken infrastructure
+5. **Testing Requirements**: Need comprehensive local testing before declaring phases complete
+6. **Sed Prohibition**: Sed commands appear to succeed but corrupt files silently
 
 ### Revised Risk Mitigation
 
@@ -330,9 +340,15 @@ The consolidation vision remains valid - centralizing intelligence in bauxd whil
 
 ### Next Steps
 1. **Immediate**: Manual fixes on FreeBSD .101 to restore working infrastructure
-2. **Short-term**: Complete BAUX-BOT's self-improvement capabilities
+2. **Short-term**: Fix BAUX-BOT API reliability and complete modification functions
 3. **Medium-term**: Resume Phase 2 consolidation with proper testing protocols
 4. **Long-term**: Deliver the unified mesh intelligence platform as originally planned
+
+### Documentation Updates Required
+- Update bauxd README to indicate POST endpoint issues
+- Update baux-bot docs to reflect current capability status
+- Update baux-registry docs to show deprecation status
+- All port docs should reference this consolidation plan
 
 **The foundation is solid; we just need to fix the blocking issues to continue building.**
 

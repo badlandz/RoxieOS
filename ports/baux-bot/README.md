@@ -1,7 +1,20 @@
 # bbot - AI Assistant
+# BAUX-BOT - AI Assistant for BAUX Development
+
+## 🚨 CURRENT STATUS: PARTIALLY BROKEN 🚨
+
+**Critical Issues:**
+- Self-improvement loop incomplete and unreliable
+- File modification functions have API and prompt issues
+- Cannot reliably apply automated improvements
+
+**See:** `docs/BAUX_CONSOLIDATION_PLAN.md` for consolidation status and recovery plan.
+
+---
+
 **BAUXBSD v0.1 AI integration**
 
-Current version: v5.0 (Nov 20 2025)  
+Current version: v5.0 (Nov 20 2025)
 Location: `/usr/local/bin/bbot.sh`
 
 Live, repo-aware AI assistant with local models and cloud fallback for BAUXBSD development workflow.

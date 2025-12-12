@@ -1,10 +1,12 @@
 BAUX daemon service for mesh coordination and service discovery.
 
+🚨 CURRENT STATUS: POST ENDPOINTS BROKEN - See docs/BAUX_CONSOLIDATION_PLAN.md
+
 bauxd provides a REST API on port 9999 for BAUX mesh operations including:
-- Session discovery and management
-- Service coordination across BAUX nodes
-- File synchronization primitives
-- Health monitoring and status reporting
+- Session discovery and management ✅ WORKING
+- Service coordination across BAUX nodes ❌ POST ENDPOINTS BROKEN
+- File synchronization primitives ❌ NOT IMPLEMENTED
+- Health monitoring and status reporting ✅ WORKING
 
 This service enables proper distributed BAUX functionality and replaces
 ad-hoc SSH-based approaches with a clean, extensible API.

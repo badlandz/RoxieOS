@@ -21,7 +21,8 @@ RoxieOS is an Operating System designed to create a BAUX-MESH. Proper deployment
 - ✅ **Core Components**: baux, bvi, ollama, keymaps working
 - ✅ **bwm Builds**: Window manager compiles successfully
 - ❌ **Installer**: Partially working but incomplete
-- ❌ **BAUX-MESH**: It's working, with AI RAG and BAUX-BOT "living" in BAUX-MESH
+- ❌ **BAUX-MESH**: Partially working - see [BAUX_CONSOLIDATION_PLAN.md](docs/BAUX_CONSOLIDATION_PLAN.md) for consolidation status
+- 🔴 **Service Consolidation**: BLOCKED by critical bugs in bauxd, baux-bot
 
 ## Vision Summary
 
