@@ -1,0 +1,27 @@
+#!/usr/local/bin/bash
+# baux-bot — BAUX-BOT v2.0 client launcher
+# Launches the Python-based BAUX-BOT client with proper environment
+
+set -euo pipefail
+
+# BAUX environment setup
+export BAUX_HOME="/usr/local/share/baux"
+export PYTHONPATH="$BAUX_HOME/baux-bot/v2-shared:$PYTHONPATH"
+
+# Find the client script
+CLIENT_SCRIPT="$BAUX_HOME/baux-bot/v2-client/baux_bot_client/main.py"
+
+if [ ! -f "$CLIENT_SCRIPT" ]; then
+    echo "ERROR: BAUX-BOT client not found at $CLIENT_SCRIPT"
+    echo "BAUX-BOT may not be properly installed."
+    exit 1
+fi
+
+# Set up Poetry environment if available
+if command -v poetry >/dev/null 2>&1; then
+    cd "$BAUX_HOME/baux-bot/v2-client"
+    exec poetry run python "$CLIENT_SCRIPT" "$@"
+else
+    # Fallback to system python
+    exec python3 "$CLIENT_SCRIPT" "$@"
+fi
