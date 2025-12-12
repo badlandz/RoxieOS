@@ -76,7 +76,7 @@ def get_hardware_stats():
     try:
         cpu_percent = psutil.cpu_percent(interval=1)
         memory = psutil.virtual_memory()
-        disk = psutil.disk_usage('/')
+        disk = psutil.disk_usage(/)
         net_before = psutil.net_io_counters()
         time.sleep(0.1)
         net_after = psutil.net_io_counters()

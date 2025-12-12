@@ -1,0 +1,29 @@
+#!/usr/local/bin/bash
+# bauxd-migrate - Migrate file-based sessions to SQLite database
+
+DB_PATH="/var/db/baux/bauxd.db"
+REGISTRY_DIR="/var/db/baux"
+
+echo "Migrating file-based sessions to SQLite database..."
+
+if [[ ! -d "$REGISTRY_DIR" ]]; then
+    echo "No registry directory found"
+    exit 0
+fi
+
+migrated=0
+for file in "$REGISTRY_DIR"/session_*.json; do
+    if [[ -f "$file" ]]; then
+        # Extract data using Python for reliable JSON parsing
+        python3 -c "
+import json
+import sqlite3
+import sys
+
+with open('$file', 'r') as f:
+    data = json.load(f)
+
+conn = sqlite3.connect('$DB_PATH')
+cursor = conn.cursor()
+
+cursor.execute(
