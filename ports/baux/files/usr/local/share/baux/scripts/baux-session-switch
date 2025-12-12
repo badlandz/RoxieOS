@@ -1,0 +1,17 @@
+#!/usr/local/bin/bash
+# Switch to nth tmux session (1-indexed)
+session_num=$1
+if [[ -z "$session_num" || ! "$session_num" =~ ^[1-9]$ ]]; then
+    exit 1
+fi
+
+# Get the nth session name
+session_name=$(tmux list-sessions -F "#{session_name}" | sed -n "${session_num}p")
+if [[ -n "$session_name" ]]; then
+    tmux switch-client -t "$session_name"
+else
+    # Create new session if it doesn't exist
+    session_name="$(hostname)-$session_num"
+    tmux new-session -d -s "$session_name"
+    tmux switch-client -t "$session_name"
+fi

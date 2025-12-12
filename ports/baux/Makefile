@@ -48,6 +48,8 @@ do-install:
 		${STAGEDIR}${PREFIX}/share/baux/scripts/baux-push
 	${INSTALL_SCRIPT} ${FILESDIR}${PREFIX}/share/baux/scripts/baux-switch \
 		${STAGEDIR}${PREFIX}/share/baux/scripts/baux-switch
+	${INSTALL_SCRIPT} ${FILESDIR}${PREFIX}/share/baux/scripts/baux-session-switch \
+		${STAGEDIR}${PREFIX}/share/baux/scripts/baux-session-switch
 	${INSTALL_DATA} ${FILESDIR}${PREFIX}/share/baux/nvim/init.lua \
 		${STAGEDIR}${PREFIX}/share/baux/nvim/
 	${INSTALL_DATA} ${FILESDIR}${PREFIX}/share/baux/nvim/lua/config/*.lua \
