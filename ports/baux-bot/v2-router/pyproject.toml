@@ -1,0 +1,21 @@
+[project]
+name = "baux-bot-router"
+version = "0.1.0"
+description = "Intelligent routing tier for BAUX-BOT v2.0 distributed AI ecosystem"
+authors = [
+    {name = "BAUX Team",email = "baux@roxieos.org"}
+]
+readme = "README.md"
+requires-python = "^3.9"
+dependencies = [
+    "baux-bot-shared @ file:///home/badlandz/src/RoxieOS/ports/baux-bot/v2-shared",
+    "aiohttp (>=3.13.2,<4.0.0)",
+    "redis (>=7.1.0,<8.0.0)",
+    "fastapi (>=0.124.2,<0.125.0)",
+    "uvicorn (>=0.38.0,<0.39.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
