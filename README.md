@@ -1,11 +1,12 @@
-# RoxieOS - BAUXBSD Development Environment
+# RoxieOS - Persistent Mesh & AI Integrated Development Environment
 
-**Immortal sessions across devices. AI-powered development. Zero friction cloning.**
+RoxieOS is an Operating System designed to create a BAUX-MESH. Proper deployment requires 2-3 (cheap) computers to operate properly.
+
+** The BAUX-MESH is an immortal sessions across devices. AI-powered development. Zero friction cloning.**
 
 * *BAUX-MESH - a Distributed session resurrection via Tailscale + Headscale*
 * *BAUX-MESH - the "ecosystem" result of tmux/nvim/tailscale/bash unifications*
 * *BAUX-MESH - the power is controlable thanks to [KEYMAPS-GLOBAL.md](KEYMAPS-GLOBAL.md)*
-
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![FreeBSD](https://img.shields.io/badge/FreeBSD-15.0+-red.svg)](https://www.freebsd.org/)
@@ -19,16 +20,16 @@
 ### **Quick Status**
 - ✅ **Core Components**: baux, bvi, ollama, keymaps working
 - ✅ **bwm Builds**: Window manager compiles successfully
-- ❌ **Installer**: Missing core components, requires manual fixes
-- ❌ **BAUX-MESH**: Not implemented (planned Phase 3)
+- ❌ **Installer**: Partially working but incomplete
+- ❌ **BAUX-MESH**: It's working, with AI RAG and BAUX-BOT "living" in BAUX-MESH
 
 ## Vision Summary
 
-RoxieOS is a three-layer development platform: **Live RoxieOS** (USB rescue tool) → **BAUX** (immortal toolkit in baux-mesh) → **baux-dev** (AI workstation full bare metal install). Boot anywhere, connect to mesh, resurrect your exact sessions instantly, access AI assistance across mesh networks. Add user live image and it becomes persistent access point to baux-mesh that can run from usb, disk, container, vm, sbc, whatever...
+RoxieOS is a multi-layer development platform: **Live RoxieOS** (USB rescue tool) → **BAUX** (immortal toolkit in baux-mesh) → **baux-dev** (AI workstation full bare metal install). Boot anywhere, connect to mesh, resurrect your exact sessions instantly, access AI assistance across mesh networks. Add user live image and it becomes persistent access point to baux-mesh that can run from usb, disk, container, vm, sbc, whatever...
 
 ## Overview
 
-RoxieOS is a FreeBSD-based operating system that merges **FreeBSD's networking excellence** with **Debian's accessibility mastery**. Create immortal development environments that persist across hardware, survive crashes, and sync via mesh networks. Linux was used, and remains used for developoment and testing, but suffers from bloat, contant "reinventing the (now incompatible) wheel," but large pool of usable code. FreeBSD, despite it's more limited collection of compatible software (opencode still an issue?!) remains the far superior platform to "unify" a small subset of ports (packages) to create something that can't be done with a "new software program." It's the result of alligning compatibility and conductivity between the key core existing systems that creates "baux-mesh," so "baux-mesh" is not a "program." BAUX-MESH is the "result" of a handfull of properly configured existing software componants.
+RoxieOS is FreeBSD based, but has a Debian fork with partial implementation. RoxieOS is a FreeBSD-based operating system that merges **FreeBSD's networking excellence** with **Debian's accessibility mastery**. Create immortal development environments that persist across hardware, survive crashes, and sync via mesh networks. Linux was used, and remains used for developoment and testing, but suffers from bloat, contant "reinventing the (now incompatible) wheel," but large pool of usable code. FreeBSD, despite it's more limited collection of compatible software (opencode still an issue?!) remains the far superior platform to "unify" a small subset of ports (packages) to create something that can't be done with a "new software program." It's the result of alligning compatibility and conductivity between the key core existing systems that creates "baux-mesh," so "baux-mesh" is not a "program." BAUX-MESH is the "result" of a handfull of properly configured existing software componants.
 
 ## Why
 
