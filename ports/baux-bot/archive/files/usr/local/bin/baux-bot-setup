@@ -1,0 +1,82 @@
+#!/bin/bash
+# baux-bot-setup.sh - Quick setup for BAUXBSD AI assistant
+# Run this after installing the baux-bot port
+
+set -e
+
+# Force CPU mode for compatibility
+export OLLAMA_GPU_LAYERS=0
+
+echo "=== BAUX BOT SETUP ==="
+echo
+
+# Check if Ollama is installed
+if ! command -v ollama >/dev/null 2>&1; then
+    echo "ERROR: Ollama not found. Please install it first:"
+    echo "  pkg install ollama"
+    exit 1
+fi
+
+echo "✓ Ollama found"
+
+# Check if Ollama service is running
+if ! pgrep -f ollama >/dev/null 2>&1; then
+    echo "Starting Ollama service..."
+    service ollama start || {
+        echo "Failed to start Ollama service. You may need to run:"
+        echo "  ollama serve"
+        echo "in another terminal, then re-run this setup."
+        exit 1
+    }
+fi
+
+echo "✓ Ollama service running"
+
+# Pull recommended model
+echo "Pulling recommended model (llama3.2:3b - fast and capable)..."
+if ! ollama list | grep -q "llama3.2:3b"; then
+    ollama pull llama3.2:3b
+    echo "✓ Model downloaded"
+else
+    echo "✓ Model already available"
+fi
+
+# Enable Ollama service for auto-start
+if ! grep -q "^ollama_enable=" /etc/rc.conf; then
+    echo 'ollama_enable="YES"' >> /etc/rc.conf
+    echo "✓ Ollama service enabled for auto-start"
+fi
+
+# Preload model in background
+echo "Preloading model in background..."
+ollama run llama3.2:3b "warmup" >/dev/null 2>&1 &
+
+# Check if baux-bot is installed
+if ! command -v baux-bot >/dev/null 2>&1; then
+    echo "ERROR: baux-bot not found. Please install the port first:"
+    echo "  cd /usr/ports/misc/baux-bot && make install clean"
+    exit 1
+fi
+
+echo "✓ baux-bot installed"
+
+# Check for RoxieOS repo
+if [[ ! -d "$HOME/src/RoxieOS" && ! -d "/src/roxieos" && -z "${ROXIE_ROOT:-}" ]]; then
+    echo "WARNING: RoxieOS repository not found in standard locations."
+    echo "Please ensure ~/src/RoxieOS exists or set ROXIE_ROOT environment variable."
+    echo "Example: export ROXIE_ROOT=/path/to/your/roxieos/repo"
+fi
+
+echo
+echo "=== SETUP COMPLETE ==="
+echo
+echo "To start using baux-bot:"
+echo "  baux-bot                    # Interactive mode"
+echo "  Alt+b in tmux              # Launch in new pane"
+echo
+echo "Commands:"
+echo "  'exit'                     # Quit"
+echo "  'status'                   # Show repo status"
+echo "  'read /path/to/file'       # Add file to context"
+echo
+echo "The bot will automatically monitor ~/src/RoxieOS/ for changes!"

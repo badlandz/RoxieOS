@@ -1,0 +1,129 @@
+#!/bin/bash
+# grok-workshop.sh - Interactive Grok workshop for BAUXBSD development
+# Allows reading files and chatting with Grok for assistance
+# Dec 09 2025
+
+set -euo pipefail
+
+API_KEY="${GROK_API_KEY:-}"
+if [[ -z "$API_KEY" ]]; then
+    echo "ERROR: GROK_API_KEY environment variable not set"
+    echo "Set it with: export GROK_API_KEY='your-api-key'"
+    exit 1
+fi
+
+# Context buffer for file contents (limit to ~10k tokens)
+CONTEXT=""
+MAX_CONTEXT_SIZE=10000
+
+log() { echo "[$(date '+%H:%M:%S')] $*" >&2; }
+
+add_to_context() {
+    local content="$1"
+    if [[ ${#CONTEXT} -gt $MAX_CONTEXT_SIZE ]]; then
+        CONTEXT="${CONTEXT: -8000}"  # Keep last 8k
+    fi
+    CONTEXT="${CONTEXT}\n$content"
+}
+
+read_file() {
+    local file="$1"
+    if [[ ! -f "$file" ]]; then
+        echo "File not found: $file"
+        return 1
+    fi
+    local content
+    content=$(head -n 200 "$file" 2>/dev/null || echo "Error reading file")
+    add_to_context "=== FILE: $file ===\n$content"
+    echo "Added $file to context (${#content} chars)"
+}
+
+send_to_grok() {
+    local prompt="$1"
+    local full_prompt="You are Grok, an AI assistant for BAUXBSD/FreeBSD development. Help with coding, debugging, and system tasks.
+
+Context from files:
+$CONTEXT
+
+User: $prompt
+
+Provide practical, actionable advice. If suggesting code changes, be specific."
+
+    # Escape for JSON
+    local escaped_prompt
+    escaped_prompt=$(jq -Rs . <<< "$full_prompt")
+
+    local response
+    response=$(curl -s -X POST "https://api.x.ai/v1/chat/completions" \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $API_KEY" \
+        -d "{
+            \"model\": \"grok-3\",
+            \"messages\": [
+                {
+                    \"role\": \"user\",
+                    \"content\": $escaped_prompt
+                }
+            ],
+            \"max_tokens\": 1024,
+            \"temperature\": 0.7
+        }")
+
+    if echo "$response" | jq -e '.choices[0].message.content' >/dev/null 2>&1; then
+        echo "$response" | jq -r '.choices[0].message.content'
+    else
+        echo "Error: Invalid API response. Raw: $response"
+    fi
+}
+
+echo "Grok Workshop v1.0 - Interactive BAUXBSD Development Assistant"
+echo "Commands:"
+echo "  read <file>    - Add file to context"
+echo "  status         - Show git status"
+echo "  context        - Show current context size"
+echo "  clear          - Clear context"
+echo "  help           - Show this help"
+echo "  quit           - Exit"
+echo ""
+
+while true; do
+    printf "grok-workshop> "
+    read -r input || break
+    [[ -z "$input" ]] && continue
+
+    case "$input" in
+        quit|exit)
+            echo "Goodbye!"
+            break
+            ;;
+        help)
+            echo "Commands:"
+            echo "  read <file>    - Add file to context"
+            echo "  status         - Show git status"
+            echo "  context        - Show current context size"
+            echo "  clear          - Clear context"
+            echo "  help           - Show this help"
+            echo "  quit           - Exit"
+            ;;
+        status)
+            git status --short 2>/dev/null || echo "Not in a git repo"
+            ;;
+        context)
+            echo "Context size: ${#CONTEXT} chars"
+            ;;
+        clear)
+            CONTEXT=""
+            echo "Context cleared"
+            ;;
+        read*)
+            file="${input#read }"
+            [[ -z "$file" ]] && echo "Usage: read <file>" && continue
+            read_file "$file"
+            ;;
+        *)
+            log "Sending to Grok: $input"
+            send_to_grok "$input"
+            echo ""
+            ;;
+    esac
+done

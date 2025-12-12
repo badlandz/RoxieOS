@@ -1,0 +1,44 @@
+#!/bin/bash
+# gemini-chat.sh - Google Gemini API chat client for BAUXBSD
+# Dec 09 2025
+
+set -euo pipefail
+
+API_KEY="${GEMINI_API_KEY:-}"
+if [[ -z "$API_KEY" ]]; then
+    echo "ERROR: GEMINI_API_KEY environment variable not set"
+    echo "Set it with: export GEMINI_API_KEY='your-api-key'"
+    exit 1
+fi
+
+# Collect all arguments as the prompt
+if [[ $# -eq 0 ]]; then
+    echo "Usage: gemini-chat <prompt>"
+    exit 1
+fi
+
+PROMPT="$*"
+
+# API call
+RESPONSE=$(curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$API_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{
+        \"contents\": [
+            {
+                \"parts\": [
+                    {
+                        \"text\": \"$PROMPT\"
+                    }
+                ]
+            }
+        ]
+    }")
+
+# Check if response is valid JSON and extract text
+if echo "$RESPONSE" | jq -e '.candidates[0].content.parts[0].text' >/dev/null 2>&1; then
+    TEXT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text')
+else
+    TEXT="Error: Invalid API response format. Raw response: $RESPONSE"
+fi
+
+echo "$TEXT"
