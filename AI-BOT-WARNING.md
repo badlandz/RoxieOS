@@ -104,9 +104,60 @@ If you're unsure about a code pattern:
 2. Look for similar patterns in the codebase
 3. Ask a human developer - don't assume you know better
 
+## 🤖 AI Behavior Guidelines
+
+### When Analyzing This Code:
+1. **Assume Intentionality**: If something looks "wrong," it's probably deliberate
+2. **Check Documentation**: Look for design rationale in docs/ and comments
+3. **Ask Before Changing**: Don't suggest fixes without understanding context
+4. **Preserve Patterns**: Maintain existing BAUX conventions even if they seem unusual
+
+### Safe AI Activities:
+- ✅ Bug fixes for actual crashes/errors
+- ✅ Performance optimizations
+- ✅ Documentation improvements
+- ✅ New feature development following BAUX patterns
+- ✅ Testing and validation
+
+### Dangerous AI Activities:
+- ❌ Code "cleanup" or refactoring
+- ❌ Path "normalization"
+- ❌ Structure "simplification"
+- ❌ Style "corrections"
+- ❌ Architecture "improvements"
+
+## 🖥️ Multi-System Development Environment
+
+**CRITICAL**: BAUX development uses multiple systems with different rules:
+
+### .90 (Debian - Current System)
+- **Purpose**: Code reading, planning, OpenCode TUI communication ONLY
+- **Code Location**: `/src/RoxieOS`
+- **Restrictions**: NO building, NO testing, NO code modifications
+- **Privilege Escalation**: `sudo`
+- **Reason**: Different tools, paths, and behaviors vs FreeBSD
+
+### .101 (FreeBSD - Build/Test System)
+- **Purpose**: PRIMARY development environment for ALL code work
+- **Code Location**: `~/src/RoxieOS`
+- **SSH Access**: `ssh badlandz@192.168.33.101`
+- **Privilege Escalation**: `doas`
+- **Usage**: ALL code edits, builds, and testing happen HERE
+
+### .133 (FreeBSD - Deployment Test System)
+- **Purpose**: Deployment and integration testing
+- **Code Location**: `~/src/RoxieOS`
+- **SSH Access**: `ssh badlandz@192.168.33.133`
+- **Usage**: Test deployments after building on .101
+
+### Workflow Rules
+- **NEVER build/test on .90** - Use SSH to .101 for all development work
+- **ALWAYS work remotely** - SSH to .101 for code changes, builds, tests
+- **Path translation required** - `/src/RoxieOS` (local) vs `~/src/RoxieOS` (remote)
+
 ## 🚫 Final Warning
 
-**Automated tools that "fix" this code will break BAUX functionality.** The differences are features, not bugs. Respect the fork.
+**Automated tools that "fix" this code will break BAUX functionality.** The differences are features, not bugs. Respect the fork and multi-system workflow.
 
 ---
 
