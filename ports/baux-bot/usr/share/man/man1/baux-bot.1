@@ -1,0 +1,157 @@
+.TH BAUX-BOT 1 "December 12, 2025" "RoxieOS v0.1" "BAUX-BOT Manual"
+.SH NAME
+baux-bot \- AI-powered development assistant for RoxieOS
+.SH SYNOPSIS
+.B baux-bot.sh
+.RI [ options ]
+.SH DESCRIPTION
+.B baux-bot
+is an intelligent AI assistant specifically designed for RoxieOS development. It maintains a comprehensive understanding of the entire codebase through continuous RAG (Retrieval-Augmented Generation) scanning, providing context-aware assistance for development tasks.
+.PP
+The bot automatically scans the /src directory tree, builds a knowledge base of all source files, git repositories, and recent changes, then uses this context to provide accurate, codebase-aware responses.
+.SH FEATURES
+.TP
+.B Real-time Codebase Awareness
+Continuously monitors /src for changes and rebuilds its knowledge base automatically
+.TP
+.B Multi-Model Support
+Prioritizes deepseek-coder:33b, falls back through qwen2.5:7b, llama3.2:3b, gemma2:2b, phi3:3.8b, smollm2:135m
+.TP
+.B Persistent Context
+Maintains ~2000-line RAG file with git status, recent commits, and latest source files
+.TP
+.B Interactive Mode
+Runs continuously until explicitly exited with the word "exit"
+.TP
+.B Comprehensive Logging
+Logs all interactions to /var/log/baux-bot/current.log
+.SH USAGE
+.SS Starting the Bot
+.nf
+$ ./baux-bot.sh
+BAUX BOT v6.2 alive — model: deepseek-coder:33b — /src is law
+Type anything. Only the word 'exit' kills me.
+
+you >
+.fi
+.SS Example Interaction
+.nf
+you > how do I add a new keybind to bauxwm?
+BAUX BOT: To add a new keybind to bauxwm, modify the config.h file in the dwm source directory. Look for the keys[] array and add your binding following the existing pattern...
+
+you > show me the current tmux configuration
+BAUX BOT: The current tmux configuration is in /usr/local/share/tmux/baux.conf. Key features include:
+- Leader key set to C-Space
+- Vi-style navigation
+- Session resurrection enabled
+- Custom status bar with BAUX branding
+.fi
+.SS Special Commands
+.TP
+.B exit
+Terminate the bot session
+.TP
+.B (any other input)
+Send query to AI model with full codebase context
+.SH CONFIGURATION
+.SS Environment Variables
+.TP
+.B SRC_ROOT
+Root directory to scan (default: /src)
+.TP
+.B MODEL_PREF
+Array of preferred models in priority order
+.SS Directory Structure
+.nf
+/var/log/baux-bot/          # Log files
+  └── current.log           # Current session log
+/var/lib/baux-bot/rag/      # RAG knowledge base
+  └── current.txt           # Current codebase snapshot
+.fi
+.SH MODEL SELECTION
+The bot automatically selects the best available model from:
+.PP
+1. deepseek-coder:33b (preferred for coding tasks)
+.br
+2. qwen2.5:7b (general purpose)
+.br
+3. llama3.2:3b (fallback)
+.br
+4. gemma2:2b (lightweight)
+.br
+5. phi3:3.8b (Microsoft Phi)
+.br
+6. smollm2:135m (minimal fallback)
+.PP
+Models are automatically pulled if not present.
+.SH RAG SYSTEM
+.SS Automatic Rebuilding
+The bot monitors the source tree and rebuilds the RAG when files change:
+.nf
+- Git repository status and recent commits
+- Latest 50 source files (*.sh, *.c, *.lua, *.conf, *.md, *.vim)
+- Full content of recent files (last 200 lines each)
+.fi
+.SS Manual Rebuilding
+The RAG rebuilds automatically when source files are modified. No manual intervention required.
+.SH INTEGRATION
+.SS TMUX Integration
+Designed to work within BAUX TMUX sessions, providing context-aware assistance during development.
+.SS BVI Integration
+Can be called from within the BVI editor for code-specific questions.
+.SS BAUX Ecosystem
+Fully integrated with the BAUX session manager and distributed storage system.
+.SH EXAMPLES
+.SS Development Questions
+.nf
+you > how does the baux session resurrection work?
+you > what changed in the latest commit?
+you > explain the tmux configuration structure
+.fi
+.SS Code Assistance
+.nf
+you > write a function to parse baux config files
+you > debug this tmux error: [error message]
+you > optimize this shell script for performance
+.fi
+.SS System Questions
+.nf
+you > how do I add a new package to the ports tree?
+you > explain the debian packaging workflow
+you > what are the current build dependencies?
+.fi
+.SH TROUBLESHOOTING
+.SS Common Issues
+.TP
+.B "ERROR: no /src/roxieos"
+Ensure the source tree is mounted at /src or set SRC_ROOT environment variable
+.TP
+.B "ollama connection failed"
+Check that Ollama service is running and models are available
+.TP
+.B "RAG rebuild slow"
+Normal on HDD storage; SSD systems are much faster
+.SS Logs
+Check /var/log/baux-bot/current.log for detailed error information and interaction history.
+.SH ROADMAP
+.SS v5.1 (Immediate)
+- Fix broken pipe errors in RAG building
+- Add short-term memory across restarts
+- Add explicit "read FILE" command
+.SS v5.5 (This Weekend)
+- Auto-detect repository root
+- Add daemon mode with notifications
+- Global keybinding integration
+.SS v6.0 (Before ISO)
+- Fine-tuned model for zero RAG on fresh boot
+- Package as roxieos-ai deb
+- Offline fallback capability
+.SH SEE ALSO
+.BR baux (1),
+.BR bvi (1),
+.BR tmux (1),
+.BR ollama (1)
+.SH AUTHOR
+badlandz <badlandz@bauxbsd.org>
+.SH VERSION
+v6.2 - November 20, 2025

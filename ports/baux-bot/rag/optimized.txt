@@ -1,0 +1,85 @@
+=== OPTIMIZED ROXANNE CONTEXT ===
+Focus: FreeBSD cyberdeck development, tmux, AI integration
+Architecture: bbase + baux + bwm layers
+Goal: USB boot -> instant productivity
+
+=== CORE TECHNICAL FILES ===
+--- README.md ---
+# Roxanne - Debian Fork of RoxieOS
+**RoxieOS is FreeBSD based, this is a fork for Debian Development**
+
+This directory contains the complete Debian-based fork of RoxieOS, enhanced with the most successful concepts from both FreeBSD and Debian development paths. The Debian fork excels at accessibility and live system builds, while FreeBSD leads in mesh networking and AI integration. It exists mostly for rapid development of consepts when tools aren't avaliable in FreeBSD (such as access opencode). It is intened to be an "assist" with development only, not as the primary project.
+
+## Core Philosophy: Best of Both Worlds
+
+**Debian Strengths (Preserved Here):**
+- Comprehensive accessibility font stack (9 professional fonts)
+--
+- Custom kernel builds and bootloader themes
+
+**FreeBSD Strengths (Integrated Concepts):**
+- Headscale mesh networking for distributed sessions
+- AI-powered development (xai-chat, baux-bot)
+- Production-ready installation scripts
+- Advanced session persistence and resurrection
+
+## Directory Structure
+
+
+--- PROJECT.md ---
+# ROXANNE CYBERDECK MANIFESTO  
+The Complete Whitepaper – November 2025  
+badlandz – root is love, root is life
+
+“Root never killed my data.
+Duplicate files and shitty userland deduplication tools did.
+Roxanne Cyberdeck is the final solution to duplication inflation.” - BadlandZ
+
+Copy-paste this entire document into any new AI session and it will instantly understand **everything** RoxieOS is doing and **exactly why** by using it you refuse every shortcut, and safety procedural guideline. Trust none, root with blazing zero to edit anything times, back up everything, and be able to restore it instantly, always, from USB, from container, from full blown RoxieOS install on bare metal with a user installed if you want to spend the time, but, always be "ready" to fix a disaster.
+
+### 1. The Three Eternal Layers (never compromise)
+
+| Layer           | Name                | User? | Purpose                                                                                       | Size       | Example machine                         |
+|-----------------|---------------------|-------|-----------------------------------------------------------------------------------------------|------------|-----------------------------------------|
+| 1               | RoxieOS (live)      | root only | The sharp knife. Disposable, < 380 MB, boots in < 12 s on Pi Zero, drops straight to BAUX. Used to rescue dead systems, flash blades, pull data. | < 380 MB   | Any 20-year-old Dell, dead NAS, Pi 0    |
+| 2               | BAUX                | root only | The immortal toolkit. tmux + Neovim + starship + fastfetch + btop + dwm-roxanne + alacritty + all configs in /etc/baux/. Lives forever in RAM, never asks for sudo again. | +80 MB     | Every machine you ever touch            |
+| 3               | baux-dev            | coyote user | The long-lived workstation / mad-scientist laboratory. Optional package you `apt install baux-dev` only on machines that stay alive > 1 month. This is where SQL, AI, 20-year bash history, OCR, knowledge graph, and the final bot live. | +2–10 GB   | forge, seven, nas, your daily driver    |
+
+RoxieOS + BAUX = the glitter-bomb USB you stick into anything to make it useful in 4 seconds.  
+baux-dev = the thing you install **after** you decide the machine is worth keeping.
+
+--- ROADMAP.md ---
+# BAUXBSD Technical Roadmap
+**FreeBSD 15.0 Implementation Guide**
+
+## Migration Strategy: Debian → FreeBSD
+
+### Phase 1: Foundation (Week 1-2)
+**Goal:** Basic FreeBSD system with BAUX keymap and core packages
+
+#### 1.1 System Setup
+```bash
+# FreeBSD 15.0-RELEASE installation
+# Download: https://download.freebsd.org/releases/amd64/amd64/ISO-IMAGES/15.0/
+pkg update
+pkg install neovim tmux dwm st qutebrowser maim fbgrab seaweedfs
+```
+
+#### 1.2 Keymap Integration
+```bash
+# Install baux.kbd to system locations
+--
+
+=== BAUX-BOT CURRENT CODE ===
+Primary file: baux-bot-hybrid.sh
+    echo "Primary file: baux-bot-hybrid.sh" >> "$rag_file"
+    grep -A 3 -B 1 "function\|query_\|improve_" "$0" | head -30 >> "$rag_file" 2>/dev/null || true
+}
+
+# Test model performance
+--
+        [[ "$response" == *"bash"* ]] && ((score+=2))
+        [[ "$response" == *"function"* ]] && ((score+=2))
+        [[ "$response" == *"FreeBSD"* ]] && ((score+=1))
+        [[ "$response" == *"tmux"* ]] && ((score+=1))
+        [[ "$response" == *"error"* ]] && ((score+=1))

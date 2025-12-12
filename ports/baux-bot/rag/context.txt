@@ -1,0 +1,1409 @@
+=== ROXANNE CYBERDECK PROJECT CONTEXT ===
+Generated: Fri Dec 12 09:54:02 UTC 2025
+Project: FreeBSD-based portable development environment
+Architecture: bbase (foundation) + baux (session manager) + bwm (window manager)
+Goal: USB boot -> root shell -> instant productivity with tmux + neovim + AI
+
+=== DIRECTORY ACCESS CONFIGURATION ===
+Directory: /src/RoxieOS/ports/bwm
+Access: readonly
+Description: FreeBSD BWM port (reference implementation)
+
+Directory: /src/roxanne/packages/bwm
+Access: build
+Description: Debian BWM package (merge target 1)
+
+Directory: /src/roxanne/packages/bauxwm
+Access: build
+Description: Debian BAUXWM package (merge target 2)
+
+Directory: /src/roxanne/packages/baux-bot
+Access: build
+Description: BAUX-BOT package (build/modify directory)
+
+Directory: /tmp/baux-bot-build
+Access: build
+Description: Temporary build directory for testing
+
+=== BAUX-BOT CURRENT CODE ===
+File: baux-bot-hybrid.sh (build directory)
+#!/bin/bash
+# BAUX-BOT Hybrid - Ollama + GROK API for advanced reasoning
+
+set -euo pipefail
+
+# Configuration
+PROJECT_ROOT="/src/roxanne"
+RAG_DIR="./rag"
+MODEL="qwen2.5-coder:1.5b"
+GROK_API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
+
+# Directory access control configuration
+# Format: directory_path:access_level:description
+DIRECTORY_CONFIG=(
+    "/src/RoxieOS/ports/bwm:readonly:FreeBSD BWM port (reference implementation)"
+    "/src/roxanne/packages/bwm:build:Debian BWM package (merge target 1)"
+    "/src/roxanne/packages/bauxwm:build:Debian BAUXWM package (merge target 2)"
+    "/src/roxanne/packages/baux-bot:build:BAUX-BOT package (build/modify directory)"
+    "/tmp/baux-bot-build:build:Temporary build directory for testing"
+)
+
+mkdir -p "$RAG_DIR"
+
+# Directory access control functions
+get_directory_access() {
+    local dir_path="$1"
+    for config in "${DIRECTORY_CONFIG[@]}"; do
+        local config_dir config_access config_desc
+        IFS=':' read -r config_dir config_access config_desc <<< "$config"
+        if [[ "$dir_path" == "$config_dir" ]]; then
+            echo "$config_access"
+            return
+        fi
+    done
+    echo "unknown"
+}
+
+is_readonly() {
+    local dir_path="$1"
+    # Check if the directory or any parent directory is readonly
+    while [[ "$dir_path" != "/" ]]; do
+        if [[ "$(get_directory_access "$dir_path")" == "readonly" ]]; then
+            return 0
+        fi
+        dir_path=$(dirname "$dir_path")
+    done
+    return 1
+}
+
+is_build_dir() {
+
+=== DIRECTORY CONTEXT: bwm ===
+Path: /src/RoxieOS/ports/bwm
+Access Level: readonly
+Description: FreeBSD BWM port (reference implementation)
+
+--- files/status.sh (readonly) ---
+#!/usr/local/bin/bash
+# BAUXWM status bar — shows session info when BAUXWM=1
+
+get_sessions() {
+    # Get tmux sessions if available
+    if command -v tmux >/dev/null 2>&1; then
+        tmux list-sessions 2>/dev/null | awk -F: '{print $1}' | tr '\n' ' ' | sed 's/ $//'
+    else
+        echo ""
+    fi
+}
+
+get_battery() {
+    # Try to get battery info (FreeBSD)
+    if [ -f /dev/acpi ]; then
+        # This is a simplified version - would need acpi or similar
+        echo "AC"
+    else
+        echo ""
+    fi
+}
+
+while :; do
+    sessions=""
+    if [ "$BAUXWM" = "1" ]; then
+        sessions="$(get_sessions)"
+        if [ -n "$sessions" ]; then
+            sessions="[$sessions] "
+        fi
+    fi
+---
+--- README.md (readonly) - COMPRESSED DIFF ---
+SOURCE: /src/RoxieOS/ports/bwm/README.md
+COMPARING WITH: /src/roxanne/packages/bwm/README.md
+--- /src/RoxieOS/ports/bwm/README.md	2025-12-07 10:11:02.074807185 +0000
++++ /src/roxanne/packages/bwm/README.md	2025-12-03 05:54:38.651897193 +0000
+@@ -8,7 +8,6 @@
+ - **Session display**: Shows BAUX session names in status bar
+ - **Mod4 integration**: Mod4+1-9 switches sessions (same as tmux)
+ - **BAUXWM=1**: Environment variable controls tmux status visibility
+-- **Gruvbox theming**: Unified colors for borders, bar, and windows
+ - **Minimal footprint**: ~25MB installed
+ - **Keyboard-native**: No mouse required
+ 
+@@ -45,6 +44,5 @@
+ - Current BAUX session names (when BAUXWM=1)
+ - System information (battery, time)
+ - Active window title
+-- **Gruvbox colors**: Consistent with console and editor theming
+ 
+-bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory, all with unified Gruvbox aesthetics.
+\ No newline at end of file
++bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory.
+\ No newline at end of file
+FILES DIFFER - unified diff above
+
+COMPARING WITH: /src/roxanne/packages/baux-bot/README.md
+--- /src/RoxieOS/ports/bwm/README.md	2025-12-07 10:11:02.074807185 +0000
++++ /src/roxanne/packages/baux-bot/README.md	2025-12-03 05:54:38.648223714 +0000
+@@ -1,50 +1,78 @@
+-# bwm - Minimal Window Manager
+-**BAUXBSD window management layer**
++# bbot - AI Assistant
++**BAUXBSD v0.1 AI integration**
+ 
+-`bwm` is a minimal, keyboard-driven window manager based on dwm, designed for perfect integration with BAUX session management.
++Current version: v5.0 (Nov 20 2025)  
++Location: `/usr/local/bin/bbot.sh`
+ 
+-## Core Features
++Live, repo-aware AI assistant with local models and cloud fallback for BAUXBSD development workflow.
+ 
+-- **Session display**: Shows BAUX session names in status bar
+-- **Mod4 integration**: Mod4+1-9 switches sessions (same as tmux)
+-- **BAUXWM=1**: Environment variable controls tmux status visibility
+-- **Gruvbox theming**: Unified colors for borders, bar, and windows
+-- **Minimal footprint**: ~25MB installed
+-- **Keyboard-native**: No mouse required
+-
+-## Package Structure
+-
+-```
+-bwm/
+-├── files/
+-│   ├── usr/local/bin/dwm          # Patched dwm binary
+-│   └── usr/local/bin/status.sh   # Status bar script
+-├── patches/
+-│   └── baux.patch              # dwm patches for BAUX integration
+-└── Makefile                     # FreeBSD port build
+-```
+-
+-## Keybindings
+-
+-| Command | Action | Context |
+-|---------|---------|---------|
+-| Mod4+1-9 | Switch session | Universal |
+-| Mod4+hjkl | Navigate tags | X11 only |
+-| Mod4+Enter | New terminal | Universal |
+-| Mod4+b | Toggle status bar | Universal |
+-
+-## Integration
+-
+-- **baux**: Session names via BAUXWM=1 environment variable
+-- **bterm**: Terminal spawning with consistent theming
+-- **chaos**: Screensaver integration
+-
+-## Status Bar
+-
+-The bwm status bar shows:
+-- Current BAUX session names (when BAUXWM=1)
+-- System information (battery, time)
+-- Active window title
+-- **Gruvbox colors**: Consistent with console and editor theming
++Uses? 
++#1 VIM TUTOR
++#2 TMUX TUTOR
++#3 ROXIEOS MAN RTFM'ing everything os helper bot
+ 
+-bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory, all with unified Gruvbox aesthetics.
+\ No newline at end of file
++"AI sheparding" 2-bot question:
++* local 2-3 second response
++* local 2-3 second "better AI picker"
++  * suggests which AI would likely have a better answer
++    * SEND: send the qustion to smarter bot
++    * Edit: open the question, and answer, in a buffer in vim that:
++      * Better rewrite the question
++      * Select which of top 3 AI choices to send it to (4th line "other" to use another AI)
++
++### What It Does Right Now (and does it well)
++
++- Hard-coded to the full monorepo at `/src/roxieos`
++- Scans every package and the live-build tree on every change
++- Builds a ~2000-line RAG file with git status + 40 newest source files
++- Auto-detects and prefers deepseek-coder:33b → qwen → smollm fallback
++- Rebuilds RAG automatically when any file in the monorepo is touched
++- Only exits on the literal word `exit`
++- Logs everything to `bot/chatlogs/current.log`
++- Survives deepseek’s first-token penance with a spinner
++
++It already feels like the model was trained on the entire distro, because it literally reads the entire distro every time.
++
++### Roadmap — Where This Goes Next (in order)
++
++1. **v5.1 – Immediate (next 48 hours)**
++   - Replace the `find | sort | head` pipe with `|| true` or `xargs -0` to kill the “broken pipe” spam forever
++   - Add last 50 lines of `current.log` into every prompt → short-term memory across restarts
++   - Add explicit “read FILE” command that forces a file into RAG even if it’s cold
++
++2. **v5.5 – This weekend**
++   - Move from hard-coded `/src/roxieos` to auto-detect via git root or `$ROXIE_ROOT` env var
++   - Add `baux-bot --daemon` mode that runs in background and speaks through `notify-send` or tmux popup
++   - Bind to `Alt + p` globally via bauxwm or tmux leader
++
++3. **v6.0 – Before ISO release**
++   - Ship a tiny 3–7B fine-tune (deepseek-coder:6.7b or qwen2.5:7b) trained on every file + every chatlog → zero RAG needed on fresh boot
++   - Package as `roxieos-ai` deb (4 GB gguf)
++   - Make `baux-bot` fall back to the fine-tuned model when no network/ollama server
++
++4. **v7.0 – Post v0.1**
++   - Multi-modal: screenshot → bot sees your tmux layout and comments on your rice
++   - Voice mode (whisper + piper) so you can yell at it from across the room
++   - Self-improvement loop: “that answer sucked, fix it” → append correction to training data
++
++5. **v10.0 – The Final Boss**
++   - Bot becomes the package manager: “add a new keybind for chaos screensaver” → writes the patch → debuild → installs it → tells you it’s done
++   - Runs entirely on the Pi Zero in your pocket with a 1.3B fine-tune
++   - You never type again
++
++### Current Limitations (we know, we’re not blind)
++
++- RAG rebuild is a little slow on 5400 rpm HDDs
++- Deepseek 33b first-token latency is penance for our sins
++- No memory between sessions (fixed in v5.1)
++- Hard-coded path (fixed in v5.5)
++
++But right now, today, this script is already the most useful local coding assistant 99 % of people have ever had, because it literally reads your entire OS every time you blink.
++
++Leave it as-is for the Rick-Roll Edition.
++
++The sarcasm, the red, the chaos screensaver, and this bot that knows every line you wrote while you slept — that’s the soul of RoxieOS v0.1.
++
++Everything after this is just making the soul stronger.
++
++— badlandz, November 20 2025  
+FILES DIFFER - unified diff above
+
+---
+--- files/config.mk (readonly) ---
+# dwm version
+VERSION = 6.4
+
+# Customize below to fit your system
+
+# paths
+PREFIX = /usr/local
+MANPREFIX = ${PREFIX}/share/man
+
+X11INC = /usr/local/include
+X11LIB = /usr/local/lib
+
+# Xinerama, comment if you don't want it
+XINERAMALIBS  = -lXinerama
+XINERAMAFLAGS = -DXINERAMA
+
+# freetype
+FREETYPELIBS = -lfontconfig -lXft
+FREETYPEINC = /usr/local/include/freetype2
+# OpenBSD (uncomment)
+#FREETYPEINC = ${X11INC}/freetype2
+#MANPREFIX = ${PREFIX}/man
+
+# includes and libs
+INCS = -I${X11INC} -I${FREETYPEINC}
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS}
+
+# flags
+CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700L -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
+#CFLAGS   = -g -std=c99 -pedantic -Wall -O0 ${INCS} ${CPPFLAGS}
+---
+
+=== DIRECTORY CONTEXT: bwm ===
+Path: /src/roxanne/packages/bwm
+Access Level: build
+Description: Debian BWM package (merge target 1)
+
+--- suckless/script2.sh (build) ---
+#!/usr/bin/env bash
+
+# Simple script to mirror core suckless git repos.
+# Initial run: Full clone of history/branches/tags.
+# Subsequent runs: Fetch only new changes (deltas) for efficiency.
+# Handles missing repos gracefully (warns and skips).
+# Edit REPOS array to add/remove projects.
+# Usage: ./mirror-suckless-repos.sh [DEST_DIR]  (defaults to ~/suckless-mirror/repos)
+
+# Config
+BASE_URL="https://git.suckless.org"
+REPOS=(
+  dwm         # Dynamic Window Manager
+  st          # Simple Terminal
+  dmenu       # Dynamic Menu
+---
+--- suckless/script.sh (build) ---
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Where everything will be stored
+DEST="${1:-$HOME/suckless-mirror}"
+mkdir -p "$DEST"
+
+# 1. Mirror ALL git repositories
+echo "=== Mirroring git repositories ==="
+repos=(
+  dwm
+  st
+  dmenu
+  surf
+  ii
+---
+--- usr/share/bauxwm/bin/status.sh (build) - COMPRESSED DIFF ---
+SOURCE: /src/roxanne/packages/bwm/usr/share/bauxwm/bin/status.sh
+COMPARING WITH: /src/roxanne/packages/bauxwm/usr/share/bauxwm/bin/status.sh
+FILES ARE IDENTICAL
+
+---
+--- debian/bauxwm/usr/share/bauxwm/bin/status.sh (build) ---
+#!/bin/sh
+# Roxanne status — only time, red on black, updates every 10s
+while :; do
+    xsetroot -name "$(date '+%a %d %b %H:%M')"
+    sleep 10
+done
+---
+--- README.md (build) - COMPRESSED DIFF ---
+SOURCE: /src/roxanne/packages/bwm/README.md
+COMPARING WITH: /src/RoxieOS/ports/bwm/README.md
+--- /src/roxanne/packages/bwm/README.md	2025-12-03 05:54:38.651897193 +0000
++++ /src/RoxieOS/ports/bwm/README.md	2025-12-07 10:11:02.074807185 +0000
+@@ -8,6 +8,7 @@
+ - **Session display**: Shows BAUX session names in status bar
+ - **Mod4 integration**: Mod4+1-9 switches sessions (same as tmux)
+ - **BAUXWM=1**: Environment variable controls tmux status visibility
++- **Gruvbox theming**: Unified colors for borders, bar, and windows
+ - **Minimal footprint**: ~25MB installed
+ - **Keyboard-native**: No mouse required
+ 
+@@ -44,5 +45,6 @@
+ - Current BAUX session names (when BAUXWM=1)
+ - System information (battery, time)
+ - Active window title
++- **Gruvbox colors**: Consistent with console and editor theming
+ 
+-bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory.
+\ No newline at end of file
++bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory, all with unified Gruvbox aesthetics.
+\ No newline at end of file
+FILES DIFFER - unified diff above
+
+COMPARING WITH: /src/roxanne/packages/baux-bot/README.md
+--- /src/roxanne/packages/bwm/README.md	2025-12-03 05:54:38.651897193 +0000
++++ /src/roxanne/packages/baux-bot/README.md	2025-12-03 05:54:38.648223714 +0000
+@@ -1,48 +1,78 @@
+-# bwm - Minimal Window Manager
+-**BAUXBSD window management layer**
++# bbot - AI Assistant
++**BAUXBSD v0.1 AI integration**
+ 
+-`bwm` is a minimal, keyboard-driven window manager based on dwm, designed for perfect integration with BAUX session management.
++Current version: v5.0 (Nov 20 2025)  
++Location: `/usr/local/bin/bbot.sh`
+ 
+-## Core Features
++Live, repo-aware AI assistant with local models and cloud fallback for BAUXBSD development workflow.
+ 
+-- **Session display**: Shows BAUX session names in status bar
+-- **Mod4 integration**: Mod4+1-9 switches sessions (same as tmux)
+-- **BAUXWM=1**: Environment variable controls tmux status visibility
+-- **Minimal footprint**: ~25MB installed
+-- **Keyboard-native**: No mouse required
+-
+-## Package Structure
+-
+-```
+-bwm/
+-├── files/
+-│   ├── usr/local/bin/dwm          # Patched dwm binary
+-│   └── usr/local/bin/status.sh   # Status bar script
+-├── patches/
+-│   └── baux.patch              # dwm patches for BAUX integration
+-└── Makefile                     # FreeBSD port build
+-```
+-
+-## Keybindings
+-
+-| Command | Action | Context |
+-|---------|---------|---------|
+-| Mod4+1-9 | Switch session | Universal |
+-| Mod4+hjkl | Navigate tags | X11 only |
+-| Mod4+Enter | New terminal | Universal |
+-| Mod4+b | Toggle status bar | Universal |
+-
+-## Integration
+-
+-- **baux**: Session names via BAUXWM=1 environment variable
+-- **bterm**: Terminal spawning with consistent theming
+-- **chaos**: Screensaver integration
+-
+-## Status Bar
+-
+-The bwm status bar shows:
+-- Current BAUX session names (when BAUXWM=1)
+-- System information (battery, time)
+-- Active window title
++Uses? 
++#1 VIM TUTOR
++#2 TMUX TUTOR
++#3 ROXIEOS MAN RTFM'ing everything os helper bot
+ 
+-bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory.
+\ No newline at end of file
++"AI sheparding" 2-bot question:
++* local 2-3 second response
++* local 2-3 second "better AI picker"
++  * suggests which AI would likely have a better answer
++    * SEND: send the qustion to smarter bot
++    * Edit: open the question, and answer, in a buffer in vim that:
++      * Better rewrite the question
++      * Select which of top 3 AI choices to send it to (4th line "other" to use another AI)
++
++### What It Does Right Now (and does it well)
++
++- Hard-coded to the full monorepo at `/src/roxieos`
++- Scans every package and the live-build tree on every change
++- Builds a ~2000-line RAG file with git status + 40 newest source files
++- Auto-detects and prefers deepseek-coder:33b → qwen → smollm fallback
++- Rebuilds RAG automatically when any file in the monorepo is touched
++- Only exits on the literal word `exit`
++- Logs everything to `bot/chatlogs/current.log`
++- Survives deepseek’s first-token penance with a spinner
++
++It already feels like the model was trained on the entire distro, because it literally reads the entire distro every time.
++
++### Roadmap — Where This Goes Next (in order)
++
++1. **v5.1 – Immediate (next 48 hours)**
++   - Replace the `find | sort | head` pipe with `|| true` or `xargs -0` to kill the “broken pipe” spam forever
++   - Add last 50 lines of `current.log` into every prompt → short-term memory across restarts
++   - Add explicit “read FILE” command that forces a file into RAG even if it’s cold
++
++2. **v5.5 – This weekend**
++   - Move from hard-coded `/src/roxieos` to auto-detect via git root or `$ROXIE_ROOT` env var
++   - Add `baux-bot --daemon` mode that runs in background and speaks through `notify-send` or tmux popup
++   - Bind to `Alt + p` globally via bauxwm or tmux leader
++
++3. **v6.0 – Before ISO release**
++   - Ship a tiny 3–7B fine-tune (deepseek-coder:6.7b or qwen2.5:7b) trained on every file + every chatlog → zero RAG needed on fresh boot
++   - Package as `roxieos-ai` deb (4 GB gguf)
++   - Make `baux-bot` fall back to the fine-tuned model when no network/ollama server
++
++4. **v7.0 – Post v0.1**
++   - Multi-modal: screenshot → bot sees your tmux layout and comments on your rice
++   - Voice mode (whisper + piper) so you can yell at it from across the room
++   - Self-improvement loop: “that answer sucked, fix it” → append correction to training data
++
++5. **v10.0 – The Final Boss**
++   - Bot becomes the package manager: “add a new keybind for chaos screensaver” → writes the patch → debuild → installs it → tells you it’s done
++   - Runs entirely on the Pi Zero in your pocket with a 1.3B fine-tune
++   - You never type again
++
++### Current Limitations (we know, we’re not blind)
++
++- RAG rebuild is a little slow on 5400 rpm HDDs
++- Deepseek 33b first-token latency is penance for our sins
++- No memory between sessions (fixed in v5.1)
++- Hard-coded path (fixed in v5.5)
++
++But right now, today, this script is already the most useful local coding assistant 99 % of people have ever had, because it literally reads your entire OS every time you blink.
++
++Leave it as-is for the Rick-Roll Edition.
++
++The sarcasm, the red, the chaos screensaver, and this bot that knows every line you wrote while you slept — that’s the soul of RoxieOS v0.1.
++
++Everything after this is just making the soul stronger.
++
++— badlandz, November 20 2025  
+FILES DIFFER - unified diff above
+
+---
+--- debian/bauxwm/etc/xdg/picom/picom.conf (build) ---
+backend = "glx;
+vsync = true;
+corner-radius = 0;
+shadow = false;
+fading = false;
+blur-background = false;
+opacity-rule = [ "90:class_g = 'Alacritty'" ];
+---
+--- etc/xdg/picom/picom.conf (build) ---
+backend = "glx;
+vsync = true;
+corner-radius = 0;
+shadow = false;
+fading = false;
+blur-background = false;
+opacity-rule = [ "90:class_g = 'Alacritty'" ];
+---
+
+=== DIRECTORY CONTEXT: bauxwm ===
+Path: /src/roxanne/packages/bauxwm
+Access Level: build
+Description: Debian BAUXWM package (merge target 2)
+
+--- usr/share/bauxwm/bin/status.sh (build) - COMPRESSED DIFF ---
+SOURCE: /src/roxanne/packages/bauxwm/usr/share/bauxwm/bin/status.sh
+COMPARING WITH: /src/roxanne/packages/bwm/usr/share/bauxwm/bin/status.sh
+FILES ARE IDENTICAL
+
+---
+
+=== DIRECTORY CONTEXT: baux-bot ===
+Path: /src/roxanne/packages/baux-bot
+Access Level: build
+Description: BAUX-BOT package (build/modify directory)
+
+--- baux-bot-advanced.sh (build) ---
+#!/bin/bash
+# Advanced BAUX-BOT with RAG and self-improvement
+
+set -euo pipefail
+
+# Configuration
+PROJECT_ROOT="/src/roxanne"
+RAG_DIR="./rag"
+MODEL="smollm2:135m"
+
+mkdir -p "$RAG_DIR"
+
+# Build basic RAG context
+build_context() {
+    local rag_file="$RAG_DIR/context.txt"
+---
+--- test-grok-api.sh (build) ---
+#!/bin/bash
+# Test GROK API directly
+
+API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
+
+if [[ -z "$API_KEY" ]]; then
+    echo "No API key"
+    exit 1
+fi
+
+echo "Testing GROK API..."
+
+RESPONSE=$(curl -s https://api.x.ai/v1/chat/completions \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+---
+--- old-bot-stuff/baux-bot.sh (build) ---
+#!/usr/bin/env bash
+# baux-bot.sh v4.1 — bullet-proof, chat-ready, ARG_MAX-safe
+# Drop-in replacement – Nov 19 2025
+
+set -u # removed -e on purpose – we handle errors ourselves
+set -o pipefail
+
+BAUX_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+LOG_DIR="$BAUX_ROOT/bot/chatlogs"
+RAG_DIR="$BAUX_ROOT/bot/rag"
+MODEL_PREF=(deepseek-coder:33b llama3.2:3b qwen2.5:7b gemma2:2b phi3:3.8b)
+
+mkdir -p "$LOG_DIR" "$RAG_DIR"
+
+log() { echo "[$(date '+%H:%M:%S')] $*" | tee -a "$LOG_DIR/current.log"; }
+---
+--- grok-rag-simple.sh (build) ---
+#!/bin/bash
+# Simple RAG-enhanced GROK interface
+
+set -euo pipefail
+
+# Configuration
+PROJECT_ROOT="/src/roxanne"
+RAG_DIR="./rag"
+API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
+
+if [[ -z "$API_KEY" ]]; then
+    echo "Error: GROK_API_KEY not found"
+    exit 1
+fi
+
+---
+--- baux-bot-local.sh (build) ---
+#!/bin/bash
+# BAUX-BOT Local - Ollama-powered AI assistant with RAG
+
+set -euo pipefail
+
+# Configuration
+PROJECT_ROOT="/src/roxanne"
+RAG_DIR="./rag"
+MODEL="${BAUX_MODEL:-smollm2:135m}"
+MAX_CONTEXT=8000
+
+mkdir -p "$RAG_DIR"
+
+# Build comprehensive RAG context
+build_rag() {
+---
+--- archive/baux-bot.sh (build) ---
+#!/usr/bin/env bash
+# baux-bot.sh v4.5 — final, idiot-proof, works from /usr/local/bin
+# Nov 20 2025
+
+set -u
+set -o pipefail
+
+# ── Find the repo no matter where the script lives ─────────────────────
+find_baux_root() {
+  local dir="$(dirname "$(realpath "$0")")"
+  #   while [[ "$dir" != "/" ]]; do
+  #     if [[ -d "$dir/packages/baux" ]]; then
+  #       echo "$dir/packages/baux"
+  #       return
+  #     fi
+---
+--- test-basic-grok.sh (build) ---
+#!/bin/bash
+# Basic GROK API test
+
+API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
+
+if [[ -z "$API_KEY" ]]; then
+    echo "No API key found"
+    exit 1
+fi
+
+echo "Testing basic GROK API call..."
+
+# Simple test
+RESPONSE=$(curl -s https://api.x.ai/v1/chat/completions \
+  -H "Authorization: Bearer $API_KEY" \
+---
+--- baux-bot-simple.sh (build) ---
+#!/bin/bash
+# Simple BAUX-BOT without complex RAG
+
+MODEL="smollm2:135m"
+
+echo "🤖 BAUX-BOT Simple AI Assistant"
+echo "==============================="
+
+query_ai() {
+    local question="$1"
+    echo "$question" | ollama run "$MODEL" --nowordwrap 2>/dev/null || echo "AI Error: Unable to get response"
+}
+
+echo "Commands: 'exit' to quit"
+echo
+---
+--- test-ollama.sh (build) ---
+#!/bin/bash
+echo "Testing Ollama directly..."
+echo "Hello" | ollama run smollm2:135m --nowordwrap
+echo "Done"
+---
+--- optimize-baux-bot.sh (build) ---
+#!/bin/bash
+# BAUX-BOT Optimization Framework
+
+set -euo pipefail
+
+# Configuration
+PROJECT_ROOT="/src/roxanne"
+RAG_DIR="./rag"
+MODELS=("qwen2.5-coder:1.5b" "smollm2:135m")
+TEST_SUGGESTIONS=(
+    "Add better error handling to BAUX-BOT"
+    "Implement voice input capability"
+    "Add tmux integration for productivity"
+    "Improve RAG context building"
+    "Add self-improvement rollback safety"
+---
+--- debug-grok-call.sh (build) ---
+#!/bin/bash
+# Debug the GROK call in hybrid script
+
+API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
+
+if [[ -z "$API_KEY" ]]; then
+    echo "No API key"
+    exit 1
+fi
+
+# Simulate the query_grok function
+question="How can I improve error handling?"
+context="Short test context"
+
+prompt="You are an expert AI assistant for Roxanne Cyberdeck OS development.
+---
+--- grok-rag-enhanced.sh (build) ---
+#!/bin/bash
+# Enhanced GROK with RAG - reads project files for context
+
+set -euo pipefail
+
+# Configuration
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="${PROJECT_ROOT:-/src/roxanne}"
+RAG_DIR="$SCRIPT_DIR/rag"
+MAX_CONTEXT_SIZE=4000
+
+# API Key
+API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
+if [[ -z "$API_KEY" ]]; then
+    echo "Error: GROK_API_KEY not found"
+---
+--- grok-chat-rag.sh (build) ---
+#!/bin/bash
+# grok-chat-rag.sh - GROK chat with RAG (project file context)
+
+set -euo pipefail
+
+# Configuration
+RAG_DIR="${RAG_DIR:-./rag}"
+mkdir -p "$RAG_DIR"
+
+# Build RAG context from current project
+build_rag() {
+    local rag_file="$RAG_DIR/current.txt"
+    local project_root
+    
+    # Find project root (look for .git or go up to /src)
+---
+--- grok/baux-grok.sh (build) ---
+#!/usr/bin/env baux
+# baux-grok — instant Grok-3 pane inside tmux with full project RAG
+# Mod4+g or whatever you bind → money printer go brrr
+
+set -euo pipefail
+
+# Configurable bits
+MODEL="${GROK_MODEL:-grok-3}"
+SESSION="baux-grok-$$"
+CWD="$(tmux display-message -p '#{pane_current_path}')"
+API_KEY="${GROK_API_KEY:-$(grok-cli config get api_key || echo 'missing')}"
+
+if [[ "$API_KEY" == "missing" || -z "$API_KEY" ]]; then
+  echo "Error: GROK_API_KEY not set. Run: grok-cli login" >&2
+  exit 1
+---
+--- debug-api-simple.sh (build) ---
+#!/bin/bash
+# Simple debug
+
+API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
+
+curl -s https://api.x.ai/v1/chat/completions \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-2-1212",
+    "messages": [
+      {"role": "system", "content": "You are a helpful assistant."},
+      {"role": "user", "content": "Context: Three layers: bbase, baux, bwm. Question: What are the three layers?"}
+    ],
+    "temperature": 0.3
+---
+--- baux-bot.sh (build) ---
+#!/usr/bin/env bash
+# baux-bot.sh v6.2 — indestructible, cosmetic broken-pipe ignored
+# Nov 20 2025
+
+set -euo pipefail
+
+SRC_ROOT="/src"
+[[ -d "$SRC_ROOT/roxanne" ]] || {
+  echo "ERROR: no /src/roxanne"
+  exit 1
+}
+
+LOG_DIR="/var/log/baux-bot"
+RAG_DIR="/var/lib/baux-bot/rag"
+mkdir -p "$LOG_DIR" "$RAG_DIR"
+---
+--- grok-api.sh (build) ---
+#!/bin/bash
+# grok-api.sh - Direct GROK API interface for Roxanne
+
+# Read from stdin or command line
+if [[ -p /dev/stdin ]]; then
+    PAYLOAD=$(cat)
+else
+    PAYLOAD="$1"
+fi
+
+# Try to parse as JSON first
+QUESTION=$(echo "$PAYLOAD" | jq -r '.question // empty' 2>/dev/null || echo "")
+CONTEXT=$(echo "$PAYLOAD" | jq -r '.context // empty' 2>/dev/null || echo "")
+
+# If JSON parsing failed, treat as plain text question
+---
+--- debug-api.sh (build) ---
+#!/bin/bash
+# Debug the API call
+
+PAYLOAD='{"question": "What are the three layers?", "context": "Three layers: bbase, baux, bwm"}'
+QUESTION="What are the three layers?"
+CONTEXT="Three layers: bbase, baux, bwm"
+API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
+
+echo "QUESTION: $QUESTION"
+echo "CONTEXT: $CONTEXT"
+echo
+
+SYSTEM_CONTENT="You are Grok helping build Roxanne Cyberdeck OS. You have access to the current project context. Be direct, technical, and helpful.
+
+PROJECT CONTEXT:
+---
+--- baux-grok/baux-grok.sh (build) ---
+#!/usr/bin/env baux
+# baux-grok — instant Grok-3 pane inside tmux with full project RAG
+# Mod4+g or whatever you bind → money printer go brrr
+
+set -euo pipefail
+
+# Configurable bits
+MODEL="${GROK_MODEL:-grok-3}"
+SESSION="baux-grok-$$"
+CWD="$(tmux display-message -p '#{pane_current_path}')"
+API_KEY="${GROK_API_KEY:-$(grok-cli config get api_key || echo 'missing')}"
+
+if [[ "$API_KEY" == "missing" || -z "$API_KEY" ]]; then
+  echo "Error: GROK_API_KEY not set. Run: grok-cli login" >&2
+  exit 1
+---
+--- test-grok-tmux.sh (build) ---
+#!/bin/bash
+# Simple test of the tmux GROK interface
+
+echo "Testing tmux GROK interface..."
+echo "This will create a tmux session. Press Ctrl+C to exit."
+
+# Check if we're in tmux
+if [[ -n "${TMUX:-}" ]]; then
+    echo "Already in tmux, creating popup..."
+    tmux popup -E -w 80% -h 80% "cd $(pwd) && echo 'Test GROK interface' && echo 'Type: Hello' | ./grok-api.sh && echo && echo 'Press Enter to exit' && read"
+else
+    echo "Not in tmux, creating new session..."
+    SESSION="test-grok-$$"
+    tmux new-session -d -s "$SESSION" -n "test"
+    tmux send-keys -t "$SESSION":0 "cd $(pwd) && echo 'Test GROK interface'" C-m
+---
+--- debug-rag.sh (build) ---
+#!/bin/bash
+# Debug RAG building
+
+PROJECT_ROOT="/src/roxanne"
+RAG_DIR="./rag"
+
+mkdir -p "$RAG_DIR"
+
+echo "Building RAG..."
+rag_file="$RAG_DIR/current.txt"
+
+echo "=== ROXANNE CYBERDECK PROJECT CONTEXT ===" > "$rag_file"
+echo "Generated: $(date)" >> "$rag_file"
+
+echo "File created:"
+---
+--- grok-chat.sh (build) ---
+#!/bin/bash
+# grok-chat.sh - Simple command-line GROK chat interface
+
+echo "🤖 Roxanne Cyberdeck AI Assistant"
+echo "=================================="
+echo "Type your questions. Type 'exit' to quit."
+echo
+
+while true; do
+    echo -n "you > "
+    read -r input
+    
+    if [[ "$input" == "exit" || "$input" == "quit" ]]; then
+        echo "Goodbye!"
+        break
+---
+--- baux-grok-direct.sh (build) ---
+#!/bin/bash
+# baux-grok-direct — instant Grok pane inside tmux using direct API
+# Uses grok-api.sh instead of grok-cli
+
+set -euo pipefail
+
+# Configurable bits
+SESSION="baux-grok-direct-$$"
+CWD="$(tmux display-message -p '#{pane_current_path}' 2>/dev/null || pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Check if GROK_API_KEY is available
+if [[ -z "${GROK_API_KEY:-}" ]]; then
+  echo "Error: GROK_API_KEY not set in environment" >&2
+  exit 1
+---
+--- test-models.sh (build) ---
+#!/bin/bash
+# Test different Ollama models for BAUX-BOT optimization
+
+set -euo pipefail
+
+MODELS=("smollm2:135m" "llama3.2:3b")
+TEST_QUESTIONS=(
+    "What is Roxanne?"
+    "How can I improve error handling in BAUX-BOT?"
+    "What are the three layers of the architecture?"
+    "Suggest a new feature for cyberdeck development"
+)
+
+echo "🧪 BAUX-BOT Model Optimization Test"
+echo "===================================="
+---
+--- grok-4.sh (build) ---
+#!/bin/bash
+PAYLOAD="$1"
+QUESTION=$(echo "$PAYLOAD" | jq -r '.question')
+CONTEXT=$(echo "$PAYLOAD" | jq -r '.context')
+
+curl -s https://api.x.ai/v1/chat/completions \
+  -H "Authorization: Bearer $GROK_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-4",
+    "messages": [
+      {"role": "system", "content": "You are helping build RoxieOS. Use the provided README-GROK.md context when relevant."},
+      {"role": "user", "content": "'"${CONTEXT:0:8000}"'\n\nQuestion: '"${QUESTION}"'"}
+    ],
+    "temperature": 0.2
+---
+--- grok-chat-simple.sh (build) ---
+#!/bin/bash
+# Simple GROK chat interface
+
+echo "🤖 Roxanne Cyberdeck AI Assistant"
+echo "=================================="
+echo "Type your questions. Type 'exit' to quit."
+echo
+
+while true; do
+    echo -n "you > "
+    read -r input
+    
+    if [[ "$input" == "exit" || "$input" == "quit" ]]; then
+        echo "Goodbye!"
+        break
+---
+--- grok-simple.sh (build) ---
+#!/bin/bash
+# Simple GROK API interface - takes question as argument or stdin
+
+API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
+
+if [[ -z "$API_KEY" ]]; then
+    echo "Error: No GROK API key found"
+    exit 1
+fi
+
+# Get input
+if [[ -p /dev/stdin ]]; then
+    QUESTION=$(cat)
+else
+    QUESTION="$1"
+---
+--- baux-bot-hybrid.sh (build) ---
+#!/bin/bash
+# BAUX-BOT Hybrid - Ollama + GROK API for advanced reasoning
+
+set -euo pipefail
+
+# Configuration
+PROJECT_ROOT="/src/roxanne"
+RAG_DIR="./rag"
+MODEL="qwen2.5-coder:1.5b"
+GROK_API_KEY="${GROK_API_KEY:-${GROK_KEY:-}}"
+
+# Directory access control configuration
+# Format: directory_path:access_level:description
+DIRECTORY_CONFIG=(
+    "/src/RoxieOS/ports/bwm:readonly:FreeBSD BWM port (reference implementation)"
+---
+--- old-bot-stuff/README.md (build) ---
+# Hi I'm BAUX BOT!
+
+I'm here to help keep BAUX fun and productive, try me out!
+
+Right now I'm just a script called baux-bot.sh in ~/src/baux/bot/ 
+But someday I'll be a fully integrated pain in the BAUX!
+
+Wed Nov 19 04:23:26 AM MST 2025
+Bot was written to use RAG and focus on README and ROADMAP
+Still a script, not made pane or window, waiting to load RAG and models
+
+Thoughts: Probably should be "openable" as mapped key for "bot" 
+what is the best workflow, alt-b for bot, alt-something, alt? 
+
+Where is my tmux now... I'm alt-hjkl for switching windows so:
+---
+--- README.md (build) - COMPRESSED DIFF ---
+SOURCE: /src/roxanne/packages/baux-bot/README.md
+COMPARING WITH: /src/RoxieOS/ports/bwm/README.md
+--- /src/roxanne/packages/baux-bot/README.md	2025-12-03 05:54:38.648223714 +0000
++++ /src/RoxieOS/ports/bwm/README.md	2025-12-07 10:11:02.074807185 +0000
+@@ -1,78 +1,50 @@
+-# bbot - AI Assistant
+-**BAUXBSD v0.1 AI integration**
++# bwm - Minimal Window Manager
++**BAUXBSD window management layer**
+ 
+-Current version: v5.0 (Nov 20 2025)  
+-Location: `/usr/local/bin/bbot.sh`
++`bwm` is a minimal, keyboard-driven window manager based on dwm, designed for perfect integration with BAUX session management.
+ 
+-Live, repo-aware AI assistant with local models and cloud fallback for BAUXBSD development workflow.
++## Core Features
+ 
+-Uses? 
+-#1 VIM TUTOR
+-#2 TMUX TUTOR
+-#3 ROXIEOS MAN RTFM'ing everything os helper bot
++- **Session display**: Shows BAUX session names in status bar
++- **Mod4 integration**: Mod4+1-9 switches sessions (same as tmux)
++- **BAUXWM=1**: Environment variable controls tmux status visibility
++- **Gruvbox theming**: Unified colors for borders, bar, and windows
++- **Minimal footprint**: ~25MB installed
++- **Keyboard-native**: No mouse required
++
++## Package Structure
++
++```
++bwm/
++├── files/
++│   ├── usr/local/bin/dwm          # Patched dwm binary
++│   └── usr/local/bin/status.sh   # Status bar script
++├── patches/
++│   └── baux.patch              # dwm patches for BAUX integration
++└── Makefile                     # FreeBSD port build
++```
++
++## Keybindings
++
++| Command | Action | Context |
++|---------|---------|---------|
++| Mod4+1-9 | Switch session | Universal |
++| Mod4+hjkl | Navigate tags | X11 only |
++| Mod4+Enter | New terminal | Universal |
++| Mod4+b | Toggle status bar | Universal |
++
++## Integration
++
++- **baux**: Session names via BAUXWM=1 environment variable
++- **bterm**: Terminal spawning with consistent theming
++- **chaos**: Screensaver integration
++
++## Status Bar
++
++The bwm status bar shows:
++- Current BAUX session names (when BAUXWM=1)
++- System information (battery, time)
++- Active window title
++- **Gruvbox colors**: Consistent with console and editor theming
+ 
+-"AI sheparding" 2-bot question:
+-* local 2-3 second response
+-* local 2-3 second "better AI picker"
+-  * suggests which AI would likely have a better answer
+-    * SEND: send the qustion to smarter bot
+-    * Edit: open the question, and answer, in a buffer in vim that:
+-      * Better rewrite the question
+-      * Select which of top 3 AI choices to send it to (4th line "other" to use another AI)
+-
+-### What It Does Right Now (and does it well)
+-
+-- Hard-coded to the full monorepo at `/src/roxieos`
+-- Scans every package and the live-build tree on every change
+-- Builds a ~2000-line RAG file with git status + 40 newest source files
+-- Auto-detects and prefers deepseek-coder:33b → qwen → smollm fallback
+-- Rebuilds RAG automatically when any file in the monorepo is touched
+-- Only exits on the literal word `exit`
+-- Logs everything to `bot/chatlogs/current.log`
+-- Survives deepseek’s first-token penance with a spinner
+-
+-It already feels like the model was trained on the entire distro, because it literally reads the entire distro every time.
+-
+-### Roadmap — Where This Goes Next (in order)
+-
+-1. **v5.1 – Immediate (next 48 hours)**
+-   - Replace the `find | sort | head` pipe with `|| true` or `xargs -0` to kill the “broken pipe” spam forever
+-   - Add last 50 lines of `current.log` into every prompt → short-term memory across restarts
+-   - Add explicit “read FILE” command that forces a file into RAG even if it’s cold
+-
+-2. **v5.5 – This weekend**
+-   - Move from hard-coded `/src/roxieos` to auto-detect via git root or `$ROXIE_ROOT` env var
+-   - Add `baux-bot --daemon` mode that runs in background and speaks through `notify-send` or tmux popup
+-   - Bind to `Alt + p` globally via bauxwm or tmux leader
+-
+-3. **v6.0 – Before ISO release**
+-   - Ship a tiny 3–7B fine-tune (deepseek-coder:6.7b or qwen2.5:7b) trained on every file + every chatlog → zero RAG needed on fresh boot
+-   - Package as `roxieos-ai` deb (4 GB gguf)
+-   - Make `baux-bot` fall back to the fine-tuned model when no network/ollama server
+-
+-4. **v7.0 – Post v0.1**
+-   - Multi-modal: screenshot → bot sees your tmux layout and comments on your rice
+-   - Voice mode (whisper + piper) so you can yell at it from across the room
+-   - Self-improvement loop: “that answer sucked, fix it” → append correction to training data
+-
+-5. **v10.0 – The Final Boss**
+-   - Bot becomes the package manager: “add a new keybind for chaos screensaver” → writes the patch → debuild → installs it → tells you it’s done
+-   - Runs entirely on the Pi Zero in your pocket with a 1.3B fine-tune
+-   - You never type again
+-
+-### Current Limitations (we know, we’re not blind)
+-
+-- RAG rebuild is a little slow on 5400 rpm HDDs
+-- Deepseek 33b first-token latency is penance for our sins
+-- No memory between sessions (fixed in v5.1)
+-- Hard-coded path (fixed in v5.5)
+-
+-But right now, today, this script is already the most useful local coding assistant 99 % of people have ever had, because it literally reads your entire OS every time you blink.
+-
+-Leave it as-is for the Rick-Roll Edition.
+-
+-The sarcasm, the red, the chaos screensaver, and this bot that knows every line you wrote while you slept — that’s the soul of RoxieOS v0.1.
+-
+-Everything after this is just making the soul stronger.
+-
+-— badlandz, November 20 2025  
++bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory, all with unified Gruvbox aesthetics.
+\ No newline at end of file
+FILES DIFFER - unified diff above
+
+COMPARING WITH: /src/roxanne/packages/bwm/README.md
+--- /src/roxanne/packages/baux-bot/README.md	2025-12-03 05:54:38.648223714 +0000
++++ /src/roxanne/packages/bwm/README.md	2025-12-03 05:54:38.651897193 +0000
+@@ -1,78 +1,48 @@
+-# bbot - AI Assistant
+-**BAUXBSD v0.1 AI integration**
++# bwm - Minimal Window Manager
++**BAUXBSD window management layer**
+ 
+-Current version: v5.0 (Nov 20 2025)  
+-Location: `/usr/local/bin/bbot.sh`
++`bwm` is a minimal, keyboard-driven window manager based on dwm, designed for perfect integration with BAUX session management.
+ 
+-Live, repo-aware AI assistant with local models and cloud fallback for BAUXBSD development workflow.
++## Core Features
+ 
+-Uses? 
+-#1 VIM TUTOR
+-#2 TMUX TUTOR
+-#3 ROXIEOS MAN RTFM'ing everything os helper bot
++- **Session display**: Shows BAUX session names in status bar
++- **Mod4 integration**: Mod4+1-9 switches sessions (same as tmux)
++- **BAUXWM=1**: Environment variable controls tmux status visibility
++- **Minimal footprint**: ~25MB installed
++- **Keyboard-native**: No mouse required
++
++## Package Structure
++
++```
++bwm/
++├── files/
++│   ├── usr/local/bin/dwm          # Patched dwm binary
++│   └── usr/local/bin/status.sh   # Status bar script
++├── patches/
++│   └── baux.patch              # dwm patches for BAUX integration
++└── Makefile                     # FreeBSD port build
++```
++
++## Keybindings
++
++| Command | Action | Context |
++|---------|---------|---------|
++| Mod4+1-9 | Switch session | Universal |
++| Mod4+hjkl | Navigate tags | X11 only |
++| Mod4+Enter | New terminal | Universal |
++| Mod4+b | Toggle status bar | Universal |
++
++## Integration
++
++- **baux**: Session names via BAUXWM=1 environment variable
++- **bterm**: Terminal spawning with consistent theming
++- **chaos**: Screensaver integration
++
++## Status Bar
++
++The bwm status bar shows:
++- Current BAUX session names (when BAUXWM=1)
++- System information (battery, time)
++- Active window title
+ 
+-"AI sheparding" 2-bot question:
+-* local 2-3 second response
+-* local 2-3 second "better AI picker"
+-  * suggests which AI would likely have a better answer
+-    * SEND: send the qustion to smarter bot
+-    * Edit: open the question, and answer, in a buffer in vim that:
+-      * Better rewrite the question
+-      * Select which of top 3 AI choices to send it to (4th line "other" to use another AI)
+-
+-### What It Does Right Now (and does it well)
+-
+-- Hard-coded to the full monorepo at `/src/roxieos`
+-- Scans every package and the live-build tree on every change
+-- Builds a ~2000-line RAG file with git status + 40 newest source files
+-- Auto-detects and prefers deepseek-coder:33b → qwen → smollm fallback
+-- Rebuilds RAG automatically when any file in the monorepo is touched
+-- Only exits on the literal word `exit`
+-- Logs everything to `bot/chatlogs/current.log`
+-- Survives deepseek’s first-token penance with a spinner
+-
+-It already feels like the model was trained on the entire distro, because it literally reads the entire distro every time.
+-
+-### Roadmap — Where This Goes Next (in order)
+-
+-1. **v5.1 – Immediate (next 48 hours)**
+-   - Replace the `find | sort | head` pipe with `|| true` or `xargs -0` to kill the “broken pipe” spam forever
+-   - Add last 50 lines of `current.log` into every prompt → short-term memory across restarts
+-   - Add explicit “read FILE” command that forces a file into RAG even if it’s cold
+-
+-2. **v5.5 – This weekend**
+-   - Move from hard-coded `/src/roxieos` to auto-detect via git root or `$ROXIE_ROOT` env var
+-   - Add `baux-bot --daemon` mode that runs in background and speaks through `notify-send` or tmux popup
+-   - Bind to `Alt + p` globally via bauxwm or tmux leader
+-
+-3. **v6.0 – Before ISO release**
+-   - Ship a tiny 3–7B fine-tune (deepseek-coder:6.7b or qwen2.5:7b) trained on every file + every chatlog → zero RAG needed on fresh boot
+-   - Package as `roxieos-ai` deb (4 GB gguf)
+-   - Make `baux-bot` fall back to the fine-tuned model when no network/ollama server
+-
+-4. **v7.0 – Post v0.1**
+-   - Multi-modal: screenshot → bot sees your tmux layout and comments on your rice
+-   - Voice mode (whisper + piper) so you can yell at it from across the room
+-   - Self-improvement loop: “that answer sucked, fix it” → append correction to training data
+-
+-5. **v10.0 – The Final Boss**
+-   - Bot becomes the package manager: “add a new keybind for chaos screensaver” → writes the patch → debuild → installs it → tells you it’s done
+-   - Runs entirely on the Pi Zero in your pocket with a 1.3B fine-tune
+-   - You never type again
+-
+-### Current Limitations (we know, we’re not blind)
+-
+-- RAG rebuild is a little slow on 5400 rpm HDDs
+-- Deepseek 33b first-token latency is penance for our sins
+-- No memory between sessions (fixed in v5.1)
+-- Hard-coded path (fixed in v5.5)
+-
+-But right now, today, this script is already the most useful local coding assistant 99 % of people have ever had, because it literally reads your entire OS every time you blink.
+-
+-Leave it as-is for the Rick-Roll Edition.
+-
+-The sarcasm, the red, the chaos screensaver, and this bot that knows every line you wrote while you slept — that’s the soul of RoxieOS v0.1.
+-
+-Everything after this is just making the soul stronger.
+-
+-— badlandz, November 20 2025  
++bwm provides the visual layer that makes BAUX sessions instantly accessible without breaking muscle memory.
+\ No newline at end of file
+FILES DIFFER - unified diff above
+
+---
+--- grok/README.md (build) ---
+# baux-grok — Grok-3 inside your tmux, instantly
+
+One hotkey → Grok-3 pane that already knows your entire project and is explicitly instructed to make you stupid rich with minimal effort.
+
+## Why
+- Because `Mod4+g` → money printer is the most cyberdeck feature of 2025
+- Because RAG on the actual code you’re looking at beats 50 different browser tabs
+- Because you’re root anyway, might as well have a superintelligence on speed dial
+
+## Requirements
+- `grok-cli` installed and logged in (`grok-cli login`)
+- Working `tmux`
+- A sense of humour about ethics
+
+## Usage
+---
+--- grok/GROKSAID.md (build) ---
+YES.  
+We can get **90 % of the way there this weekend** — no exaggeration — and the remaining 10 % only needs one $8 cloud run later.
+
+Here’s exactly how your dream workflow looks in practice, starting **tomorrow night**:
+
+```
+tmux (BAUX session)
+┌──────────────┬──────────────┬──────────────┐
+│ vim          │ shell        │ GROK PANE    │
+│ /src/roxieos/baux/tmux.conf   │ ls /src…     │              │
+│ …editing…    │              │ > waiting…   │
+└──────────────┴──────────────┴──────────────┘
+```
+
+You hit **Ctrl-b X** (or Mod4+X, whatever you pick) → magic happens:
+---
+--- baux-grok/README.md (build) ---
+# baux-grok — Grok-3 inside your tmux, instantly
+
+One hotkey → Grok-3 pane that already knows your entire project and is explicitly instructed to make you stupid rich with minimal effort.
+
+## Why
+- Because `Mod4+g` → money printer is the most cyberdeck feature of 2025
+- Because RAG on the actual code you’re looking at beats 50 different browser tabs
+- Because you’re root anyway, might as well have a superintelligence on speed dial
+
+## Requirements
+- `grok-cli` installed and logged in (`grok-cli login`)
+- Working `tmux`
+- A sense of humour about ethics
+
+## Usage
+---
+--- baux-grok/GROKSAID.md (build) ---
+YES.  
+We can get **90 % of the way there this weekend** — no exaggeration — and the remaining 10 % only needs one $8 cloud run later.
+
+Here’s exactly how your dream workflow looks in practice, starting **tomorrow night**:
+
+```
+tmux (BAUX session)
+┌──────────────┬──────────────┬──────────────┐
+│ vim          │ shell        │ GROK PANE    │
+│ /src/roxieos/baux/tmux.conf   │ ls /src…     │              │
+│ …editing…    │              │ > waiting…   │
+└──────────────┴──────────────┴──────────────┘
+```
+
+You hit **Ctrl-b X** (or Mod4+X, whatever you pick) → magic happens:
+---
+
+=== DIRECTORY CONTEXT: baux-bot-build ===
+Path: /tmp/baux-bot-build
+Access Level: build
+Description: Temporary build directory for testing
+
+--- test.sh (build) ---
+```bash
+#!/bin/bash
+
+# Main function with argument parsing
+main() {
+    # Parse arguments if necessary
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --version)
+                echo "Version: v1.0"
+                exit 0
+                ;;
+            *)
+                echo "Unknown option: $1"
+                exit 1
+---
+
+=== PROJECT README ===
+# Roxanne - Debian Fork of RoxieOS
+**RoxieOS is FreeBSD based, this is a fork for Debian Development**
+
+This directory contains the complete Debian-based fork of RoxieOS, enhanced with the most successful concepts from both FreeBSD and Debian development paths. The Debian fork excels at accessibility and live system builds, while FreeBSD leads in mesh networking and AI integration. It exists mostly for rapid development of consepts when tools aren't avaliable in FreeBSD (such as access opencode). It is intened to be an "assist" with development only, not as the primary project.
+
+## Core Philosophy: Best of Both Worlds
+
+**Debian Strengths (Preserved Here):**
+- Comprehensive accessibility font stack (9 professional fonts)
+- Complete live system build with debootstrap
+- Working local apt repository infrastructure
+- Custom kernel builds and bootloader themes
+
+**FreeBSD Strengths (Integrated Concepts):**
+- Headscale mesh networking for distributed sessions
+- AI-powered development (xai-chat, baux-bot)
+- Production-ready installation scripts
+- Advanced session persistence and resurrection
+
+## Directory Structure

@@ -1,0 +1,136 @@
+=== BAUX-BOT CODE CONTEXT FOR SELF-IMPROVEMENT ===
+Current BAUX-BOT implementation analysis
+
+=== SCRIPT STRUCTURE ===
+1:#!/bin/bash
+2:# BAUX-BOT Hybrid - Ollama + GROK API for advanced reasoning
+6:# Configuration
+14:# Build multiple specialized RAG contexts
+97:# Query local Ollama (fast)
+98:query_ollama() {
+103:# Query GROK API (smart, expensive)
+104:query_grok() {
+134:# Smart routing - decide which AI to use
+152:# Git safety check function (implemented from BAUX-BOT suggestion)
+165:# Self-improvement with GROK (enhanced autonomous mode)
+166:improve_self() {
+243:# Main interface
+244:main() {
+
+=== KEY FUNCTIONS ===
+query_ollama() {
+    local question="$1"
+    echo "$question" | ollama run "$MODEL" --nowordwrap 2>/dev/null || echo "Ollama Error"
+}
+query_grok() {
+    local question="$1"
+
+    if [[ -z "$GROK_API_KEY" ]]; then
+        echo "GROK API key not available."
+        return
+    fi
+
+    # Simplified prompt without complex context for now
+    local prompt="You are an expert AI assistant for Roxanne Cyberdeck OS development. Focus on FreeBSD, tmux, AI integration, and cyberdeck development. Question: $question"
+
+    local response
+    response=$(curl -s https://api.x.ai/v1/chat/completions \
+      -H "Authorization: Bearer $GROK_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"model\": \"grok-2-1212\",
+        \"messages\": [
+          {
+            \"role\": \"user\",
+            \"content\": \"$prompt\"
+          }
+        ],
+        \"temperature\": 0.3,
+        \"max_tokens\": 1000
+      }")
+
+    echo "$response" | jq -r '.choices[0].message.content // "GROK API Error"' 2>/dev/null || echo "GROK API Error: $response"
+}
+improve_self() {
+    local suggestion="$1"
+
+    echo "🔧 BAUX-BOT Self-Improvement Mode (Autonomous)"
+    echo "=============================================="
+
+    # Load specialized RAG contexts
+    local project_context=""
+    local code_context=""
+    local workflow_context=""
+
+    if [[ -f "$RAG_DIR/project.txt" ]]; then
+        project_context=$(cat "$RAG_DIR/project.txt" | head -c 500)
+    fi
+    if [[ -f "$RAG_DIR/code.txt" ]]; then
+        code_context=$(cat "$RAG_DIR/code.txt" | head -c 1000)
+    fi
+    if [[ -f "$RAG_DIR/workflow.txt" ]]; then
+        workflow_context=$(cat "$RAG_DIR/workflow.txt" | head -c 500)
+    fi
+
+    # Create clean single-line prompt
+    local improvement_prompt="You are BAUX-BOT improving yourself. Analyze: $suggestion. Provide 3-5 specific improvements with bash code examples. Focus on self-improvement, safety, and Roxanne cyberdeck development."
+
+    echo "🤖 Analyzing suggestion with GROK..."
+    local analysis
+    analysis=$(query_grok "$improvement_prompt")
+
+    echo "🎯 GROK Analysis & Implementation Plan:"
+    echo "$analysis"
+    echo
+
+    # Autonomous implementation attempt
+    echo "🤖 BAUX-BOT attempting autonomous implementation..."
+    if ! check_git_status; then
+        echo "❌ Cannot implement - git safety check failed"
+        return 1
+    fi
+
+    # Look for code blocks in the analysis and attempt to implement
+    local code_blocks
+    code_blocks=$(echo "$analysis" | grep -A 20 '```bash' | sed -n '/```bash/,/```/p' | sed '1d;$d' | tr '\n' ';')
+
+    if [[ -n "$code_blocks" ]]; then
+        echo "📝 Found code suggestions, attempting implementation..."
+
+        # Create backup
+        cp "$0" "${0}.backup"
+
+        # Try to apply the first code block (simplified approach)
+        local first_function
+        first_function=$(echo "$code_blocks" | cut -d';' -f1 | head -5)
+
+        if [[ -n "$first_function" ]]; then
+            echo "Implementing: $first_function"
+            # This is a simplified implementation - in practice would need more sophisticated parsing
+            echo "# Auto-implemented improvement: $suggestion" >> "$0"
+            echo "$first_function" >> "$0"
+            echo "✅ Implementation attempted"
+        fi
+    else
+        echo "📝 No code blocks found - manual implementation needed"
+    fi
+
+    echo "🔄 Testing implementation..."
+    if bash -n "$0" 2>/dev/null; then
+        echo "✅ Syntax check passed"
+        echo "💾 Committing improvement..."
+        git add "$0" && git commit -m "BAUX-BOT self-improvement: $suggestion"
+        echo "🎉 Self-improvement successful!"
+    else
+        echo "❌ Syntax error detected, rolling back..."
+        mv "${0}.backup" "$0"
+        echo "🔙 Rollback completed"
+    fi
+}
+
+=== SELF-IMPROVEMENT PATTERNS ===
+- Add git safety checks before code changes
+- Implement better error handling and logging
+- Add tmux integration for productivity
+- Optimize RAG context building
+- Enhance AI model selection and routing

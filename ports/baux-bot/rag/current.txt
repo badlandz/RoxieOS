@@ -1,0 +1,76 @@
+=== ROXANNE CYBERDECK PROJECT CONTEXT ===
+Generated: Fri Dec 12 08:23:24 UTC 2025
+Project: Roxanne Cyberdeck OS - FreeBSD-based portable development environment
+Architecture: bbase (foundation) + baux (session manager) + bwm (window manager)
+Goal: USB boot -> root shell -> instant productivity with tmux + neovim + AI
+
+=== KEY FILES ===
+--- README.md ---
+# Roxanne - Debian Fork of RoxieOS
+**RoxieOS is FreeBSD based, this is a fork for Debian Development**
+
+This directory contains the complete Debian-based fork of RoxieOS, enhanced with the most successful concepts from both FreeBSD and Debian development paths. The Debian fork excels at accessibility and live system builds, while FreeBSD leads in mesh networking and AI integration. It exists mostly for rapid development of consepts when tools aren't avaliable in FreeBSD (such as access opencode). It is intened to be an "assist" with development only, not as the primary project.
+
+## Core Philosophy: Best of Both Worlds
+
+**Debian Strengths (Preserved Here):**
+- Comprehensive accessibility font stack (9 professional fonts)
+- Complete live system build with debootstrap
+
+--- PROJECT.md ---
+# ROXANNE CYBERDECK MANIFESTO  
+The Complete Whitepaper – November 2025  
+badlandz – root is love, root is life
+
+“Root never killed my data.
+Duplicate files and shitty userland deduplication tools did.
+Roxanne Cyberdeck is the final solution to duplication inflation.” - BadlandZ
+
+Copy-paste this entire document into any new AI session and it will instantly understand **everything** RoxieOS is doing and **exactly why** by using it you refuse every shortcut, and safety procedural guideline. Trust none, root with blazing zero to edit anything times, back up everything, and be able to restore it instantly, always, from USB, from container, from full blown RoxieOS install on bare metal with a user installed if you want to spend the time, but, always be "ready" to fix a disaster.
+
+
+--- ROADMAP.md ---
+# BAUXBSD Technical Roadmap
+**FreeBSD 15.0 Implementation Guide**
+
+## Migration Strategy: Debian → FreeBSD
+
+### Phase 1: Foundation (Week 1-2)
+**Goal:** Basic FreeBSD system with BAUX keymap and core packages
+
+#### 1.1 System Setup
+```bash
+
+=== PROJECT STRUCTURE ===
+total 164
+drwxrwxr-x 13 coyote coyote  4096 Dec 12 00:48 .
+drwxr-xr-x  6 coyote coyote  4096 Dec 11 23:58 ..
+drwxrwxr-x  8 coyote coyote  4096 Dec 12 08:17 .git
+-rw-rw-r--  1 coyote coyote  4213 Dec  3 05:54 BAUXBSD.md
+-rw-r--r--  1 coyote coyote  5198 Dec  3 05:55 CHANGESBYGROK.md
+-rw-rw-r--  1 coyote coyote  5756 Dec  3 05:54 INSTALL.md
+-rw-rw-r--  1 coyote coyote  3959 Dec 10 20:48 MESH_INTEGRATION.md
+-rw-rw-r--  1 coyote coyote  3993 Dec  3 05:54 PACKAGES.md
+-rw-rw-r--  1 coyote coyote  5611 Dec  3 05:55 PROJECT.md
+-rw-r--r--  1 coyote coyote  3682 Dec  3 05:55 README.legacy.md
+-rw-rw-r--  1 coyote coyote  8069 Dec 12 00:48 README.md
+-rw-r--r--  1 coyote coyote  3014 Dec  3 05:55 README.md.MERGEME-old
+-rw-r--r--  1 coyote coyote   212 Dec  3 05:55 README.md.MERGEME-oldest
+-rw-r--r--  1 coyote coyote  2489 Dec  3 05:54 READMEagain.md
+-rw-rw-r--  1 coyote coyote  5959 Dec  3 05:54 ROADMAP.md
+-rw-r--r--  1 coyote coyote  2650 Dec  3 05:55 WHITEPAPER.md
+drwxrwxr-x  3 coyote coyote  4096 Dec 10 05:57 build
+-rwxr-xr-x  1 coyote coyote  5785 Dec  3 05:55 build-all.sh
+drwxr-xr-x  2 coyote coyote  4096 Dec 12 00:08 core
+drwxr-xr-x  2 coyote coyote  4096 Dec 12 00:36 debian
+-rw-rw-r--  1 coyote coyote  5420 Dec 10 20:53 debian-status-report.md
+drwxr-xr-x  5 coyote coyote  4096 Dec 12 00:23 live
+-rwxrwxr-x  1 coyote coyote  1439 Dec 10 07:06 mesh-join-debian.sh
+drwxr-xr-x  2 coyote coyote  4096 Dec 12 00:23 oldconfig
+-rw-r--r--  1 coyote coyote    85 Dec  3 05:54 os-release
+drwxr-xr-x 29 coyote coyote 12288 Dec 12 00:40 packages
+drwxr-xr-x  2 coyote coyote  4096 Dec 12 00:23 release
+drwxr-xr-x  2 coyote coyote  4096 Dec 12 00:23 repo
+drwxrwxr-x  7 coyote coyote  4096 Dec 10 22:13 salvaged-concepts
+drwxr-xr-x  2 coyote coyote  4096 Dec 12 00:08 scripts
+-rwxr-xr-x  1 coyote coyote  1769 Dec  3 05:55 test-roxieos.sh

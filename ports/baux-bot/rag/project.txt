@@ -1,0 +1,201 @@
+=== ROXANNE CYBERDECK PROJECT OVERVIEW ===
+FreeBSD-based portable development environment
+Architecture: bbase + baux + bwm layers
+Goal: USB boot -> instant productivity
+Key technologies: tmux, neovim, AI integration
+
+=== PROJECT README ===
+# Roxanne - Debian Fork of RoxieOS
+**RoxieOS is FreeBSD based, this is a fork for Debian Development**
+
+This directory contains the complete Debian-based fork of RoxieOS, enhanced with the most successful concepts from both FreeBSD and Debian development paths. The Debian fork excels at accessibility and live system builds, while FreeBSD leads in mesh networking and AI integration. It exists mostly for rapid development of consepts when tools aren't avaliable in FreeBSD (such as access opencode). It is intened to be an "assist" with development only, not as the primary project.
+
+## Core Philosophy: Best of Both Worlds
+
+**Debian Strengths (Preserved Here):**
+- Comprehensive accessibility font stack (9 professional fonts)
+- Complete live system build with debootstrap
+- Working local apt repository infrastructure
+- Custom kernel builds and bootloader themes
+
+**FreeBSD Strengths (Integrated Concepts):**
+- Headscale mesh networking for distributed sessions
+- AI-powered development (xai-chat, baux-bot)
+- Production-ready installation scripts
+- Advanced session persistence and resurrection
+
+## Directory Structure
+
+```
+roxanne/
+├── README.md                    # This comprehensive guide
+├── debian/
+│   ├── packages/               # 38 .deb packages + 18 build dirs
+│   │   ├── baux/              # Core shell (FreeBSD mesh concepts)
+│   │   ├── bauxwm/            # Window manager + debug symbols
+│   │   ├── neovim-roxanne/    # Custom editor (FreeBSD AI integration)
+│   │   ├── fonts-*/           # Complete accessibility stack
+│   │   └── roxieos-*/         # System components
+│   ├── live/                  # Live build (debootstrap working)
+│   ├── repo/                  # Local apt repo (38 packages)
+│   └── build/                 # Core build scripts
+├── REBUILD/                   # Development rebuild notes
+└── MESH_INTEGRATION.md        # FreeBSD mesh concepts for Debian
+```
+
+## Revolutionary Font Stack (Debian Excellence)
+
+**Complete Accessibility-Focused Typography (9 Professional Fonts):**
+
+### Primary Development Fonts
+- **JetBrains Mono** - Primary monospace, ligatures, programming optimized
+- **FiraCode** - Ligature-rich monospace for coding
+- **Hack** - Clean, highly readable monospace
+--
+**Features:**
+- Full Debian testing base system
+- Pre-installed BAUX packages
+- Custom kernel with accessibility patches
+- Bootloader themes and Plymouth splash
+- Local package repository included
+
+## Mesh Networking Integration (FreeBSD Innovation)
+
+**Headscale Concepts for Debian Implementation:**
+
+### Distributed Session Management
+```bash
+# Future Debian implementation
+baux mesh enroll --server https://baux-scale.example.com
+baux session resurrect --from mesh
+```
+
+### AI-Powered Development
+```bash
+# Integrated AI assistance (FreeBSD model)
+xai-chat "optimize this function"
+baux-bot --context codebase "explain this bug"
+```
+
+### Session Persistence
+```bash
+# Immortal sessions across devices
+baux session save workspace
+baux session restore workspace --device laptop
+```
+
+## Package Ecosystem (38+ Packages)
+
+**✅ BUILT PACKAGES (Ready for Installation):**
+- `baux` - Core shell with mesh session management
+- `bauxwm` - Window manager with session display
+- `neovim-roxanne` - Editor with AI integration
+- `roxieos-base` - System foundation
+- `roxieos-meta` - Complete installation
+- `linux-image-roxanne-amd64` - Custom accessibility kernel
+- `roxieos-grub` - Themed bootloader
+- `roxieos-plymouth` - Boot splash screens
+- Plus 9 accessibility fonts and system components
+
+**🔄 INTEGRATION PACKAGES (In Development):**
+- `headscale` - Mesh networking server
+- `xai-chat` - AI assistant interface
+- `baux-bot` - AI workflow automation
+
+### Core BAUX System
+- `baux` - Shell environment with mesh concepts
+- `bauxwm` - Window manager with session display
+- `neovim-roxanne` - Editor with AI integration
+- `roxieos-base` - System foundation
+- `roxieos-meta` - Complete installation
+
+### System Components
+- `linux-image-roxanne-amd64` - Custom accessibility kernel
+- `roxieos-grub` - Themed bootloader
+- `roxieos-plymouth` - Boot splash screens
+
+### Development Tools
+- `roxieos-grub` - Bootloader customization
+- `roxieos-plymouth` - Plymouth themes
+
+## Build Instructions
+
+1. **Prerequisites:**
+--
+   ```
+
+4. **Join BAUX Mesh (Post-Install):**
+   ```bash
+   # Install built packages
+   sudo dpkg -i *.deb
+   sudo apt install -f
+
+   # Join mesh
+   sudo tailscale up --login-server https://bs.coseismic.org --auth-key <mesh-key>
+
+   # Start BAUX
+   baux
+   ```
+
+### Build Individual Packages
+```bash
+cd debian/packages/<package_name>
+dpkg-buildpackage -us -uc -b
+```
+
+### Build Complete Live System
+```bash
+--
+- [x] **Document font accessibility stack** - Comprehensive typography guide
+- [x] **Preserve live build system** - Working debootstrap infrastructure
+- [x] **Integrate FreeBSD mesh concepts** - Session listing and switching
+- [x] **Add AI assistance framework** - xai-chat and baux-bot integration
+- [x] **Implement session persistence** - tmux-resurrect concepts
+- [x] **Port accessibility configurations** - Font stack and theming
+
+### Phase 2: Unified BAUX Experience
+- [ ] Cross-platform session sync
+- [ ] Unified keymap system (Caps→Esc, Mod4 navigation)
+- [ ] AI-powered development workflow (xai-chat, baux-bot)
+- [ ] Mesh networking support (Headscale integration)
+
+### Phase 3: Production Deployment
+- [ ] Live system optimization (boot in <5 seconds)
+- [ ] Enterprise repository setup (38 packages)
+- [ ] Multi-architecture support (amd64, arm64)
+- [ ] Commercial deployment options
+
+## Migration Path
+
+**From Debian to FreeBSD:**
+- Font packages → FreeBSD ports
+- Live build → NomadBSD-inspired approach
+- Package repo → FreeBSD pkg infrastructure
+- Kernel patches → FreeBSD src/ tree
+
+**From FreeBSD to Debian:**
+- Mesh networking → Debian Headscale packages
+- AI integration → Debian Ollama/xAI packages
+- Session management → Debian tmux-resurrect integration
+
+## Development Status
+
+**✅ Complete Debian Components:**
+- 38 working .deb packages
+- Live system build process
+- Local apt repository
+--
+- Comprehensive font stack
+
+**🔄 FreeBSD Concepts to Integrate:**
+- Headscale mesh networking
+- AI assistance (xai-chat, baux-bot)
+- Advanced session persistence
+- Production installation scripts
+
+**🎯 Combined Vision:**
+Create the most accessible, productive development environment by merging Debian's polish with FreeBSD's innovation.
+
+---
+
+**This Debian fork represents the foundation, enhanced with FreeBSD's breakthrough concepts for the ultimate BAUXBSD experience.**

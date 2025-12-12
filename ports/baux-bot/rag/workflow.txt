@@ -1,0 +1,17 @@
+=== DEVELOPMENT WORKFLOW CONTEXT ===
+BAUX-BOT development and improvement workflow
+
+=== GIT WORKFLOW ===
+1. Create rollback point: git commit -m 'rollback point'
+2. Run safety checks: check_git_status()
+3. Apply improvements manually or via script
+4. Test changes thoroughly
+5. Commit with descriptive message
+6. Rollback if needed: git reset --hard HEAD~1
+
+=== TESTING WORKFLOW ===
+- Test basic functionality with simple queries
+- Test self-improvement with 'improve <suggestion>'
+- Test git safety checks
+- Verify RAG context building
+- Test AI model routing (simple vs complex queries)
