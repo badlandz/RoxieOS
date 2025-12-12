@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "baux-bot-shared"
+version = "2.0.0"
+description = "Shared components for BAUX-BOT distributed AI ecosystem"
+authors = ["BAUX Team <team@baux.org>"]
+readme = "README.md"
+packages = [{include = "baux_bot_shared"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.0"
+pyyaml = "^6.0"
+aiohttp = "^3.9.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

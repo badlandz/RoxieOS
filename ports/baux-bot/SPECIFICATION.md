@@ -222,10 +222,12 @@ User Query → Local Router → Mesh Discovery → Optimal Server → Primary Ba
 - **Code Actions**: Refactoring suggestions, bug fixes with server-side processing
 
 #### Mesh Integration (Core Architecture)
-- **Service Discovery**: Automatic detection of AI routers and servers in mesh
+- **Service Discovery**: Automatic detection via bauxd HTTP API (port 9999)
+- **Health Monitoring**: Built-in service health checks through bauxd `/health`
+- **Session Registry**: AI context persistence using bauxd session storage (`/var/db/baux/`)
 - **Intelligent Routing**: Query complexity analysis for optimal resource allocation
-- **Session Roaming**: AI context follows users across devices seamlessly
-- **Collaborative Sessions**: Multi-user AI interactions with shared context
+- **Session Roaming**: AI context follows users across devices via bauxd coordination
+- **Collaborative Sessions**: Multi-user AI interactions with shared context through mesh
 - **Resource Pooling**: Dynamic load balancing across heterogeneous mesh nodes
 - **Offline Operation**: Client-side caching for disconnected operation
 
@@ -512,7 +514,14 @@ User Query → Local Router → Mesh Discovery → Optimal Server → Primary Ba
 - **BAUX Philosophy**: Respect intentional design differences and educational focus
 - **Session Resurrection**: Integration with tmux resurrect processes across mesh
 - **Drop-BAUX**: Secure key storage and mesh synchronization
+- **bauxd Integration**: Leverages existing BAUX daemon for service discovery and coordination
 - **Heterogeneous Hardware**: Optimized performance across device capabilities
+
+### Mesh Infrastructure Dependencies
+- **bauxd Service**: Required for distributed operations (HTTP API on port 9999)
+- **Session Registry**: `/var/db/baux/` directory for persistent state
+- **Health Monitoring**: Built-in service health checks and failover
+- **Authentication**: Mesh-aware security through bauxd configuration
 
 ## Risk Mitigation
 
