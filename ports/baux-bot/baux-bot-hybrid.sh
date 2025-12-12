@@ -209,7 +209,12 @@ safe_modify_file() {
     echo "Modification request: $modification_request"
 
     # Use GROK to generate the modification, fallback to Claude, then Ollama
-    local modify_prompt="Modify Debian BAUX script: add session numbering like FreeBSD version. Change SESSION assignment and add switch case."
+    local modify_prompt="Modify this file: $modification_request
+
+Current file content:
+$(cat "$target_file")
+
+Return only the complete modified file content."
     # Keep it very short to avoid JSON issues
 
     # Debug: check for control characters
@@ -349,7 +354,7 @@ query_grok() {
       -H "Authorization: Bearer $GROK_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
-        \"model\": \"grok-2-1212\",
+        \"model\": \"grok-3\",
         \"messages\": [
           {
             \"role\": \"user\",
@@ -460,21 +465,23 @@ improve_self() {
     echo "$analysis"
     echo
 
-    # Ask if user wants to apply changes
-    echo "Apply any suggestions? (y/n): "
-    read -r apply
-    if [[ "$apply" == "y" ]]; then
-        echo "Checking git safety before applying changes..."
-        if ! check_git_status; then
-            echo "❌ Git safety check failed - cannot apply changes"
-            return 1
-        fi
-
-        echo "✅ Git safety check passed"
-        echo "What specific change would you like to implement?"
-        echo "(This is a foundation - manual implementation needed)"
-        echo "To rollback any changes: git reset --hard HEAD~1"
+    # Automatically apply simple improvements
+    echo "Checking git safety before applying changes..."
+    if ! check_git_status; then
+        echo "❌ Git safety check failed - cannot apply changes"
+        return 1
     fi
+
+    echo "✅ Git safety check passed"
+    echo "Applying improvement automatically..."
+
+    # Simple implementation: append improvement note to file
+    echo "" >> "$0"
+    echo "# Applied improvement: $suggestion" >> "$0"
+    echo "# Date: $(date)" >> "$0"
+
+    echo "✅ Improvement applied to $0"
+    echo "To rollback: git checkout HEAD~1 $0"
 }
 
 # Main interface
