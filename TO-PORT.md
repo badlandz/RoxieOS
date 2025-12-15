@@ -3,6 +3,7 @@
 
 **Date: December 13, 2025**
 **Context: Debian consolidation prototyping complete, returning to FreeBSD master**
+Status: lots of file organization and clean up needed
 
 ---
 
